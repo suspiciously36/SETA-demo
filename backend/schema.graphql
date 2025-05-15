@@ -1,0 +1,2057 @@
+"""The root query type which gives access points into the data universe."""
+type Query implements Node {
+  """
+  Exposes the root query type nested one level down. This is helpful for Relay 1
+  which can only query top level fields if they are in a particular form.
+  """
+  query: Query!
+
+  """
+  The root query type must be a `Node` to work well with Relay 1 mutations. This just resolves to `query`.
+  """
+  nodeId: ID!
+
+  """Fetches an object given its globally unique `ID`."""
+  node(
+    """The globally unique `ID`."""
+    nodeId: ID!
+  ): Node
+
+  """Reads and enables pagination through a set of `KnexMigration`."""
+  allKnexMigrations(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `KnexMigration`."""
+    orderBy: [KnexMigrationsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: KnexMigrationCondition
+  ): KnexMigrationsConnection
+
+  """Reads a set of `KnexMigration`."""
+  allKnexMigrationsList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `KnexMigration`."""
+    orderBy: [KnexMigrationsOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: KnexMigrationCondition
+  ): [KnexMigration!]
+
+  """Reads and enables pagination through a set of `KnexMigrationsLock`."""
+  allKnexMigrationsLocks(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `KnexMigrationsLock`."""
+    orderBy: [KnexMigrationsLocksOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: KnexMigrationsLockCondition
+  ): KnexMigrationsLocksConnection
+
+  """Reads a set of `KnexMigrationsLock`."""
+  allKnexMigrationsLocksList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `KnexMigrationsLock`."""
+    orderBy: [KnexMigrationsLocksOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: KnexMigrationsLockCondition
+  ): [KnexMigrationsLock!]
+
+  """Reads and enables pagination through a set of `TeamUser`."""
+  allTeamUsers(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamUserCondition
+  ): TeamUsersConnection
+
+  """Reads a set of `TeamUser`."""
+  allTeamUsersList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamUserCondition
+  ): [TeamUser!]
+
+  """Reads and enables pagination through a set of `Team`."""
+  allTeams(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Team`."""
+    orderBy: [TeamsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamCondition
+  ): TeamsConnection
+
+  """Reads a set of `Team`."""
+  allTeamsList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `Team`."""
+    orderBy: [TeamsOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamCondition
+  ): [Team!]
+
+  """Reads and enables pagination through a set of `Token`."""
+  allTokens(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Token`."""
+    orderBy: [TokensOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TokenCondition
+  ): TokensConnection
+
+  """Reads a set of `Token`."""
+  allTokensList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `Token`."""
+    orderBy: [TokensOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TokenCondition
+  ): [Token!]
+
+  """Reads and enables pagination through a set of `User`."""
+  allUsers(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: UserCondition
+  ): UsersConnection
+
+  """Reads a set of `User`."""
+  allUsersList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: UserCondition
+  ): [User!]
+  knexMigrationById(id: Int!): KnexMigration
+  knexMigrationsLockByIndex(index: Int!): KnexMigrationsLock
+  teamUserByUserIdAndTeamId(userId: UUID!, teamId: UUID!): TeamUser
+  teamById(id: UUID!): Team
+  tokenById(id: UUID!): Token
+  userById(id: UUID!): User
+  userByEmail(email: String!): User
+
+  """Reads a single `KnexMigration` using its globally unique `ID`."""
+  knexMigration(
+    """
+    The globally unique `ID` to be used in selecting a single `KnexMigration`.
+    """
+    nodeId: ID!
+  ): KnexMigration
+
+  """Reads a single `KnexMigrationsLock` using its globally unique `ID`."""
+  knexMigrationsLock(
+    """
+    The globally unique `ID` to be used in selecting a single `KnexMigrationsLock`.
+    """
+    nodeId: ID!
+  ): KnexMigrationsLock
+
+  """Reads a single `TeamUser` using its globally unique `ID`."""
+  teamUser(
+    """The globally unique `ID` to be used in selecting a single `TeamUser`."""
+    nodeId: ID!
+  ): TeamUser
+
+  """Reads a single `Team` using its globally unique `ID`."""
+  team(
+    """The globally unique `ID` to be used in selecting a single `Team`."""
+    nodeId: ID!
+  ): Team
+
+  """Reads a single `Token` using its globally unique `ID`."""
+  token(
+    """The globally unique `ID` to be used in selecting a single `Token`."""
+    nodeId: ID!
+  ): Token
+
+  """Reads a single `User` using its globally unique `ID`."""
+  user(
+    """The globally unique `ID` to be used in selecting a single `User`."""
+    nodeId: ID!
+  ): User
+}
+
+"""An object with a globally unique `ID`."""
+interface Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+}
+
+"""A connection to a list of `KnexMigration` values."""
+type KnexMigrationsConnection {
+  """A list of `KnexMigration` objects."""
+  nodes: [KnexMigration!]!
+
+  """
+  A list of edges which contains the `KnexMigration` and cursor to aid in pagination.
+  """
+  edges: [KnexMigrationsEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `KnexMigration` you could get from the connection."""
+  totalCount: Int!
+}
+
+type KnexMigration implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: Int!
+  name: String
+  batch: Int
+  migrationTime: Datetime
+}
+
+"""
+A point in time as described by the [ISO
+8601](https://en.wikipedia.org/wiki/ISO_8601) standard. May or may not include a timezone.
+"""
+scalar Datetime
+
+"""A `KnexMigration` edge in the connection."""
+type KnexMigrationsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `KnexMigration` at the end of the edge."""
+  node: KnexMigration!
+}
+
+"""A location in a connection that can be used for resuming pagination."""
+scalar Cursor
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: Cursor
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: Cursor
+}
+
+"""Methods to use when ordering `KnexMigration`."""
+enum KnexMigrationsOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `KnexMigration` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input KnexMigrationCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+}
+
+"""A connection to a list of `KnexMigrationsLock` values."""
+type KnexMigrationsLocksConnection {
+  """A list of `KnexMigrationsLock` objects."""
+  nodes: [KnexMigrationsLock!]!
+
+  """
+  A list of edges which contains the `KnexMigrationsLock` and cursor to aid in pagination.
+  """
+  edges: [KnexMigrationsLocksEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `KnexMigrationsLock` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+type KnexMigrationsLock implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  index: Int!
+  isLocked: Int
+}
+
+"""A `KnexMigrationsLock` edge in the connection."""
+type KnexMigrationsLocksEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `KnexMigrationsLock` at the end of the edge."""
+  node: KnexMigrationsLock!
+}
+
+"""Methods to use when ordering `KnexMigrationsLock`."""
+enum KnexMigrationsLocksOrderBy {
+  NATURAL
+  INDEX_ASC
+  INDEX_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `KnexMigrationsLock` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input KnexMigrationsLockCondition {
+  """Checks for equality with the object’s `index` field."""
+  index: Int
+}
+
+"""A connection to a list of `TeamUser` values."""
+type TeamUsersConnection {
+  """A list of `TeamUser` objects."""
+  nodes: [TeamUser!]!
+
+  """
+  A list of edges which contains the `TeamUser` and cursor to aid in pagination.
+  """
+  edges: [TeamUsersEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `TeamUser` you could get from the connection."""
+  totalCount: Int!
+}
+
+type TeamUser implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  userId: UUID!
+  teamId: UUID!
+  role: String!
+  isMainManager: Boolean
+  createdAt: Datetime!
+  updatedAt: Datetime!
+
+  """Reads a single `User` that is related to this `TeamUser`."""
+  userByUserId: User
+}
+
+"""
+A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
+"""
+scalar UUID
+
+type User implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: UUID!
+  username: String!
+  email: String!
+  password: String!
+  role: String!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+
+  """Reads and enables pagination through a set of `TeamUser`."""
+  teamUsersByUserId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamUserCondition
+  ): TeamUsersConnection!
+
+  """Reads and enables pagination through a set of `TeamUser`."""
+  teamUsersByUserIdList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamUserCondition
+  ): [TeamUser!]!
+}
+
+"""Methods to use when ordering `TeamUser`."""
+enum TeamUsersOrderBy {
+  NATURAL
+  USER_ID_ASC
+  USER_ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `TeamUser` object types. All fields are tested
+for equality and combined with a logical ‘and.’
+"""
+input TeamUserCondition {
+  """Checks for equality with the object’s `userId` field."""
+  userId: UUID
+}
+
+"""A `TeamUser` edge in the connection."""
+type TeamUsersEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `TeamUser` at the end of the edge."""
+  node: TeamUser!
+}
+
+"""A connection to a list of `Team` values."""
+type TeamsConnection {
+  """A list of `Team` objects."""
+  nodes: [Team!]!
+
+  """
+  A list of edges which contains the `Team` and cursor to aid in pagination.
+  """
+  edges: [TeamsEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Team` you could get from the connection."""
+  totalCount: Int!
+}
+
+type Team implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: UUID!
+  teamName: String!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+}
+
+"""A `Team` edge in the connection."""
+type TeamsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Team` at the end of the edge."""
+  node: Team!
+}
+
+"""Methods to use when ordering `Team`."""
+enum TeamsOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `Team` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input TeamCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+}
+
+"""A connection to a list of `Token` values."""
+type TokensConnection {
+  """A list of `Token` objects."""
+  nodes: [Token!]!
+
+  """
+  A list of edges which contains the `Token` and cursor to aid in pagination.
+  """
+  edges: [TokensEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Token` you could get from the connection."""
+  totalCount: Int!
+}
+
+type Token implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: UUID!
+  token: String
+  isRevoked: Boolean
+  userId: UUID!
+  expiredAt: String
+  createdAt: Datetime!
+  updatedAt: Datetime!
+}
+
+"""A `Token` edge in the connection."""
+type TokensEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Token` at the end of the edge."""
+  node: Token!
+}
+
+"""Methods to use when ordering `Token`."""
+enum TokensOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `Token` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input TokenCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+}
+
+"""A connection to a list of `User` values."""
+type UsersConnection {
+  """A list of `User` objects."""
+  nodes: [User!]!
+
+  """
+  A list of edges which contains the `User` and cursor to aid in pagination.
+  """
+  edges: [UsersEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `User` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `User` edge in the connection."""
+type UsersEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `User` at the end of the edge."""
+  node: User!
+}
+
+"""Methods to use when ordering `User`."""
+enum UsersOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  EMAIL_ASC
+  EMAIL_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `User` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input UserCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+
+  """Checks for equality with the object’s `email` field."""
+  email: String
+}
+
+"""
+The root mutation type which contains root level fields which mutate data.
+"""
+type Mutation {
+  """Creates a single `KnexMigration`."""
+  createKnexMigration(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateKnexMigrationInput!
+  ): CreateKnexMigrationPayload
+
+  """Creates a single `KnexMigrationsLock`."""
+  createKnexMigrationsLock(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateKnexMigrationsLockInput!
+  ): CreateKnexMigrationsLockPayload
+
+  """Creates a single `TeamUser`."""
+  createTeamUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTeamUserInput!
+  ): CreateTeamUserPayload
+
+  """Creates a single `Team`."""
+  createTeam(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTeamInput!
+  ): CreateTeamPayload
+
+  """Creates a single `Token`."""
+  createToken(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateTokenInput!
+  ): CreateTokenPayload
+
+  """Creates a single `User`."""
+  createUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateUserInput!
+  ): CreateUserPayload
+
+  """
+  Updates a single `KnexMigration` using its globally unique id and a patch.
+  """
+  updateKnexMigration(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateKnexMigrationInput!
+  ): UpdateKnexMigrationPayload
+
+  """Updates a single `KnexMigration` using a unique key and a patch."""
+  updateKnexMigrationById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateKnexMigrationByIdInput!
+  ): UpdateKnexMigrationPayload
+
+  """
+  Updates a single `KnexMigrationsLock` using its globally unique id and a patch.
+  """
+  updateKnexMigrationsLock(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateKnexMigrationsLockInput!
+  ): UpdateKnexMigrationsLockPayload
+
+  """Updates a single `KnexMigrationsLock` using a unique key and a patch."""
+  updateKnexMigrationsLockByIndex(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateKnexMigrationsLockByIndexInput!
+  ): UpdateKnexMigrationsLockPayload
+
+  """Updates a single `TeamUser` using its globally unique id and a patch."""
+  updateTeamUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTeamUserInput!
+  ): UpdateTeamUserPayload
+
+  """Updates a single `TeamUser` using a unique key and a patch."""
+  updateTeamUserByUserIdAndTeamId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTeamUserByUserIdAndTeamIdInput!
+  ): UpdateTeamUserPayload
+
+  """Updates a single `Team` using its globally unique id and a patch."""
+  updateTeam(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTeamInput!
+  ): UpdateTeamPayload
+
+  """Updates a single `Team` using a unique key and a patch."""
+  updateTeamById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTeamByIdInput!
+  ): UpdateTeamPayload
+
+  """Updates a single `Token` using its globally unique id and a patch."""
+  updateToken(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTokenInput!
+  ): UpdateTokenPayload
+
+  """Updates a single `Token` using a unique key and a patch."""
+  updateTokenById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateTokenByIdInput!
+  ): UpdateTokenPayload
+
+  """Updates a single `User` using its globally unique id and a patch."""
+  updateUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateUserInput!
+  ): UpdateUserPayload
+
+  """Updates a single `User` using a unique key and a patch."""
+  updateUserById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateUserByIdInput!
+  ): UpdateUserPayload
+
+  """Updates a single `User` using a unique key and a patch."""
+  updateUserByEmail(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateUserByEmailInput!
+  ): UpdateUserPayload
+
+  """Deletes a single `KnexMigration` using its globally unique id."""
+  deleteKnexMigration(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteKnexMigrationInput!
+  ): DeleteKnexMigrationPayload
+
+  """Deletes a single `KnexMigration` using a unique key."""
+  deleteKnexMigrationById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteKnexMigrationByIdInput!
+  ): DeleteKnexMigrationPayload
+
+  """Deletes a single `KnexMigrationsLock` using its globally unique id."""
+  deleteKnexMigrationsLock(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteKnexMigrationsLockInput!
+  ): DeleteKnexMigrationsLockPayload
+
+  """Deletes a single `KnexMigrationsLock` using a unique key."""
+  deleteKnexMigrationsLockByIndex(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteKnexMigrationsLockByIndexInput!
+  ): DeleteKnexMigrationsLockPayload
+
+  """Deletes a single `TeamUser` using its globally unique id."""
+  deleteTeamUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTeamUserInput!
+  ): DeleteTeamUserPayload
+
+  """Deletes a single `TeamUser` using a unique key."""
+  deleteTeamUserByUserIdAndTeamId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTeamUserByUserIdAndTeamIdInput!
+  ): DeleteTeamUserPayload
+
+  """Deletes a single `Team` using its globally unique id."""
+  deleteTeam(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTeamInput!
+  ): DeleteTeamPayload
+
+  """Deletes a single `Team` using a unique key."""
+  deleteTeamById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTeamByIdInput!
+  ): DeleteTeamPayload
+
+  """Deletes a single `Token` using its globally unique id."""
+  deleteToken(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTokenInput!
+  ): DeleteTokenPayload
+
+  """Deletes a single `Token` using a unique key."""
+  deleteTokenById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteTokenByIdInput!
+  ): DeleteTokenPayload
+
+  """Deletes a single `User` using its globally unique id."""
+  deleteUser(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUserInput!
+  ): DeleteUserPayload
+
+  """Deletes a single `User` using a unique key."""
+  deleteUserById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUserByIdInput!
+  ): DeleteUserPayload
+
+  """Deletes a single `User` using a unique key."""
+  deleteUserByEmail(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteUserByEmailInput!
+  ): DeleteUserPayload
+  _login(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: _LoginInput!
+  ): _LoginPayload
+  _refreshToken(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: _RefreshTokenInput!
+  ): _RefreshTokenPayload
+}
+
+"""The output of our create `KnexMigration` mutation."""
+type CreateKnexMigrationPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `KnexMigration` that was created by this mutation."""
+  knexMigration: KnexMigration
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `KnexMigration`. May be used by Relay 1."""
+  knexMigrationEdge(
+    """The method to use when ordering `KnexMigration`."""
+    orderBy: [KnexMigrationsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): KnexMigrationsEdge
+}
+
+"""All input for the create `KnexMigration` mutation."""
+input CreateKnexMigrationInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `KnexMigration` to be created by this mutation."""
+  knexMigration: KnexMigrationInput!
+}
+
+"""An input for mutations affecting `KnexMigration`"""
+input KnexMigrationInput {
+  id: Int
+  name: String
+  batch: Int
+  migrationTime: Datetime
+}
+
+"""The output of our create `KnexMigrationsLock` mutation."""
+type CreateKnexMigrationsLockPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `KnexMigrationsLock` that was created by this mutation."""
+  knexMigrationsLock: KnexMigrationsLock
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `KnexMigrationsLock`. May be used by Relay 1."""
+  knexMigrationsLockEdge(
+    """The method to use when ordering `KnexMigrationsLock`."""
+    orderBy: [KnexMigrationsLocksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): KnexMigrationsLocksEdge
+}
+
+"""All input for the create `KnexMigrationsLock` mutation."""
+input CreateKnexMigrationsLockInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `KnexMigrationsLock` to be created by this mutation."""
+  knexMigrationsLock: KnexMigrationsLockInput!
+}
+
+"""An input for mutations affecting `KnexMigrationsLock`"""
+input KnexMigrationsLockInput {
+  index: Int
+  isLocked: Int
+}
+
+"""The output of our create `TeamUser` mutation."""
+type CreateTeamUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `TeamUser` that was created by this mutation."""
+  teamUser: TeamUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `TeamUser`."""
+  userByUserId: User
+
+  """An edge for our `TeamUser`. May be used by Relay 1."""
+  teamUserEdge(
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TeamUsersEdge
+}
+
+"""All input for the create `TeamUser` mutation."""
+input CreateTeamUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `TeamUser` to be created by this mutation."""
+  teamUser: TeamUserInput!
+}
+
+"""An input for mutations affecting `TeamUser`"""
+input TeamUserInput {
+  userId: UUID!
+  teamId: UUID!
+  role: String!
+  isMainManager: Boolean
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""The output of our create `Team` mutation."""
+type CreateTeamPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Team` that was created by this mutation."""
+  team: Team
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `Team`. May be used by Relay 1."""
+  teamEdge(
+    """The method to use when ordering `Team`."""
+    orderBy: [TeamsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TeamsEdge
+}
+
+"""All input for the create `Team` mutation."""
+input CreateTeamInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `Team` to be created by this mutation."""
+  team: TeamInput!
+}
+
+"""An input for mutations affecting `Team`"""
+input TeamInput {
+  id: UUID
+  teamName: String!
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""The output of our create `Token` mutation."""
+type CreateTokenPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Token` that was created by this mutation."""
+  token: Token
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `Token`. May be used by Relay 1."""
+  tokenEdge(
+    """The method to use when ordering `Token`."""
+    orderBy: [TokensOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TokensEdge
+}
+
+"""All input for the create `Token` mutation."""
+input CreateTokenInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `Token` to be created by this mutation."""
+  token: TokenInput!
+}
+
+"""An input for mutations affecting `Token`"""
+input TokenInput {
+  id: UUID
+  token: String
+  isRevoked: Boolean
+  userId: UUID!
+  expiredAt: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""The output of our create `User` mutation."""
+type CreateUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `User` that was created by this mutation."""
+  user: User
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `User`. May be used by Relay 1."""
+  userEdge(
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UsersEdge
+}
+
+"""All input for the create `User` mutation."""
+input CreateUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `User` to be created by this mutation."""
+  user: UserInput!
+}
+
+"""An input for mutations affecting `User`"""
+input UserInput {
+  id: UUID
+  username: String!
+  email: String!
+  password: String!
+  role: String!
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""The output of our update `KnexMigration` mutation."""
+type UpdateKnexMigrationPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `KnexMigration` that was updated by this mutation."""
+  knexMigration: KnexMigration
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `KnexMigration`. May be used by Relay 1."""
+  knexMigrationEdge(
+    """The method to use when ordering `KnexMigration`."""
+    orderBy: [KnexMigrationsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): KnexMigrationsEdge
+}
+
+"""All input for the `updateKnexMigration` mutation."""
+input UpdateKnexMigrationInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `KnexMigration` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `KnexMigration` being updated.
+  """
+  knexMigrationPatch: KnexMigrationPatch!
+}
+
+"""
+Represents an update to a `KnexMigration`. Fields that are set will be updated.
+"""
+input KnexMigrationPatch {
+  id: Int
+  name: String
+  batch: Int
+  migrationTime: Datetime
+}
+
+"""All input for the `updateKnexMigrationById` mutation."""
+input UpdateKnexMigrationByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `KnexMigration` being updated.
+  """
+  knexMigrationPatch: KnexMigrationPatch!
+  id: Int!
+}
+
+"""The output of our update `KnexMigrationsLock` mutation."""
+type UpdateKnexMigrationsLockPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `KnexMigrationsLock` that was updated by this mutation."""
+  knexMigrationsLock: KnexMigrationsLock
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `KnexMigrationsLock`. May be used by Relay 1."""
+  knexMigrationsLockEdge(
+    """The method to use when ordering `KnexMigrationsLock`."""
+    orderBy: [KnexMigrationsLocksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): KnexMigrationsLocksEdge
+}
+
+"""All input for the `updateKnexMigrationsLock` mutation."""
+input UpdateKnexMigrationsLockInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `KnexMigrationsLock` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `KnexMigrationsLock` being updated.
+  """
+  knexMigrationsLockPatch: KnexMigrationsLockPatch!
+}
+
+"""
+Represents an update to a `KnexMigrationsLock`. Fields that are set will be updated.
+"""
+input KnexMigrationsLockPatch {
+  index: Int
+  isLocked: Int
+}
+
+"""All input for the `updateKnexMigrationsLockByIndex` mutation."""
+input UpdateKnexMigrationsLockByIndexInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `KnexMigrationsLock` being updated.
+  """
+  knexMigrationsLockPatch: KnexMigrationsLockPatch!
+  index: Int!
+}
+
+"""The output of our update `TeamUser` mutation."""
+type UpdateTeamUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `TeamUser` that was updated by this mutation."""
+  teamUser: TeamUser
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `TeamUser`."""
+  userByUserId: User
+
+  """An edge for our `TeamUser`. May be used by Relay 1."""
+  teamUserEdge(
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TeamUsersEdge
+}
+
+"""All input for the `updateTeamUser` mutation."""
+input UpdateTeamUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `TeamUser` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `TeamUser` being updated.
+  """
+  teamUserPatch: TeamUserPatch!
+}
+
+"""
+Represents an update to a `TeamUser`. Fields that are set will be updated.
+"""
+input TeamUserPatch {
+  userId: UUID
+  teamId: UUID
+  role: String
+  isMainManager: Boolean
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""All input for the `updateTeamUserByUserIdAndTeamId` mutation."""
+input UpdateTeamUserByUserIdAndTeamIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `TeamUser` being updated.
+  """
+  teamUserPatch: TeamUserPatch!
+  userId: UUID!
+  teamId: UUID!
+}
+
+"""The output of our update `Team` mutation."""
+type UpdateTeamPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Team` that was updated by this mutation."""
+  team: Team
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `Team`. May be used by Relay 1."""
+  teamEdge(
+    """The method to use when ordering `Team`."""
+    orderBy: [TeamsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TeamsEdge
+}
+
+"""All input for the `updateTeam` mutation."""
+input UpdateTeamInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Team` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `Team` being updated.
+  """
+  teamPatch: TeamPatch!
+}
+
+"""Represents an update to a `Team`. Fields that are set will be updated."""
+input TeamPatch {
+  id: UUID
+  teamName: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""All input for the `updateTeamById` mutation."""
+input UpdateTeamByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Team` being updated.
+  """
+  teamPatch: TeamPatch!
+  id: UUID!
+}
+
+"""The output of our update `Token` mutation."""
+type UpdateTokenPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Token` that was updated by this mutation."""
+  token: Token
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `Token`. May be used by Relay 1."""
+  tokenEdge(
+    """The method to use when ordering `Token`."""
+    orderBy: [TokensOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TokensEdge
+}
+
+"""All input for the `updateToken` mutation."""
+input UpdateTokenInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Token` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `Token` being updated.
+  """
+  tokenPatch: TokenPatch!
+}
+
+"""
+Represents an update to a `Token`. Fields that are set will be updated.
+"""
+input TokenPatch {
+  id: UUID
+  token: String
+  isRevoked: Boolean
+  userId: UUID
+  expiredAt: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""All input for the `updateTokenById` mutation."""
+input UpdateTokenByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Token` being updated.
+  """
+  tokenPatch: TokenPatch!
+  id: UUID!
+}
+
+"""The output of our update `User` mutation."""
+type UpdateUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `User` that was updated by this mutation."""
+  user: User
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `User`. May be used by Relay 1."""
+  userEdge(
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UsersEdge
+}
+
+"""All input for the `updateUser` mutation."""
+input UpdateUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `User` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `User` being updated.
+  """
+  userPatch: UserPatch!
+}
+
+"""Represents an update to a `User`. Fields that are set will be updated."""
+input UserPatch {
+  id: UUID
+  username: String
+  email: String
+  password: String
+  role: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""All input for the `updateUserById` mutation."""
+input UpdateUserByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `User` being updated.
+  """
+  userPatch: UserPatch!
+  id: UUID!
+}
+
+"""All input for the `updateUserByEmail` mutation."""
+input UpdateUserByEmailInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `User` being updated.
+  """
+  userPatch: UserPatch!
+  email: String!
+}
+
+"""The output of our delete `KnexMigration` mutation."""
+type DeleteKnexMigrationPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `KnexMigration` that was deleted by this mutation."""
+  knexMigration: KnexMigration
+  deletedKnexMigrationId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `KnexMigration`. May be used by Relay 1."""
+  knexMigrationEdge(
+    """The method to use when ordering `KnexMigration`."""
+    orderBy: [KnexMigrationsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): KnexMigrationsEdge
+}
+
+"""All input for the `deleteKnexMigration` mutation."""
+input DeleteKnexMigrationInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `KnexMigration` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteKnexMigrationById` mutation."""
+input DeleteKnexMigrationByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: Int!
+}
+
+"""The output of our delete `KnexMigrationsLock` mutation."""
+type DeleteKnexMigrationsLockPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `KnexMigrationsLock` that was deleted by this mutation."""
+  knexMigrationsLock: KnexMigrationsLock
+  deletedKnexMigrationsLockId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `KnexMigrationsLock`. May be used by Relay 1."""
+  knexMigrationsLockEdge(
+    """The method to use when ordering `KnexMigrationsLock`."""
+    orderBy: [KnexMigrationsLocksOrderBy!] = [PRIMARY_KEY_ASC]
+  ): KnexMigrationsLocksEdge
+}
+
+"""All input for the `deleteKnexMigrationsLock` mutation."""
+input DeleteKnexMigrationsLockInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `KnexMigrationsLock` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteKnexMigrationsLockByIndex` mutation."""
+input DeleteKnexMigrationsLockByIndexInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  index: Int!
+}
+
+"""The output of our delete `TeamUser` mutation."""
+type DeleteTeamUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `TeamUser` that was deleted by this mutation."""
+  teamUser: TeamUser
+  deletedTeamUserId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `TeamUser`."""
+  userByUserId: User
+
+  """An edge for our `TeamUser`. May be used by Relay 1."""
+  teamUserEdge(
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TeamUsersEdge
+}
+
+"""All input for the `deleteTeamUser` mutation."""
+input DeleteTeamUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `TeamUser` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteTeamUserByUserIdAndTeamId` mutation."""
+input DeleteTeamUserByUserIdAndTeamIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  userId: UUID!
+  teamId: UUID!
+}
+
+"""The output of our delete `Team` mutation."""
+type DeleteTeamPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Team` that was deleted by this mutation."""
+  team: Team
+  deletedTeamId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `Team`. May be used by Relay 1."""
+  teamEdge(
+    """The method to use when ordering `Team`."""
+    orderBy: [TeamsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TeamsEdge
+}
+
+"""All input for the `deleteTeam` mutation."""
+input DeleteTeamInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Team` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteTeamById` mutation."""
+input DeleteTeamByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: UUID!
+}
+
+"""The output of our delete `Token` mutation."""
+type DeleteTokenPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Token` that was deleted by this mutation."""
+  token: Token
+  deletedTokenId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `Token`. May be used by Relay 1."""
+  tokenEdge(
+    """The method to use when ordering `Token`."""
+    orderBy: [TokensOrderBy!] = [PRIMARY_KEY_ASC]
+  ): TokensEdge
+}
+
+"""All input for the `deleteToken` mutation."""
+input DeleteTokenInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Token` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteTokenById` mutation."""
+input DeleteTokenByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: UUID!
+}
+
+"""The output of our delete `User` mutation."""
+type DeleteUserPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `User` that was deleted by this mutation."""
+  user: User
+  deletedUserId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """An edge for our `User`. May be used by Relay 1."""
+  userEdge(
+    """The method to use when ordering `User`."""
+    orderBy: [UsersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): UsersEdge
+}
+
+"""All input for the `deleteUser` mutation."""
+input DeleteUserInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `User` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteUserById` mutation."""
+input DeleteUserByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: UUID!
+}
+
+"""All input for the `deleteUserByEmail` mutation."""
+input DeleteUserByEmailInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  email: String!
+}
+
+input _LoginInput {
+  email: String!
+  password: String!
+}
+
+input _RefreshTokenInput {
+  userId: String!
+  refreshToken: String!
+}
+
+type _LoginPayload {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type _RefreshTokenPayload {
+  accessToken: String!
+  refreshToken: String!
+}
