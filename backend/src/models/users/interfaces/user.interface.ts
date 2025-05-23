@@ -1,4 +1,5 @@
-import { UserRole } from '../dtos/create-user.dto.js';
+import { TeamInterface } from '../../teams/interfaces/team.interface.js';
+import { UserRole } from '../dtos/create-user.res.dto.js';
 
 export interface UserInterface {
   id: string;
@@ -6,5 +7,5 @@ export interface UserInterface {
   password: string;
   email: string;
   role: UserRole;
-  refresh_token?: string;
+  teams: TeamInterface[];
 }

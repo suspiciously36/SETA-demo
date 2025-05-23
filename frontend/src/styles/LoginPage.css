@@ -1,0 +1,71 @@
+.login-page-container {
+}
+
+.login-form-card-paper {
+  position: relative;
+  overflow: visible;
+}
+
+.logo-box-wrapper {
+  position: absolute;
+  z-index: 2;
+}
+
+.login-form-card-tag::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: white;
+  z-index: 1;
+}
+
+.login-form-card-tag-white::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(48, 112, 196, 1);
+  z-index: 1;
+}
+
+.login-form-card-blur-bottom {
+  backdrop-filter: blur(10px) saturate(180%);
+}
+
+.login-form-card-tag-bottom::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: white;
+  z-index: 1;
+}
+
+.login-form-card-paper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 170px;
+  height: 57px;
+  background: linear-gradient(
+    240deg,
+    #fff -10%,
+    rgba(175, 217, 241, 0.15) 100%
+  );
+  border-bottom-right-radius: 45px;
+  border-top-left-radius: 30px;
+  /* transform: translate(100%, -100%) rotate(180deg); */
+  /* box-shadow: inherit; */
+  z-index: 1;
+}

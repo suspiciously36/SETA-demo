@@ -1,18 +1,23 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AuthResolver } from '../../../graphql/auth/auth.resolver.js';
 import { PassportStrategy } from '@nestjs/passport';
-import { AuthPayload } from '../../tokens/token.interface.js';
+
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AuthResolver } from '../auth.resolver.js';
+import { AuthPayload } from '../../../models/tokens/token.interface.js';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private readonly authResolver: AuthResolver) {
+    console.log('Initializing JwtStrategy...');
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        (req: any) => {
+          const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+          return token;
+        },
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.AUTH_JWT_SECRET,
+      secretOrKey: process.env.AUTH_JWT_SECRET!,
     });
   }
 

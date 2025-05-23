@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { KnexModule } from 'nest-knexjs';
-import { UserModule } from './models/users/user.module.js';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { TeamModule } from './models/teams/team.module.js';
+import { UserModule } from './models/users/user.module.js';
 import { PostgraphileModule } from './postgraphile/postgraphile.module.js';
 
 @Module({
@@ -14,11 +14,11 @@ import { PostgraphileModule } from './postgraphile/postgraphile.module.js';
       config: {
         client: 'pg',
         connection: {
-          host: process.env.DATABASE_HOST || 'localhost',
-          user: process.env.DATABASE_USERNAME || 'postgres',
-          database: process.env.DATABASE_NAME || 'postgres',
-          password: process.env.DATABASE_PASSWORD || 'password',
-          port: Number(process.env.DATABASE_PORT) || 5432,
+          host: process.env.DB_HOST || 'localhost',
+          user: process.env.DB_USERNAME || 'postgres',
+          database: process.env.DB_NAME || 'postgres',
+          password: process.env.DB_PASSWORD || 'password',
+          port: Number(process.env.DB_PORT) || 5432,
         },
       },
     }),

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Knex } from 'knex';
+import { InjectConnection } from 'nest-knexjs';
+
 import { UserInterface } from '../users/interfaces/user.interface.js';
 import { AuthPayload } from './token.interface.js';
-import { InjectConnection } from 'nest-knexjs';
-import { Knex } from 'knex';
 
 @Injectable()
 export class TokenService {

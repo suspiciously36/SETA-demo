@@ -8,30 +8,47 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
-import { TeamService } from './team.service.js';
-import { CreateTeamReqDto } from './dtos/create-team.req.dto.js';
-import { AddMemberReqDto } from './dtos/add-member.req.dto.js';
-import { AddManagerReqDto } from './dtos/add-manager.req.dto.js';
-import { UpdateTeamDto } from './dtos/update-team.dto.js';
-import { AuthGuard } from '@nestjs/passport';
+
 import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
 import { JwtAuthGuard } from '../../guards/auth/jwt.guard.js';
 import { UserInterface } from '../users/interfaces/user.interface.js';
-import { CreateDto } from '../../common/dto/create.dto.js';
+import { AddManagerReqDto } from './dtos/add-manager.req.dto.js';
+import { AddMemberReqDto } from './dtos/add-member.req.dto.js';
 import { AddMemberResDto } from './dtos/add-member.res.dto.js';
+import { CreateTeamReqDto } from './dtos/create-team.req.dto.js';
 import { CreateTeamResDto } from './dtos/create-team.res.dto.js';
+import { UpdateTeamDto } from './dtos/update-team.dto.js';
+import { TeamService } from './team.service.js';
+import { TeamInterface } from './interfaces/team.interface.js';
+import { CreateDto } from '../../common/dtos/create.dto.js';
+import { OffsetPaginatedDto } from '../../common/dtos/offset-pagination/paginated.dto.js';
+import { TeamResDto } from './dtos/team.dto.js';
 
 @Controller('teams')
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
-  getTeams(): Promise<any[]> {
+  @UseGuards(JwtAuthGuard)
+  getTeams(
+    @Query() reqDto: TeamResDto,
+    @CurrentUser() currentUser: UserInterface,
+  ): Promise<OffsetPaginatedDto<TeamInterface>> {
     console.log('Fetching teams...');
-    return this.teamService.getTeams();
+    return this.teamService.getTeams(reqDto, currentUser.id);
+  }
+
+  @Get(':teamId')
+  @UseGuards(JwtAuthGuard)
+  getTeamById(
+    @Param('teamId') teamId: string,
+    @CurrentUser() currentUser: UserInterface,
+  ): Promise<TeamInterface> {
+    console.log('Fetching team detail by Id');
+    return this.teamService.getTeamById(teamId, currentUser.id);
   }
 
   @Post()
@@ -101,5 +118,16 @@ export class TeamController {
   ) {
     console.log('Removing Manager...');
     await this.teamService.removeManager(teamId, managerId, currentUser.id);
+  }
+
+  @Delete(':teamId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteTeam(
+    @Param('teamId') teamId: string,
+    @CurrentUser() currentUser: UserInterface,
+  ) {
+    console.log('Deleting Team...');
+    await this.teamService.deleteTeam(teamId, currentUser.id);
   }
 }

@@ -1,5 +1,6 @@
 import { postgraphile, PostGraphileOptions } from 'postgraphile';
 import { Plugin } from 'graphile-build';
+import { Request, Response } from 'express';
 
 export function createMiddleware(
   databaseUrl: string,
@@ -9,7 +10,7 @@ export function createMiddleware(
     watchPg: true,
     graphiql: true,
     enhanceGraphiql: true,
-    enableCors: true,
+    enableCors: false,
     dynamicJson: true,
     ignoreRBAC: false,
     ignoreIndexes: false,
@@ -20,6 +21,16 @@ export function createMiddleware(
     setofFunctionsContainNulls: false,
     allowExplain: () => true, // Allow EXPLAIN for debugging
     legacyRelations: 'omit',
+
+    additionalGraphQLContextFromRequest: async (
+      req: Request,
+      res: Response,
+    ) => {
+      return {
+        req,
+        res,
+      };
+    },
   };
 
   return postgraphile(databaseUrl, 'public', options);

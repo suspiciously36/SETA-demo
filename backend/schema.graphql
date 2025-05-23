@@ -514,6 +514,9 @@ type TeamUser implements Node {
 
   """Reads a single `User` that is related to this `TeamUser`."""
   userByUserId: User
+
+  """Reads a single `Team` that is related to this `TeamUser`."""
+  teamByTeamId: Team
 }
 
 """
@@ -579,6 +582,52 @@ type User implements Node {
     """
     condition: TeamUserCondition
   ): [TeamUser!]!
+
+  """Reads and enables pagination through a set of `Token`."""
+  tokensByUserId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Token`."""
+    orderBy: [TokensOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TokenCondition
+  ): TokensConnection!
+
+  """Reads and enables pagination through a set of `Token`."""
+  tokensByUserIdList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `Token`."""
+    orderBy: [TokensOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TokenCondition
+  ): [Token!]!
 }
 
 """Methods to use when ordering `TeamUser`."""
@@ -586,6 +635,8 @@ enum TeamUsersOrderBy {
   NATURAL
   USER_ID_ASC
   USER_ID_DESC
+  TEAM_ID_ASC
+  TEAM_ID_DESC
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC
 }
@@ -597,69 +648,9 @@ for equality and combined with a logical ‘and.’
 input TeamUserCondition {
   """Checks for equality with the object’s `userId` field."""
   userId: UUID
-}
 
-"""A `TeamUser` edge in the connection."""
-type TeamUsersEdge {
-  """A cursor for use in pagination."""
-  cursor: Cursor
-
-  """The `TeamUser` at the end of the edge."""
-  node: TeamUser!
-}
-
-"""A connection to a list of `Team` values."""
-type TeamsConnection {
-  """A list of `Team` objects."""
-  nodes: [Team!]!
-
-  """
-  A list of edges which contains the `Team` and cursor to aid in pagination.
-  """
-  edges: [TeamsEdge!]!
-
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """The count of *all* `Team` you could get from the connection."""
-  totalCount: Int!
-}
-
-type Team implements Node {
-  """
-  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
-  """
-  nodeId: ID!
-  id: UUID!
-  teamName: String!
-  createdAt: Datetime!
-  updatedAt: Datetime!
-}
-
-"""A `Team` edge in the connection."""
-type TeamsEdge {
-  """A cursor for use in pagination."""
-  cursor: Cursor
-
-  """The `Team` at the end of the edge."""
-  node: Team!
-}
-
-"""Methods to use when ordering `Team`."""
-enum TeamsOrderBy {
-  NATURAL
-  ID_ASC
-  ID_DESC
-  PRIMARY_KEY_ASC
-  PRIMARY_KEY_DESC
-}
-
-"""
-A condition to be used against `Team` object types. All fields are tested for equality and combined with a logical ‘and.’
-"""
-input TeamCondition {
-  """Checks for equality with the object’s `id` field."""
-  id: UUID
+  """Checks for equality with the object’s `teamId` field."""
+  teamId: UUID
 }
 
 """A connection to a list of `Token` values."""
@@ -691,6 +682,9 @@ type Token implements Node {
   expiredAt: String
   createdAt: Datetime!
   updatedAt: Datetime!
+
+  """Reads a single `User` that is related to this `Token`."""
+  userByUserId: User
 }
 
 """A `Token` edge in the connection."""
@@ -707,6 +701,8 @@ enum TokensOrderBy {
   NATURAL
   ID_ASC
   ID_DESC
+  USER_ID_ASC
+  USER_ID_DESC
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC
 }
@@ -715,6 +711,118 @@ enum TokensOrderBy {
 A condition to be used against `Token` object types. All fields are tested for equality and combined with a logical ‘and.’
 """
 input TokenCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: UUID
+}
+
+type Team implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: UUID!
+  teamName: String!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+
+  """Reads and enables pagination through a set of `TeamUser`."""
+  teamUsersByTeamId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamUserCondition
+  ): TeamUsersConnection!
+
+  """Reads and enables pagination through a set of `TeamUser`."""
+  teamUsersByTeamIdList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamUserCondition
+  ): [TeamUser!]!
+}
+
+"""A `TeamUser` edge in the connection."""
+type TeamUsersEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `TeamUser` at the end of the edge."""
+  node: TeamUser!
+}
+
+"""A connection to a list of `Team` values."""
+type TeamsConnection {
+  """A list of `Team` objects."""
+  nodes: [Team!]!
+
+  """
+  A list of edges which contains the `Team` and cursor to aid in pagination.
+  """
+  edges: [TeamsEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Team` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `Team` edge in the connection."""
+type TeamsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Team` at the end of the edge."""
+  node: Team!
+}
+
+"""Methods to use when ordering `Team`."""
+enum TeamsOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `Team` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input TeamCondition {
   """Checks for equality with the object’s `id` field."""
   id: UUID
 }
@@ -1036,12 +1144,7 @@ type Mutation {
     """
     input: _LoginInput!
   ): _LoginPayload
-  _refreshToken(
-    """
-    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
-    """
-    input: _RefreshTokenInput!
-  ): _RefreshTokenPayload
+  _refreshToken: _RefreshTokenPayload
 }
 
 """The output of our create `KnexMigration` mutation."""
@@ -1147,6 +1250,9 @@ type CreateTeamUserPayload {
   """Reads a single `User` that is related to this `TeamUser`."""
   userByUserId: User
 
+  """Reads a single `Team` that is related to this `TeamUser`."""
+  teamByTeamId: Team
+
   """An edge for our `TeamUser`. May be used by Relay 1."""
   teamUserEdge(
     """The method to use when ordering `TeamUser`."""
@@ -1234,6 +1340,9 @@ type CreateTokenPayload {
   Our root query field type. Allows us to run any query from our mutation payload.
   """
   query: Query
+
+  """Reads a single `User` that is related to this `Token`."""
+  userByUserId: User
 
   """An edge for our `Token`. May be used by Relay 1."""
   tokenEdge(
@@ -1462,6 +1571,9 @@ type UpdateTeamUserPayload {
   """Reads a single `User` that is related to this `TeamUser`."""
   userByUserId: User
 
+  """Reads a single `Team` that is related to this `TeamUser`."""
+  teamByTeamId: Team
+
   """An edge for our `TeamUser`. May be used by Relay 1."""
   teamUserEdge(
     """The method to use when ordering `TeamUser`."""
@@ -1596,6 +1708,9 @@ type UpdateTokenPayload {
   Our root query field type. Allows us to run any query from our mutation payload.
   """
   query: Query
+
+  """Reads a single `User` that is related to this `Token`."""
+  userByUserId: User
 
   """An edge for our `Token`. May be used by Relay 1."""
   tokenEdge(
@@ -1850,6 +1965,9 @@ type DeleteTeamUserPayload {
   """Reads a single `User` that is related to this `TeamUser`."""
   userByUserId: User
 
+  """Reads a single `Team` that is related to this `TeamUser`."""
+  teamByTeamId: Team
+
   """An edge for our `TeamUser`. May be used by Relay 1."""
   teamUserEdge(
     """The method to use when ordering `TeamUser`."""
@@ -1947,6 +2065,9 @@ type DeleteTokenPayload {
   """
   query: Query
 
+  """Reads a single `User` that is related to this `Token`."""
+  userByUserId: User
+
   """An edge for our `Token`. May be used by Relay 1."""
   tokenEdge(
     """The method to use when ordering `Token`."""
@@ -2041,17 +2162,10 @@ input _LoginInput {
   password: String!
 }
 
-input _RefreshTokenInput {
-  userId: String!
-  refreshToken: String!
-}
-
 type _LoginPayload {
   accessToken: String!
-  refreshToken: String!
 }
 
 type _RefreshTokenPayload {
   accessToken: String!
-  refreshToken: String!
 }
