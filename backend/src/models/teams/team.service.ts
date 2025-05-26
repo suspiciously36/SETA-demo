@@ -228,15 +228,10 @@ export class TeamService {
     currentUserId: string,
   ): Promise<CreateDto<any>> {
     await this.knex.transaction(async (trx) => {
-      const isMainManager = await this.teamPolicyService.isMainManager(
-        teamId,
-        currentUserId,
-      );
+      const isManager = await this.teamPolicyService.isManager(currentUserId);
 
-      if (!isMainManager) {
-        throw new UnauthorizedException(
-          'Only main manager can update the team',
-        );
+      if (!isManager) {
+        throw new UnauthorizedException('Only manager can update the team');
       }
 
       if (dto.teamName) {

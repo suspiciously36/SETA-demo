@@ -36,49 +36,20 @@ This project is a comprehensive User and Team Management system designed primari
 
 ### Core Features
 
-1.  Authentication (GraphQL APIs)
+**1. Authentication (GraphQL APIs)**
 
     Login/Logout: Secure user login and logout mechanisms.
 
     JWT Strategy: Implements JSON Web Tokens for authentication.
 
-        AccessToken: Short-lived token for accessing protected resources.
+        AccessToken: Short-lived token for accessing protected resources ()
 
-        RefreshToken Rotation: Securely manages refresh tokens (stored server-side in the database, and an HTTP-Only cookie is used for the refresh token itself) to obtain new access tokens without requiring users to log in repeatedly. The backend handles clearing the HTTP-Only cookie on logout.
+        RefreshToken Rotation: Securely manages refresh tokens (stored server-side in the database,
+        and an HTTP-Only cookie is used for the refresh token itself) to obtain new access tokens
+        without requiring users to log in repeatedly.
+        The backend handles clearing the HTTP-Only cookie on logout.
 
-2.  Role-Based Access Control (RBAC - RESTful APIs)
-
-The application enforces different permissions based on user roles:
-
-    Member Role:
-
-        View-only access to certain information (details to be specified, typically cannot perform management actions).
-
-    Manager/Root Role (Manageability):
-
-        User Management:
-
-            Create new users (can assign roles: 'member' or 'manager').
-
-            Delete users from the system.
-
-            View user list with pagination.
-
-        Team Management:
-
-            Create new teams.
-
-            Edit existing team formations:
-
-                Add members and managers to a team.
-
-                Remove members and managers from a team (only the main manager of a team or a root user can remove other managers from that team).
-
-                Edit team name.
-
-                Delete teams, view team list with lazy loading.
-
-3.  User Interface & Experience
+**2. User Interface & Experience**
 
     Dashboard Layout:
 
@@ -120,7 +91,39 @@ The application enforces different permissions based on user roles:
 
         Toast/Snackbar notifications for feedback on actions (e.g., success or failure of create, edit, delete operations).
 
-Project Status & Next Steps (Implied)
+**3. Role-Based Access Control (RBAC - RESTful APIs)**
+
+The application enforces different permissions based on user roles:
+
+    Member Role:
+
+        View-only access to certain information (details to be specified, typically cannot perform management actions).
+
+    Manager/Root Role (Manageability):
+
+        User Management:
+
+            Create new users (can assign roles: 'member' or 'manager').
+
+            Delete users from the system.
+
+            View user list with pagination.
+
+        Team Management:
+
+            Create new teams.
+
+            Edit existing team formations:
+
+                Add members and managers to a team.
+
+                Remove members and managers from a team (only the main manager of a team or a root user can remove other managers from that team).
+
+                Edit team name.
+
+                Delete teams, view team list with lazy loading.
+
+_Project Status_
 
     Core authentication and RBAC logic is in place.
 
@@ -128,6 +131,4 @@ Project Status & Next Steps (Implied)
 
     UI styling is being updated to match design mockups using MUI.
 
-    Focus on improving UX with live data updates, robust error handling, and intuitive navigation.
-
-### Database Table Design: https://dbdiagram.io/d/Management-dashboard-68220b965b2fc4582f3cb992
+- Database Table Design: https://dbdiagram.io/d/Management-dashboard-68220b965b2fc4582f3cb992

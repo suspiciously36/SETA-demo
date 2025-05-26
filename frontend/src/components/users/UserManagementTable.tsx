@@ -340,13 +340,11 @@ const UserManagementTable: React.FC = () => {
               )}
               {!loading && users && users.length === 0 && (
                 <TableRow>
-                  {" "}
                   <TableCell colSpan={canManageUsers ? 7 : 6} align="center">
-                    {" "}
                     <Typography sx={{ p: 3, color: "text.secondary" }}>
                       No users to display.
-                    </Typography>{" "}
-                  </TableCell>{" "}
+                    </Typography>
+                  </TableCell>
                 </TableRow>
               )}
               {users &&

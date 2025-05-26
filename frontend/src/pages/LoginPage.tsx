@@ -24,6 +24,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import "../styles/LoginPage.css";
 import appLogo from "../assets/images/seta-removebg-preview.png";
+import teamImg from "../assets/images/daily-avatar.png";
 
 const LOGO_BOX_HEIGHT = 65;
 const LOGO_BOX_WIDTH = 175;
@@ -297,6 +298,15 @@ const LoginPage: React.FC = () => {
           >
             9:30AM - 10:00AM
           </Typography>
+          <img
+            src={teamImg}
+            style={{
+              paddingTop: "16px",
+              height: "45%",
+              maxWidth: "45%",
+              objectFit: "contain",
+            }}
+          />
         </Box>
         <Box
           className="logo-box-wrapper"

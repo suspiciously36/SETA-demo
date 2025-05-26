@@ -92,7 +92,10 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     useState<SelectionTab>("members");
   const [searchTerm, setSearchTerm] = useState("");
   const [localFormError, setLocalFormError] = useState<string | null>(null);
-  const [isUserAllowedToEdit, setIsUserAllowedToEdit] = useState(false);
+
+  const [canEditTeamNameAndMembers, setCanEditTeamNameAndMembers] =
+    useState(false);
+  const [canEditManagersList, setCanEditManagersList] = useState(false);
 
   const resetFormStates = useCallback(() => {
     setTeamName("");
@@ -102,7 +105,8 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     setActiveSelectionTab("members");
     setSearchTerm("");
     setLocalFormError(null);
-    setIsUserAllowedToEdit(false);
+    setCanEditTeamNameAndMembers(false);
+    setCanEditManagersList(false);
   }, []);
 
   const handleActualClose = useCallback(() => {
@@ -133,8 +137,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
 
   useEffect(() => {
     if (currentTeamDetails && teamIdToEdit === currentTeamDetails.id) {
-      const currentNameFromDetails =
-        currentTeamDetails.team_name || currentTeamDetails.name || "";
+      const currentNameFromDetails = currentTeamDetails.team_name || "";
       setTeamName(currentNameFromDetails);
       const initialManagers: ModalSelectedManager[] =
         currentTeamDetails.managers.map((m) => ({
@@ -151,10 +154,17 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
       const isMainManagerOfThisTeam = initialManagers.some(
         (m) => m.userId === authUser?.id && m.isMain
       );
-      const canEdit = isRoot || isMainManagerOfThisTeam;
-      setIsUserAllowedToEdit(canEdit);
-      if (!canEdit) {
-        setLocalFormError("You are not authorized to edit this team.");
+      const isAManagerOfThisTeam = initialManagers.some(
+        (m) => m.userId === authUser.id
+      );
+
+      setCanEditTeamNameAndMembers(isRoot || isAManagerOfThisTeam);
+      setCanEditManagersList(isRoot || isMainManagerOfThisTeam);
+
+      if (!(isRoot || isAManagerOfThisTeam)) {
+        setLocalFormError(
+          "You are not authorized to edit this team's details."
+        );
       } else {
         setLocalFormError(null);
       }
@@ -180,6 +190,8 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     setSearchTerm("");
   };
   const handleToggleManager = (user: DetailedUser) => {
+    if (!canEditManagersList) return;
+    if (!canEditTeamNameAndMembers) return;
     setLocalFormError(null);
     const existingManagerIndex = selectedManagers.findIndex(
       (m) => m.userId === user.id
@@ -227,6 +239,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     }
   };
   const handleSetMainManager = (managerUserIdToSetAsMain: string) => {
+    if (!canEditManagersList) return;
     setLocalFormError(null);
     const currentMainManagers = selectedManagers.filter((m) => m.isMain);
     if (
@@ -253,9 +266,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     selectedMemberIds.includes(user.id);
   const filteredUsers = useMemo(() => {
     if (!allUsers) return [];
-    const usersAvailableForSelection = allUsers.filter(
-      (user) => user.id !== authUser?.id
-    );
+    const usersAvailableForSelection = allUsers.filter((user) => user.id);
     let roleFilteredUsers: DetailedUser[];
     if (activeSelectionTab === "managers") {
       roleFilteredUsers = usersAvailableForSelection.filter(
@@ -327,7 +338,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isUserAllowedToEdit) {
+    if (!canEditTeamNameAndMembers && !canEditManagersList) {
       setLocalFormError("You are not authorized to submit changes.");
       return;
     }
@@ -531,7 +542,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                 onChange={(e) => setTeamName(e.target.value)}
                 required
                 sx={{ mb: 2 }}
-                disabled={!isUserAllowedToEdit}
+                disabled={!canEditTeamNameAndMembers}
               />
               <Tabs
                 value={activeSelectionTab}
@@ -552,7 +563,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                     fontWeight: 500,
                     fontSize: "0.9rem",
                   }}
-                  disabled={!isUserAllowedToEdit}
+                  disabled={!canEditTeamNameAndMembers}
                 />
                 <Tab
                   label={`Managers ${
@@ -566,7 +577,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                     fontWeight: 500,
                     fontSize: "0.9rem",
                   }}
-                  disabled={!isUserAllowedToEdit}
+                  disabled={!canEditManagersList}
                 />
               </Tabs>
             </Box>
@@ -599,7 +610,11 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                 }}
                 size="small"
                 sx={{ mr: filteredUsers.length > 0 ? 2 : 0 }}
-                disabled={!isUserAllowedToEdit}
+                disabled={
+                  activeSelectionTab === "managers"
+                    ? !canEditManagersList
+                    : !canEditTeamNameAndMembers
+                }
               />
               {filteredUsers.length > 0 && (
                 <FormControlLabel
@@ -615,7 +630,11 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                       }
                       onChange={handleSelectAllFiltered}
                       size="small"
-                      disabled={!isUserAllowedToEdit}
+                      disabled={
+                        activeSelectionTab === "managers"
+                          ? !canEditManagersList
+                          : !canEditTeamNameAndMembers
+                      }
                     />
                   }
                   label={
@@ -647,6 +666,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                   <CircularProgress />{" "}
                 </Box>
               ) : (
+                /* ... List rendering ... */
                 <List dense>
                   {filteredUsers.length === 0 && searchTerm && (
                     <Typography
@@ -683,17 +703,23 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                       activeSelectionTab === "managers"
                         ? selectedManagers.find((m) => m.userId === user.id)
                         : undefined;
+                    const canInteractWithThisUser =
+                      activeSelectionTab === "managers"
+                        ? canEditManagersList
+                        : canEditTeamNameAndMembers;
                     return (
                       <ListItem
                         key={user.id}
                         button
                         onClick={() =>
-                          isUserAllowedToEdit &&
+                          canInteractWithThisUser &&
                           (activeSelectionTab === "managers"
                             ? handleToggleManager(user)
                             : handleToggleMember(user))
                         }
-                        disabled={!isUserAllowedToEdit && !isSelectedCurrently}
+                        disabled={
+                          !canInteractWithThisUser && !isSelectedCurrently
+                        }
                         sx={{
                           mb: 0.5,
                           borderRadius: "8px",
@@ -709,7 +735,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                             tabIndex={-1}
                             disableRipple
                             disabled={
-                              !isUserAllowedToEdit && !isSelectedCurrently
+                              !canInteractWithThisUser && !isSelectedCurrently
                             }
                           />{" "}
                         </ListItemIcon>
@@ -762,10 +788,10 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                                   size="small"
                                   checked={currentManagerData.isMain}
                                   onChange={() =>
-                                    isUserAllowedToEdit &&
+                                    canEditManagersList &&
                                     handleSetMainManager(user.id)
                                   }
-                                  disabled={!isUserAllowedToEdit}
+                                  disabled={!canEditManagersList}
                                 />{" "}
                               </Box>{" "}
                             </Tooltip>
@@ -774,11 +800,11 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                           edge="end"
                           aria-label={isSelectedCurrently ? "remove" : "add"}
                           disabled={
-                            !isUserAllowedToEdit && !isSelectedCurrently
+                            !canInteractWithThisUser && !isSelectedCurrently
                           }
                           onClick={(e) => {
                             e.stopPropagation();
-                            isUserAllowedToEdit &&
+                            canInteractWithThisUser &&
                               (activeSelectionTab === "managers"
                                 ? handleToggleManager(user)
                                 : handleToggleMember(user));
@@ -827,7 +853,10 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
               type="submit"
               variant="contained"
               color="primary"
-              disabled={updatingLoading || !isUserAllowedToEdit}
+              disabled={
+                updatingLoading ||
+                (!canEditTeamNameAndMembers && !canEditManagersList)
+              }
               sx={{ textTransform: "uppercase" }}
             >
               {" "}

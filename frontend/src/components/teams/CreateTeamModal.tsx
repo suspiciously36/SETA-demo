@@ -249,15 +249,6 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
       setLocalFormError("Team name is required.");
       return;
     }
-    if (selectedManagers.length === 0 && activeSelectionTab === "managers") {
-      setLocalFormError("At least one manager must be selected for the team.");
-    }
-    if (selectedManagers.length === 0 && selectedMembers.length === 0) {
-      setLocalFormError(
-        "At least one manager or member must be added to the team."
-      );
-      return;
-    }
 
     const teamData: CreateTeamReqDto = {
       teamName,

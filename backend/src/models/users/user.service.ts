@@ -19,10 +19,14 @@ import { ListUserReqDto } from './dtos/listUser.req.dto.js';
 import { OffsetPaginationDto } from '../../common/dtos/offset-pagination/offset-pagination.dto.js';
 import { OffsetPaginatedDto } from '../../common/dtos/offset-pagination/paginated.dto.js';
 import { TeamInterface } from '../teams/interfaces/team.interface.js';
+import { TeamPolicyService } from '../teams/team-policy.service.js';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectConnection() private readonly knex: Knex) {}
+  constructor(
+    private readonly teamPolicyService: TeamPolicyService,
+    @InjectConnection() private readonly knex: Knex,
+  ) {}
 
   async getUsers(
     reqDto: ListUserReqDto,
@@ -101,10 +105,12 @@ export class UserService {
   }
 
   async createUser(dto: CreateUserReqDto, currentUserId: string) {
-    const isRootUser = await this.isRootUser(currentUserId);
+    const isManager = await this.teamPolicyService.isManager(currentUserId);
 
-    if (!isRootUser) {
-      throw new ConflictException('Only root user can create new users');
+    if (!isManager) {
+      throw new ConflictException(
+        'Only root user / manager can create new users',
+      );
     }
 
     const isUserExist = await this.knex<UserInterface>('users')

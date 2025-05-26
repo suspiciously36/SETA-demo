@@ -37,7 +37,7 @@ export const refreshTokenSuccess = (accessToken: string, newRefreshToken?: strin
 // Thunk Action for Login
 export const loginUser = (
   loginData: Parameters<typeof loginWithCredentials>[0]
-): AppThunk => async (dispatch: AppDispatch, getState) => {
+): AppThunk => async (dispatch: AppDispatch) => {
   dispatch(loginRequest());
   try {
     const { accessToken } = await loginWithCredentials(loginData);
@@ -60,7 +60,6 @@ export const loginUser = (
 };
 
 export const logoutUser = (): AppThunk<Promise<void>> => async (dispatch: AppDispatch) => {
-  console.log('[AuthActions] Starting logout process with GraphQL...'); 
   try {
     await logoutUserService(); 
     
@@ -73,7 +72,7 @@ export const logoutUser = (): AppThunk<Promise<void>> => async (dispatch: AppDis
   }
 };
 
-export const attemptRefreshAuthToken = (): AppThunk<Promise<string | null>> => async (dispatch: AppDispatch, getState) => {
+export const attemptRefreshAuthToken = (): AppThunk<Promise<string | null>> => async (dispatch: AppDispatch) => {
   try {
       const { accessToken: newAccessToken } = await refreshAuthTokenService();
       
