@@ -1,12 +1,10 @@
-// src/components/teams/TeamList.tsx
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTeams,
   deleteTeam,
   clearTeamDetails,
-  createTeam,
-} from "../../store/actions/teamActions"; // Added createTeam for typing if needed by modal
+} from "../../store/actions/teamActions";
 import { RootState, AppDispatch } from "../../store";
 import { Team } from "../../types/team.types";
 import CreateTeamModal from "./CreateTeamModal";
@@ -25,27 +23,15 @@ import {
   Avatar,
   AvatarGroup,
   Tooltip,
-  Snackbar,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
 import { showSnackbar } from "../../store/actions/notificationActions.ts";
+import { UserRole } from "../../types/user.types.ts";
 
-const getInitials = (name: string = "") => {
-  const nameParts = name.split(" ");
-  if (nameParts.length > 1 && nameParts[0] && nameParts[1]) {
-    return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-  } else if (
-    nameParts.length === 1 &&
-    nameParts[0] &&
-    nameParts[0].length > 0
-  ) {
-    return `${nameParts[0][0]}`.toUpperCase();
-  }
-  return "U";
-};
+import { getInitials } from "../../utils/helpers/getInitials.ts";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -63,6 +49,12 @@ const TeamList: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { teams, loading, error, pagination, deletingLoading, deletingError } =
     useSelector((state: RootState) => state.teams);
+
+  const loggedInUser = useSelector((state: RootState) => state.auth.user);
+
+  const canManageTeams =
+    loggedInUser?.role === UserRole.ROOT ||
+    loggedInUser?.role === UserRole.MANAGER;
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingTeamId, setEditingTeamId] = useState<string | null>(null);
@@ -129,7 +121,7 @@ const TeamList: React.FC = () => {
             handleLoadMore();
           }
         },
-        { threshold: 1.0 } // Trigger when 100% of the sentinel is visible
+        { threshold: 1.0 }
       );
       intersectionObserverRef.current.observe(currentObserverTarget);
     }
@@ -139,9 +131,10 @@ const TeamList: React.FC = () => {
         intersectionObserverRef.current.unobserve(currentObserverTarget);
       }
     };
-  }, [handleLoadMore, loading, isFetchingMore, pagination, teams]); // Re-run if these change
+  }, [handleLoadMore, loading, isFetchingMore, pagination, teams]);
 
   const handleOpenEditModal = (teamId: string) => {
+    if (!canManageTeams) return;
     setEditingTeamId(teamId);
   };
 
@@ -155,31 +148,33 @@ const TeamList: React.FC = () => {
   };
 
   const handleDeleteTeam = async (teamId: string, teamName: string) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the team "${teamName}"? This action cannot be undone.`
-      )
-    ) {
-      try {
-        await dispatch(deleteTeam(teamId, currentPage, ITEMS_PER_PAGE));
-        dispatch(
-          showSnackbar(`Team "${teamName}" deleted successfully.`, "success")
-        );
-        const newTotalRecords = pagination ? pagination.totalRecords - 1 : 0;
-        const newTotalPages = Math.ceil(newTotalRecords / ITEMS_PER_PAGE);
-        if (currentPage > newTotalPages && newTotalPages > 0) {
-          setCurrentPage(newTotalPages);
-        } else if (newTotalRecords === 0) {
-          setCurrentPage(1);
+    if (canManageTeams) {
+      if (
+        window.confirm(
+          `Are you sure you want to delete the team "${teamName}"? This action cannot be undone.`
+        )
+      ) {
+        try {
+          await dispatch(deleteTeam(teamId, currentPage, ITEMS_PER_PAGE));
+          dispatch(
+            showSnackbar(`Team "${teamName}" deleted successfully.`, "success")
+          );
+          const newTotalRecords = pagination ? pagination.totalRecords - 1 : 0;
+          const newTotalPages = Math.ceil(newTotalRecords / ITEMS_PER_PAGE);
+          if (currentPage > newTotalPages && newTotalPages > 0) {
+            setCurrentPage(newTotalPages);
+          } else if (newTotalRecords === 0) {
+            setCurrentPage(1);
+          }
+        } catch (e: any) {
+          console.error("Delete team failed (caught in component):", e);
+          dispatch(
+            showSnackbar(
+              e.message || `Failed to delete team "${teamName}".`,
+              "error"
+            )
+          );
         }
-      } catch (e: any) {
-        console.error("Delete team failed (caught in component):", e);
-        dispatch(
-          showSnackbar(
-            e.message || `Failed to delete team "${teamName}".`,
-            "error"
-          )
-        );
       }
     }
   };
@@ -215,34 +210,45 @@ const TeamList: React.FC = () => {
     pagination && teams && teams.length < pagination.totalRecords;
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
+    <Box sx={{ minHeight: "100vh" }}>
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         mb={4}
       >
-        <Typography variant="h4" component="h1" sx={{ fontWeight: "bold" }}>
+        <Typography
+          variant="h4"
+          component="h2"
+          sx={{ fontWeight: "400", color: "#666" }}
+        >
           {" "}
           Team Management{" "}
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setIsCreateModalOpen(true)}
-          sx={{
-            backgroundColor: "#673ab7",
-            "&:hover": { backgroundColor: "#5e35b1" },
-            borderRadius: "8px",
-            padding: "10px 20px",
-            textTransform: "none",
-            fontWeight: "bold",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-          }}
-        >
-          {" "}
-          New Team{" "}
-        </Button>
+        {canManageTeams && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setIsCreateModalOpen(true)}
+            sx={{
+              backgroundColor: "#fff",
+              "&:hover": {
+                backgroundColor: "rgba(48, 112, 196, 0.95)",
+                color: "#fff",
+              },
+              border: "1.5px solid rgba(48, 112, 196, 0.95)",
+              borderRadius: "24px",
+              minWidth: "120px",
+              padding: "10px 20px",
+              textTransform: "none",
+              fontWeight: "bold",
+              fontSize: "16px",
+              color: "rgba(48, 112, 196, 0.95)",
+            }}
+          >
+            NEW TEAM
+          </Button>
+        )}
       </Box>
       {(!teams || teams.length === 0) && !loading && !error ? (
         <Alert severity="info" sx={{ m: 2 }}>
@@ -271,10 +277,12 @@ const TeamList: React.FC = () => {
                         "box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out, border-color 0.2s ease-in-out, opacity 0.2s ease-in-out",
                       border:
                         team.id === highlightedTeamId
-                          ? "2px solid #673ab7"
+                          ? "2px solid rgba(48, 112, 196, 0.95)"
                           : "2px solid transparent",
                       backgroundColor:
-                        team.id === highlightedTeamId ? "#ede7f6" : "#fff",
+                        team.id === highlightedTeamId
+                          ? "rgba(159, 183, 214, 0.45)"
+                          : "#fff",
                       "&:hover": {
                         transform: isDeleting ? "none" : "translateY(-3px)",
                         boxShadow: isDeleting
@@ -282,10 +290,10 @@ const TeamList: React.FC = () => {
                           : "0 6px 16px rgba(0,0,0,0.12)",
                         borderColor: isDeleting
                           ? team.id === highlightedTeamId
-                            ? "#673ab7"
+                            ? "rgba(48, 112, 196, 0.95)"
                             : "transparent"
                           : team.id === highlightedTeamId
-                          ? "#673ab7"
+                          ? "rgba(48, 112, 196, 0.95)"
                           : "#bdbdbd",
                       },
                     }}
@@ -321,7 +329,7 @@ const TeamList: React.FC = () => {
                               fontWeight: "bold",
                               color:
                                 team.id === highlightedTeamId
-                                  ? "#5e35b1"
+                                  ? "rgba(48, 112, 196, 0.95)"
                                   : "text.primary",
                               fontSize: "1.1rem",
                               whiteSpace: "nowrap",
@@ -340,64 +348,71 @@ const TeamList: React.FC = () => {
                             flexShrink: 0,
                           }}
                         >
-                          <Tooltip title="Edit Team">
-                            <span>
-                              <IconButton
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleOpenEditModal(team.id);
-                                }}
-                                disabled={isDeleting}
-                                sx={{
-                                  color:
-                                    team.id === highlightedTeamId
-                                      ? "#5e35b1"
-                                      : "text.secondary",
-                                  "&:hover": {
-                                    backgroundColor: "action.hover",
-                                  },
-                                }}
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                          <Tooltip
-                            title={isDeleting ? "Deleting..." : "Delete Team"}
-                          >
-                            <span>
-                              <IconButton
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteTeam(
-                                    team.id,
-                                    team.team_name || "Unknown Team"
-                                  );
-                                }}
-                                disabled={isDeleting}
-                                sx={{
-                                  color:
-                                    team.id === highlightedTeamId
-                                      ? "#5e35b1"
-                                      : "text.secondary",
-                                  "&:hover": {
-                                    backgroundColor: "action.hover",
-                                  },
-                                }}
-                              >
-                                {isDeleting ? (
-                                  <CircularProgress size={16} color="inherit" />
-                                ) : (
-                                  <DeleteIcon
-                                    fontSize="small"
-                                    sx={{ color: "indianred" }}
-                                  />
-                                )}
-                              </IconButton>
-                            </span>
-                          </Tooltip>
+                          {canManageTeams && (
+                            <Tooltip title="Edit Team">
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleOpenEditModal(team.id);
+                                  }}
+                                  disabled={isDeleting}
+                                  sx={{
+                                    color:
+                                      team.id === highlightedTeamId
+                                        ? "#5e35b1"
+                                        : "text.secondary",
+                                    "&:hover": {
+                                      backgroundColor: "action.hover",
+                                    },
+                                  }}
+                                >
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                          )}
+                          {canManageTeams && (
+                            <Tooltip
+                              title={isDeleting ? "Deleting..." : "Delete Team"}
+                            >
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteTeam(
+                                      team.id,
+                                      team.team_name || "Unknown Team"
+                                    );
+                                  }}
+                                  disabled={isDeleting}
+                                  sx={{
+                                    color:
+                                      team.id === highlightedTeamId
+                                        ? "#5e35b1"
+                                        : "text.secondary",
+                                    "&:hover": {
+                                      backgroundColor: "action.hover",
+                                    },
+                                  }}
+                                >
+                                  {isDeleting ? (
+                                    <CircularProgress
+                                      size={16}
+                                      color="inherit"
+                                    />
+                                  ) : (
+                                    <DeleteIcon
+                                      fontSize="small"
+                                      sx={{ color: "indianred" }}
+                                    />
+                                  )}
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                          )}
                         </Box>
                       </Box>
                       {deleteErrorForThisTeam && (
@@ -492,11 +507,9 @@ const TeamList: React.FC = () => {
             })}
         </Grid>
       )}
-      {/* Sentinel element for IntersectionObserver */}
       {canLoadMore && !isFetchingMore && !loading && (
         <div ref={observerRef} style={{ height: "1px", marginTop: "20px" }} />
       )}
-      {/* Loading indicator for when fetching more items via scroll */}
       {(isFetchingMore ||
         (loading && teams && teams.length > 0 && currentPage > 1)) && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}>
@@ -507,7 +520,6 @@ const TeamList: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={handleCreateModalClose}
       />{" "}
-      {/* Updated onClose */}
       <EditTeamModal
         isOpen={!!editingTeamId}
         onClose={handleCloseEditModal}

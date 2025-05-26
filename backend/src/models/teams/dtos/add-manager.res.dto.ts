@@ -1,9 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { AddManagerReqDto } from './add-manager.req.dto.js';
 
-export class AddManagerResDto {
-  @ApiProperty({ type: String })
-  managerId: string;
-
-  @ApiProperty({ type: String })
-  managerName: string;
-}
+export class AddManagerResDto extends AddManagerReqDto {}

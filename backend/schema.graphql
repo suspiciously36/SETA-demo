@@ -1145,6 +1145,7 @@ type Mutation {
     input: _LoginInput!
   ): _LoginPayload
   _refreshToken: _RefreshTokenPayload
+  _logout: _LogoutPayload
 }
 
 """The output of our create `KnexMigration` mutation."""
@@ -2168,4 +2169,8 @@ type _LoginPayload {
 
 type _RefreshTokenPayload {
   accessToken: String!
+}
+
+type _LogoutPayload {
+  success: Boolean!
 }

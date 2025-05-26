@@ -25,7 +25,7 @@ import { TeamService } from './team.service.js';
 import { TeamInterface } from './interfaces/team.interface.js';
 import { CreateDto } from '../../common/dtos/create.dto.js';
 import { OffsetPaginatedDto } from '../../common/dtos/offset-pagination/paginated.dto.js';
-import { TeamResDto } from './dtos/team.dto.js';
+import { TeamResDto } from './dtos/team.res.dto.js';
 
 @Controller('teams')
 export class TeamController {
@@ -36,8 +36,7 @@ export class TeamController {
   getTeams(
     @Query() reqDto: TeamResDto,
     @CurrentUser() currentUser: UserInterface,
-  ): Promise<OffsetPaginatedDto<TeamInterface>> {
-    console.log('Fetching teams...');
+  ): Promise<OffsetPaginatedDto<any>> {
     return this.teamService.getTeams(reqDto, currentUser.id);
   }
 
@@ -47,7 +46,6 @@ export class TeamController {
     @Param('teamId') teamId: string,
     @CurrentUser() currentUser: UserInterface,
   ): Promise<TeamInterface> {
-    console.log('Fetching team detail by Id');
     return this.teamService.getTeamById(teamId, currentUser.id);
   }
 
@@ -57,9 +55,7 @@ export class TeamController {
     @Body() dto: CreateTeamReqDto,
     @CurrentUser() currentUser: UserInterface,
   ): Promise<CreateDto<CreateTeamResDto>> {
-    console.log('Creating team...');
     const result = await this.teamService.createTeam(dto, currentUser.id);
-    console.log('Team created:', result);
     return result;
   }
 
@@ -70,7 +66,6 @@ export class TeamController {
     @Body() dto: AddMemberReqDto,
     @CurrentUser() currentUser: UserInterface,
   ): Promise<CreateDto<AddMemberResDto>> {
-    console.log('Adding Member...');
     return this.teamService.addMember(teamId, dto, currentUser.id);
   }
 
@@ -81,7 +76,6 @@ export class TeamController {
     @Body() dto: AddManagerReqDto,
     @CurrentUser() currentUser: UserInterface,
   ) {
-    console.log('Adding Manager...');
     return this.teamService.addManager(teamId, dto, currentUser.id);
   }
 
@@ -92,7 +86,6 @@ export class TeamController {
     @Body() dto: UpdateTeamDto,
     @CurrentUser() currentUser: UserInterface,
   ) {
-    console.log('Updating Team...');
     return this.teamService.updateTeam(teamId, dto, currentUser.id);
   }
 
@@ -104,7 +97,6 @@ export class TeamController {
     @Param('memberId') memberId: string,
     @CurrentUser() currentUser: UserInterface,
   ) {
-    console.log('Removing Member...');
     await this.teamService.removeMember(teamId, memberId, currentUser.id);
   }
 
@@ -116,7 +108,6 @@ export class TeamController {
     @Param('managerId') managerId: string,
     @CurrentUser() currentUser: UserInterface,
   ) {
-    console.log('Removing Manager...');
     await this.teamService.removeManager(teamId, managerId, currentUser.id);
   }
 
@@ -127,7 +118,6 @@ export class TeamController {
     @Param('teamId') teamId: string,
     @CurrentUser() currentUser: UserInterface,
   ) {
-    console.log('Deleting Team...');
     await this.teamService.deleteTeam(teamId, currentUser.id);
   }
 }

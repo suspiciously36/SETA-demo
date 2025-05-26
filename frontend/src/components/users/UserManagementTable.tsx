@@ -1,5 +1,4 @@
-// src/components/users/UserManagementTable.tsx
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, fetchUsers } from "../../store/actions/userListActions";
 import { RootState, AppDispatch } from "../../store";
@@ -31,7 +30,6 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
-  Snackbar,
   TablePagination,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -39,23 +37,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import CreateUserModal from "./CreateUserModal.tsx";
+import CreateUserModal from "./CreateUserModal";
 
-import { showSnackbar } from "../../store/actions/notificationActions.ts";
-
-const getInitials = (name: string = "") => {
-  const nameParts = name.split(" ");
-  if (nameParts.length > 1 && nameParts[0] && nameParts[1]) {
-    return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-  } else if (
-    nameParts.length === 1 &&
-    nameParts[0] &&
-    nameParts[0].length > 0
-  ) {
-    return `${nameParts[0][0]}`.toUpperCase();
-  }
-  return "U";
-};
+import { showSnackbar } from "../../store/actions/notificationActions";
+import { getInitials } from "../../utils/helpers/getInitials.ts";
 
 const chipColorPalette = [
   { backgroundColor: "#e3f2fd", color: "#1565c0" },
@@ -72,7 +57,7 @@ const getTeamChipStyle = (teamNameOrId: string) => {
   for (let i = 0; i < teamNameOrId.length; i++) {
     const char = teamNameOrId.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash |= 0; // Convert to 32bit integer
+    hash |= 0;
   }
   const index = Math.abs(hash) % chipColorPalette.length;
   return chipColorPalette[index];
@@ -83,8 +68,9 @@ const UserManagementTable: React.FC = () => {
   const { users, loading, error, pagination } = useSelector(
     (state: RootState) => state.userList
   );
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
+  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
   const [selected, setSelected] = useState<readonly string[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [currentUserActions, setCurrentUserActions] =
@@ -92,6 +78,10 @@ const UserManagementTable: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const canManageUsers =
+    loggedInUser?.role === UserRole.ROOT ||
+    loggedInUser?.role === UserRole.MANAGER;
 
   useEffect(() => {
     dispatch(fetchUsers(currentPage, rowsPerPage));
@@ -109,7 +99,7 @@ const UserManagementTable: React.FC = () => {
   };
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
+    if (event.target.checked && users) {
       const newSelecteds = users.map((n) => n.id);
       setSelected(newSelecteds);
       return;
@@ -117,10 +107,7 @@ const UserManagementTable: React.FC = () => {
     setSelected([]);
   };
 
-  const handleClick = (
-    event: React.MouseEvent<HTMLInputElement>,
-    id: string
-  ) => {
+  const handleClick = (_event: React.MouseEvent<unknown>, id: string) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected: readonly string[] = [];
     if (selectedIndex === -1) newSelected = newSelected.concat(selected, id);
@@ -137,10 +124,12 @@ const UserManagementTable: React.FC = () => {
   };
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
+
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
     user: DetailedUser
   ) => {
+    if (!canManageUsers) return;
     setAnchorEl(event.currentTarget);
     setCurrentUserActions(user);
   };
@@ -156,19 +145,38 @@ const UserManagementTable: React.FC = () => {
     if (currentUserActions) console.log("Permissions:", currentUserActions.id);
     handleMenuClose();
   };
-  const handleDeleteUser = async (userId: string) => {
-    if (currentUserActions) {
-      console.log(userId);
+
+  const handleDeleteUserConfirmed = async () => {
+    if (currentUserActions && currentUserActions.id && canManageUsers) {
+      const userIdToDelete = currentUserActions.id;
+      const usernameToDelete = currentUserActions.username;
       if (
         window.confirm(
-          "Are you sure to delete this user? The action cannot be undone."
+          `Are you sure you want to delete user "${usernameToDelete}"? This action cannot be undone.`
         )
       ) {
         try {
-          await dispatch(deleteUser(userId, currentPage, rowsPerPage));
-          dispatch(showSnackbar(`User deleted successfully.`, "success"));
-          if (users.length === 1 && currentPage > 1) {
-            setCurrentPage(currentPage - 1);
+          await dispatch(deleteUser(userIdToDelete, currentPage, rowsPerPage));
+          dispatch(
+            showSnackbar(
+              `User "${usernameToDelete}" deleted successfully.`,
+              "success"
+            )
+          );
+          if (
+            users.length === 1 &&
+            currentPage > 1 &&
+            pagination &&
+            pagination.totalRecords > 0
+          ) {
+            const newTotalPages = Math.ceil(
+              (pagination.totalRecords - 1) / rowsPerPage
+            );
+            if (currentPage > newTotalPages && newTotalPages > 0) {
+              setCurrentPage(newTotalPages);
+            }
+          } else if (pagination && pagination.totalRecords - 1 === 0) {
+            setCurrentPage(1);
           }
         } catch (e: any) {
           console.error("Delete user failed (caught in component):", e);
@@ -181,7 +189,7 @@ const UserManagementTable: React.FC = () => {
     handleMenuClose();
   };
 
-  if (loading)
+  if (loading && (!users || users.length === 0))
     return (
       <Box
         display="flex"
@@ -189,57 +197,70 @@ const UserManagementTable: React.FC = () => {
         alignItems="center"
         minHeight="300px"
       >
+        {" "}
         <CircularProgress />{" "}
-        <Typography sx={{ ml: 2 }}>Loading users...</Typography>
+        <Typography sx={{ ml: 2 }}>Loading users...</Typography>{" "}
       </Box>
     );
-  if (error)
+
+  if (error && (!users || users.length === 0))
     return (
       <Alert severity="error" sx={{ m: 2 }}>
-        Error fetching users: {error}
+        {" "}
+        Error fetching users: {error}{" "}
       </Alert>
     );
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
+    <Box sx={{ minHeight: "100vh" }}>
+      {" "}
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        mb={4}
+        mb={2}
       >
-        <Typography variant="h4" component="h1" sx={{ fontWeight: "bold" }}>
+        <Typography
+          variant="h4"
+          component="h2"
+          sx={{ fontWeight: "400", color: "#666" }}
+        >
           User Management
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setIsCreateModalOpen(true)}
-          sx={{
-            backgroundColor: "#673ab7",
-            "&:hover": {
-              backgroundColor: "#5e35b1",
-            },
-            borderRadius: "8px",
-            padding: "10px 20px",
-            textTransform: "none",
-            fontWeight: "bold",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-          }}
-        >
-          New User
-        </Button>
+        {canManageUsers && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setIsCreateUserModalOpen(true)}
+            sx={{
+              backgroundColor: "#fff",
+              "&:hover": {
+                backgroundColor: "rgba(48, 112, 196, 0.95)",
+                color: "#fff",
+              },
+              border: "1.5px solid rgba(48, 112, 196, 0.95)",
+              borderRadius: "24px",
+              minWidth: "120px",
+              padding: "10px 20px",
+              textTransform: "none",
+              fontWeight: "bold",
+              fontSize: "16px",
+              color: "rgba(48, 112, 196, 0.95)",
+            }}
+          >
+            NEW USER
+          </Button>
+        )}
       </Box>
-
       <Paper
         sx={{
           width: "100%",
           overflow: "hidden",
           borderRadius: "12px",
-          boxShadow: 3,
+          boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
         }}
       >
-        <TableContainer sx={{ maxHeight: "calc(100vh - 250px)" }}>
+        <TableContainer sx={{ maxHeight: "calc(100vh - 220px)" }}>
           <Table stickyHeader aria-label="user management table">
             <TableHead>
               <TableRow>
@@ -247,205 +268,317 @@ const UserManagementTable: React.FC = () => {
                   <Checkbox
                     color="primary"
                     indeterminate={
-                      selected.length > 0 && selected.length < users.length
+                      users &&
+                      selected.length > 0 &&
+                      selected.length < users.length
                     }
                     checked={
-                      users.length > 0 && selected.length === users.length
+                      users &&
+                      users.length > 0 &&
+                      selected.length === users.length
                     }
                     onChange={handleSelectAllClick}
                   />
                 </TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>User</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Username Tag</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Role</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Teams</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "right" }}>
-                  Actions
+                <TableCell sx={{ fontWeight: "bold", color: "text.secondary" }}>
+                  User
                 </TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "text.secondary" }}>
+                  Username Tag
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "text.secondary" }}>
+                  Role
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "text.secondary" }}>
+                  Teams
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold", color: "text.secondary" }}>
+                  Status
+                </TableCell>
+                {canManageUsers && (
+                  <TableCell
+                    sx={{
+                      fontWeight: "bold",
+                      textAlign: "right",
+                      color: "text.secondary",
+                    }}
+                  >
+                    {" "}
+                    Actions{" "}
+                  </TableCell>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => {
-                const isItemSelected = isSelected(user.id);
-                const userAssociatedTeams = (user.teams ||
-                  []) as UserAssociatedTeamInfo[];
-
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, user.id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={user.id}
-                    selected={isItemSelected}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              {loading && users && users.length > 0 && (
+                <TableRow>
+                  {" "}
+                  <TableCell
+                    colSpan={canManageUsers ? 7 : 6}
+                    align="center"
+                    sx={{ p: 0, position: "relative", border: 0 }}
                   >
-                    <TableCell padding="checkbox">
-                      <Checkbox color="primary" checked={isItemSelected} />
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Avatar
-                          src={user.avatarUrl}
-                          alt={user.username}
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            mr: 1.5,
-                            fontSize: "0.9rem",
-                          }}
-                        >
-                          {getInitials(user.username)}
-                        </Avatar>
-                        <Box>
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ fontWeight: 500 }}
+                    {" "}
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "rgba(255,255,255,0.5)",
+                      }}
+                    >
+                      {" "}
+                      <CircularProgress size={30} />{" "}
+                    </Box>{" "}
+                  </TableCell>{" "}
+                </TableRow>
+              )}
+              {!loading && users && users.length === 0 && (
+                <TableRow>
+                  {" "}
+                  <TableCell colSpan={canManageUsers ? 7 : 6} align="center">
+                    {" "}
+                    <Typography sx={{ p: 3, color: "text.secondary" }}>
+                      No users to display.
+                    </Typography>{" "}
+                  </TableCell>{" "}
+                </TableRow>
+              )}
+              {users &&
+                users.map((user) => {
+                  const isItemSelected = isSelected(user.id);
+                  const userAssociatedTeams = (user.teams ||
+                    []) as UserAssociatedTeamInfo[];
+
+                  return (
+                    <TableRow
+                      hover
+                      onClick={(event: React.MouseEvent<unknown>) =>
+                        handleClick(event, user.id)
+                      }
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={user.id}
+                      selected={isItemSelected}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell padding="checkbox">
+                        {" "}
+                        <Checkbox
+                          color="primary"
+                          checked={isItemSelected}
+                        />{" "}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Avatar
+                            src={user.avatarUrl}
+                            alt={user.username}
+                            sx={{
+                              width: 36,
+                              height: 36,
+                              mr: 1.5,
+                              fontSize: "0.9rem",
+                            }}
                           >
-                            {user.username}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {user.email}
-                          </Typography>
+                            {" "}
+                            {getInitials(user.username)}{" "}
+                          </Avatar>
+                          <Box>
+                            {" "}
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ fontWeight: 500 }}
+                            >
+                              {" "}
+                              {user.username}{" "}
+                            </Typography>{" "}
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {" "}
+                              {user.email}{" "}
+                            </Typography>{" "}
+                          </Box>
                         </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" color="text.secondary">
-                        @{user.username}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={user.role}
-                        size="small"
-                        color={
-                          user.role === UserRole.MANAGER
-                            ? "primary"
-                            : user.role === UserRole.ROOT
-                            ? "warning"
-                            : "default"
-                        }
-                        sx={{ textTransform: "capitalize", fontWeight: 500 }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {userAssociatedTeams.length === 0 ? (
-                          <Typography variant="caption" color="text.secondary">
-                            No teams assigned
-                          </Typography>
-                        ) : (
-                          <>
-                            {userAssociatedTeams.slice(0, 3).map((teamInfo) => {
-                              const chipStyle = getTeamChipStyle(teamInfo.id);
-                              return (
-                                <Chip
-                                  key={teamInfo.id}
-                                  label={teamInfo.name}
-                                  size="small"
-                                  sx={{
-                                    backgroundColor: chipStyle.backgroundColor,
-                                    color: chipStyle.color,
-                                    fontWeight: 500,
-                                    borderRadius: "6px",
-                                  }}
-                                />
-                              );
-                            })}
-                            {userAssociatedTeams.length > 3 && (
-                              <Tooltip
-                                title={userAssociatedTeams
-                                  .slice(3)
-                                  .map((ti) => ti.name)
-                                  .join(", ")}
-                              >
-                                <Chip
-                                  label={`+${userAssociatedTeams.length - 3}`}
-                                  size="small"
-                                  sx={{
-                                    backgroundColor: "action.hover",
-                                    color: "text.secondary",
-                                    fontWeight: 500,
-                                    borderRadius: "6px",
-                                  }}
-                                />
-                              </Tooltip>
-                            )}
-                          </>
-                        )}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" color="text.secondary">
-                        Active
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        aria-label="more actions"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleMenuOpen(event, user);
-                        }}
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                      </TableCell>
+                      <TableCell>
+                        {" "}
+                        <Typography variant="body2" color="text.secondary">
+                          {" "}
+                          @{user.username
+                            .replace(/\s+/g, "_")
+                            .toLowerCase()}{" "}
+                        </Typography>{" "}
+                      </TableCell>
+                      <TableCell>
+                        {" "}
+                        <Chip
+                          label={
+                            user.role.charAt(0).toUpperCase() +
+                            user.role.slice(1)
+                          }
+                          size="small"
+                          color={
+                            user.role === UserRole.MANAGER
+                              ? "primary"
+                              : user.role === UserRole.ROOT
+                              ? "error"
+                              : "default"
+                          }
+                          sx={{
+                            textTransform: "capitalize",
+                            fontWeight: 500,
+                            borderRadius: "6px",
+                          }}
+                        />{" "}
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
+                          {userAssociatedTeams.length === 0 ? (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {" "}
+                              No teams assigned{" "}
+                            </Typography>
+                          ) : (
+                            <>
+                              {userAssociatedTeams
+                                .slice(0, 3)
+                                .map((teamInfo) => {
+                                  const chipStyle = getTeamChipStyle(
+                                    teamInfo.id
+                                  );
+                                  return (
+                                    <Chip
+                                      key={teamInfo.id}
+                                      label={teamInfo.name}
+                                      size="small"
+                                      sx={{
+                                        backgroundColor:
+                                          chipStyle.backgroundColor,
+                                        color: chipStyle.color,
+                                        fontWeight: 500,
+                                        borderRadius: "6px",
+                                      }}
+                                    />
+                                  );
+                                })}
+                              {userAssociatedTeams.length > 3 && (
+                                <Tooltip
+                                  title={userAssociatedTeams
+                                    .slice(3)
+                                    .map((ti) => ti.name)
+                                    .join(", ")}
+                                >
+                                  {" "}
+                                  <Chip
+                                    label={`+${userAssociatedTeams.length - 3}`}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: "action.hover",
+                                      color: "text.secondary",
+                                      fontWeight: 500,
+                                      borderRadius: "6px",
+                                    }}
+                                  />{" "}
+                                </Tooltip>
+                              )}
+                            </>
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        {" "}
+                        <Chip
+                          label="Active"
+                          size="small"
+                          sx={{
+                            bgcolor: "success.light",
+                            color: "success",
+                            fontWeight: 500,
+                            borderRadius: "6px",
+                          }}
+                        />{" "}
+                      </TableCell>
+                      {canManageUsers && (
+                        <TableCell align="right">
+                          {" "}
+                          <IconButton
+                            aria-label="more actions"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleMenuOpen(event, user);
+                            }}
+                          >
+                            {" "}
+                            <MoreVertIcon />{" "}
+                          </IconButton>{" "}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
             </TableBody>
           </Table>
         </TableContainer>
-        <Menu
-          id="actions-menu"
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleViewProfile}>
-            <ListItemIcon>
-              <VisibilityIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>View profile</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={handlePermissions}>
-            <ListItemIcon>
-              <VpnKeyIcon fontSize="small" />
-            </ListItemIcon>
-            <ListItemText>Permission</ListItemText>
-          </MenuItem>
-          <MenuItem
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteUser(currentUserActions?.id);
-            }}
-            sx={{ color: "error.main" }}
-          >
-            <ListItemIcon>
-              <DeleteIcon fontSize="small" sx={{ color: "error.main" }} />
-            </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
-          </MenuItem>
-        </Menu>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={pagination?.totalRecords}
+          count={pagination?.totalRecords || 0}
           rowsPerPage={rowsPerPage}
           page={currentPage - 1}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{ borderTop: "1px solid #eee" }}
+          sx={{ borderTop: "1px solid #e0e0e0" }}
         />
+        {canManageUsers && (
+          <Menu
+            id="actions-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleViewProfile}>
+              <ListItemIcon>
+                <VisibilityIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>View profile</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handlePermissions}>
+              <ListItemIcon>
+                <VpnKeyIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Permission</ListItemText>
+            </MenuItem>
+            <MenuItem
+              onClick={handleDeleteUserConfirmed}
+              sx={{ color: "error.main" }}
+            >
+              <ListItemIcon>
+                <DeleteIcon fontSize="small" sx={{ color: "error.main" }} />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          </Menu>
+        )}
       </Paper>
       <CreateUserModal
-        isOpen={isCreateModalOpen}
-        onClose={() => {
-          setIsCreateModalOpen(false);
+        isOpen={isCreateUserModalOpen}
+        onClose={() => setIsCreateUserModalOpen(false)}
+        onSubmit={() => {
+          setCurrentPage(1);
           dispatch(fetchUsers(1, rowsPerPage));
         }}
       />

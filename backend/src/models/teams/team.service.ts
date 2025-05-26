@@ -23,7 +23,7 @@ import { UserRole } from '../users/dtos/create-user.res.dto.js';
 import { TeamInterface } from './interfaces/team.interface.js';
 import { CreateDto } from '../../common/dtos/create.dto.js';
 import { OffsetPaginatedDto } from '../../common/dtos/offset-pagination/paginated.dto.js';
-import { TeamResDto } from './dtos/team.dto.js';
+import { TeamResDto } from './dtos/team.res.dto.js';
 import { OffsetPaginationDto } from '../../common/dtos/offset-pagination/offset-pagination.dto.js';
 
 @Injectable()

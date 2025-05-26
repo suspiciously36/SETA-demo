@@ -16,19 +16,17 @@ export enum UserRole {
 
 export type UserProfile = Omit<UserInterface, 'password'>
 
-export type TeamUserRoleInTeam = 'manager' | 'member'; // Role within a specific team
+export type TeamUserRoleInTeam = 'manager' | 'member'; 
 
-export interface TeamUser { // As defined in your team.types.ts or similar
-  id: string; // ID of the team-user link
+export interface TeamUser { 
+  id: string; 
   team_id: string;
-  user_id: string; // Should match DetailedUser.id
-  is_main_manager?: boolean; // Optional as per some DTOs
-  role: TeamUserRoleInTeam; // Role of the user within that specific team
-  createdAt: string; // Or Date
-  updatedAt: string; // Or Date
-  // If this TeamUser object from your API also includes team_name, that would simplify things.
-  // Otherwise, we'll map team_id to team_name using the teams list from Redux.
-  team_name?: string; // OPTIONAL: if your backend provides this directly in the user's team list
+  user_id: string;
+  is_main_manager?: boolean;
+  role: TeamUserRoleInTeam;
+  createdAt: string; 
+  updatedAt: string; 
+  team_name?: string; 
 }
 
 export interface UserAssociatedTeamInfo {

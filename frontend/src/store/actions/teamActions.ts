@@ -1,4 +1,3 @@
-// src/store/actions/teamActions.ts
 import { getAllTeams as fetchTeamsService, createNewTeam as createTeamsService, deleteTeamById as deleteTeamService, updateExistingTeam as updateTeamService, getTeamById as fetchTeamDetailsService, type PaginatedTeamsResponse} from '../../services/teamService';
 import { Team, type CreateTeamReqDto, type DetailedTeam, type UpdateTeamDto, type UpdateTeamSuccessResponseData } from '../../types/team.types';
 import { AppThunk, AppDispatch, type RootState } from '../index';

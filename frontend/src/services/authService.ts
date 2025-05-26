@@ -26,11 +26,13 @@ interface RefreshTokenResponseData {
   };
 }
 
+interface LogoutMutationResponse { 
+  _logout: {
+    success: boolean;
+  };
+}
 interface GraphQLErrorDetail {
   message: string;
-  // locations?: [{ line: number; column: number }];
-  // path?: string[];
-  // extensions?: any;
 }
 
 interface GraphQLResponse<T> {
@@ -125,6 +127,41 @@ export const refreshAuthTokenService = async (): Promise<RefreshTokenResponseDat
     throw new Error(String(error) || 'An unknown error occurred during token refresh.');
   }
 };
+
+export const logoutUserService = async (): Promise<LogoutMutationResponse['_logout']> => {
+  checkEndpoints();
+  const mutation = `
+    mutation Logout {
+      _logout {
+      success
+      }
+    }
+  `
+  try {
+    const response = await axios.post<GraphQLResponse<LogoutMutationResponse>>(GRAPHQL_ENDPOINT!, { 
+      query: mutation,
+    }, {
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true
+    });
+    if (response.data.errors && response.data.errors.length > 0) {
+      const errorMessage = response.data.errors.map(err => err.message).join(', ');
+      throw new Error(errorMessage);
+    }
+    if (!response.data.data?._logout) {
+      throw new Error('Logout failed: No data returned from mutation.');
+    }
+    return response.data.data._logout;
+  } catch (error) {
+    console.error('GraphQL Logout Error:', error);
+     if (axios.isAxiosError(error)) {
+      const serverErrorMessage = (error.response?.data as any)?.errors?.[0]?.message || (error.response?.data as any)?.message;
+      throw new Error(serverErrorMessage || error.message || 'Failed to logout due to network error.');
+    }
+    if (error instanceof Error) throw error;
+    throw new Error(String(error) || 'An unknown error occurred during logging out.');
+  }
+}
 
 
 // --- REST API Related ---

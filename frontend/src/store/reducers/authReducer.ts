@@ -1,8 +1,6 @@
-// src/store/reducers/authReducer.ts
 import type { UserProfile } from '../../types/user.types.ts';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT, REFRESH_TOKEN_SUCCESS } from '../actions/actionTypes';
 
-// Define the shape of your authentication state
 export interface AuthState {
   isAuthenticated: boolean;
   accessToken: string | null;

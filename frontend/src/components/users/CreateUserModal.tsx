@@ -1,19 +1,13 @@
-// src/components/users/CreateUserModal.tsx
 import React, { useState, FormEvent, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  CreateUserReqDto,
-  UserRole,
-  type DetailedUser,
-} from "../../types/user.types"; // Adjust path
-import { submitNewUser } from "../../store/actions/userListActions"; // Adjust path
-import { RootState, AppDispatch } from "../../store"; // Adjust path
+import { CreateUserReqDto, UserRole } from "../../types/user.types";
+import { submitNewUser } from "../../store/actions/userListActions";
+import { RootState, AppDispatch } from "../../store";
 
 import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
   TextField,
   Button,
   IconButton,
@@ -21,7 +15,6 @@ import {
   Box,
   CircularProgress,
   Alert,
-  Snackbar,
   Select,
   MenuItem,
   FormControl,
@@ -34,25 +27,29 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import { showSnackbar } from "../../store/actions/notificationActions.ts";
 
+import appLogo from "../../assets/images/seta-removebg-preview.png";
+
 interface CreateUserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: () => void;
 }
 
 const CreateUserModal: React.FC<CreateUserModalProps> = ({
   isOpen,
   onClose,
+  onSubmit,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const { creatingUserLoading, creatingUserError } = useSelector(
     (state: RootState) => state.userList
   );
-  const loggedInUser = useSelector((state: RootState) => state.auth.user); // For authorization
+  const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>(UserRole.MEMBER); // Default to 'member'
+  const [role, setRole] = useState<UserRole>(UserRole.MEMBER);
   const [showPassword, setShowPassword] = useState(false);
 
   const [localFormError, setLocalFormError] = useState<string | null>(null);
@@ -130,6 +127,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
         dispatch(
           showSnackbar(`Create new user: ${username} successfully! `, "success")
         );
+        onSubmit();
         handleActualClose();
       } else {
         dispatch(
@@ -139,10 +137,10 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
     }
     prevCreatingUserLoading.current = creatingUserLoading;
   }, [
+    dispatch,
     creatingUserLoading,
     creatingUserError,
     username,
-    showSnackbar,
     handleActualClose,
   ]);
 
@@ -171,13 +169,15 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
               width: "100%",
             }}
           >
-            <Typography
-              variant="h5"
-              component="div"
-              sx={{ fontWeight: "bold", color: "#673ab7" /* LOGO color */ }}
-            >
-              LOGO {/* Placeholder */}
-            </Typography>
+            <img
+              src={appLogo}
+              alt="App Logo"
+              style={{
+                height: "50%",
+                maxWidth: "50%",
+                objectFit: "contain",
+              }}
+            />
             <IconButton
               aria-label="close"
               onClick={handleActualClose}
@@ -209,7 +209,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
               gutterBottom
               sx={{ fontWeight: 500, color: "text.secondary", mb: 0.5 }}
             >
-              Username / User ID
+              Username
             </Typography>
             <TextField
               autoFocus
@@ -227,10 +227,10 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                   backgroundColor: "#f3f4f6",
                   "& fieldset": { borderColor: "transparent" },
                   "&:hover fieldset": {
-                    borderColor: "rgba(103, 58, 183, 0.5)",
+                    borderColor: "rgba(48, 112, 196, 0.95)",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#673ab7",
+                    borderColor: "rgba(48, 112, 196, 0.95)",
                     borderWidth: "1px",
                   },
                 },
@@ -261,10 +261,10 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                   backgroundColor: "#f3f4f6",
                   "& fieldset": { borderColor: "transparent" },
                   "&:hover fieldset": {
-                    borderColor: "rgba(103, 58, 183, 0.5)",
+                    borderColor: "rgba(48, 112, 196, 0.95)",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#673ab7",
+                    borderColor: "rgba(48, 112, 196, 0.95)",
                     borderWidth: "1px",
                   },
                 },
@@ -311,10 +311,10 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                   backgroundColor: "#f3f4f6",
                   "& fieldset": { borderColor: "transparent" },
                   "&:hover fieldset": {
-                    borderColor: "rgba(103, 58, 183, 0.5)",
+                    borderColor: "rgba(48, 112, 196, 0.95)",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#673ab7",
+                    borderColor: "rgba(48, 112, 196, 0.95)",
                     borderWidth: "1px",
                   },
                 },
@@ -338,10 +338,10 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
                   backgroundColor: "#f3f4f6",
                   "& fieldset": { borderColor: "transparent" },
                   "&:hover fieldset": {
-                    borderColor: "rgba(103, 58, 183, 0.5)",
+                    borderColor: "rgba(48, 112, 196, 0.95)",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#673ab7",
+                    borderColor: "rgba(48, 112, 196, 0.95)",
                     borderWidth: "1px",
                   },
                 },
@@ -374,12 +374,12 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({
               sx={{
                 py: 1.5,
                 borderRadius: "12px",
-                backgroundColor: "#673ab7",
+                backgroundColor: "rgba(48, 112, 196, 0.95)",
                 textTransform: "none",
                 fontSize: "1rem",
                 fontWeight: "bold",
                 boxShadow: "0 4px 12px rgba(103, 58, 183, 0.3)",
-                "&:hover": { backgroundColor: "#5e35b1" },
+                "&:hover": { backgroundColor: "rgb(43, 110, 199)" },
               }}
             >
               {creatingUserLoading ? (

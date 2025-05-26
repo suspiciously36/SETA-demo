@@ -1,6 +1,6 @@
-// src/components/layout/Sidebar.tsx
-import React, { useEffect } from "react"; // Added useEffect
-import { Link as RouterLink, useLocation } from "react-router-dom"; // Import Link and useLocation
+import React, { useEffect } from "react";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
   Drawer,
   List,
@@ -8,9 +8,10 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
   Box,
   Collapse,
+  useTheme,
+  Divider,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
@@ -22,11 +23,15 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-// Removed PersonIcon, Person4Icon as we'll use PeopleIcon, SupervisorAccountIcon, GroupWorkIcon for clarity
+import LogoutIcon from "@mui/icons-material/Logout";
 
-const drawerWidth = 300; // Sidebar width from your code
+import { logoutUser } from "../../store/actions/authActions";
+import { AppDispatch } from "../../store";
 
-// Define a type for the active view string that MainLayout will pass
+import appLogo from "../../assets/images/seta-removebg-preview.png";
+
+const drawerWidth = 300;
+
 type ActiveViewType =
   | "users"
   | "teams"
@@ -35,20 +40,22 @@ type ActiveViewType =
   | "notifications"
   | "profile"
   | "settings"
+  | "logout"
   | string;
 
 interface SidebarProps {
-  activeView: ActiveViewType; // Prop to indicate current active section from MainLayout
+  activeView: ActiveViewType;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
   const location = useLocation();
+  const theme = useTheme();
+  const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // State for expandable "Dashboard" section in sidebar (which contains User/Manager/Team Management)
   const [managementSectionOpen, setManagementSectionOpen] =
     React.useState(true);
 
-  // Automatically open the "Dashboard" section if a child route is active on load
   useEffect(() => {
     if (
       ["/users", "/managers", "/teams"].some((path) =>
@@ -63,6 +70,18 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
     setManagementSectionOpen(!managementSectionOpen);
   };
 
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/login");
+  };
+
+  const logoHeaderBackgroundColor = "#FFFFFF";
+  const menuItemDefaultColor = theme.palette.grey[700];
+  const menuItemHoverBg = theme.palette.action.hover;
+  const activeMenuItemBg = "rgba(48, 112, 196, 0.95)";
+  const activeMenuItemColor = "#FFFFFF";
+  const activeMenuItemHoverBg = "rgba(40, 90, 160, 0.95)";
+
   const menuItems = [
     {
       text: "Dashboard",
@@ -70,6 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
       onClick: handleManagementSectionToggle,
       open: managementSectionOpen,
       active: ["users", "managers", "teams"].includes(activeView),
+      isParent: true,
       subItems: [
         {
           text: "User Management",
@@ -118,197 +138,219 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
       path: "/settings",
       id: "settings",
     },
+    {
+      text: "Logout",
+      icon: <LogoutIcon />,
+      id: "logout",
+      onClick: handleLogout,
+    },
   ];
 
   const drawerContent = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        background: "#FFFFFF",
+      }}
+    >
       <Toolbar
         sx={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          py: 2,
-          backgroundColor: "primary.main",
-          color: "white",
+          justifyContent: "space-between",
+          py: 4,
+          px: 2,
+          backgroundColor: logoHeaderBackgroundColor,
+          // borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
-          LOGO
-        </Typography>
-        <Typography variant="caption" sx={{ ml: 1, opacity: 0.8 }}>
-          v1.0
-        </Typography>
+        <a href="https://seta-international.com" >
+          <img
+            src={appLogo}
+            alt="App Logo"
+            style={{
+              height: "100%",
+              maxWidth: "100%",
+              objectFit: "contain",
+            }}
+          />
+        </a>
       </Toolbar>
-      <List sx={{ flexGrow: 1, pt: 2 }}>
-        {menuItems.map((item) => (
-          <React.Fragment key={item.text}>
-            <ListItemButton
-              component={
-                item.path && (!item.subItems || item.subItems.length === 0)
-                  ? RouterLink
-                  : "div"
-              }
-              to={item.path}
-              selected={item.active || activeView === item.id}
-              onClick={item.onClick}
-              sx={{
-                mx: 2,
-                borderRadius: "8px",
-                mb: 0.5,
-                "&.Mui-selected": {
-                  backgroundColor: "rgba(255, 255, 255, 0.16)",
+      <List sx={{ flexGrow: 1, pt: 1, px: 1.5 }}>
+        {menuItems.map((item) => {
+          const isItemSelected = item.active || activeView === item.id;
+          return (
+            <React.Fragment key={item.text}>
+              <ListItemButton
+                component={
+                  item.path &&
+                  (!item.subItems || item.subItems.length === 0) &&
+                  !item.onClick
+                    ? RouterLink
+                    : "div"
+                }
+                to={item.path}
+                selected={isItemSelected}
+                onClick={item.onClick}
+                sx={{
+                  borderRadius: "8px",
+                  mb: 0.5,
+                  color: isItemSelected
+                    ? activeMenuItemColor
+                    : menuItemDefaultColor,
+                  backgroundColor: isItemSelected
+                    ? activeMenuItemBg
+                    : "transparent",
                   "&:hover": {
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    backgroundColor: isItemSelected
+                      ? activeMenuItemHoverBg
+                      : menuItemHoverBg,
                   },
-                },
-                "&:hover": {
-                  backgroundColor:
-                    item.active || activeView === item.id
-                      ? "rgba(255, 255, 255, 0.2)"
-                      : "rgba(255, 255, 255, 0.08)", // Lighter hover for non-active
-                },
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  color:
-                    item.active || activeView === item.id
-                      ? "white"
-                      : "rgba(255,255,255,0.7)",
-                  minWidth: "40px",
+                  "&.Mui-selected": {
+                    backgroundColor: activeMenuItemBg,
+                    color: activeMenuItemColor,
+                    "& .MuiListItemIcon-root": { color: activeMenuItemColor },
+                    "&:hover": { backgroundColor: activeMenuItemHoverBg },
+                  },
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={item.text}
-                primaryTypographyProps={{
-                  fontWeight:
-                    item.active || activeView === item.id ? "bold" : "normal",
-                  color:
-                    item.active || activeView === item.id
-                      ? "white"
-                      : "rgba(255,255,255,0.9)",
-                }}
-              />
-              {item.subItems && item.subItems.length > 0 ? (
-                item.open ? (
-                  <ExpandLess
-                    sx={{
-                      color:
-                        item.active || activeView === item.id
-                          ? "white"
-                          : "rgba(255,255,255,0.7)",
-                    }}
-                  />
-                ) : (
-                  <ExpandMore
-                    sx={{
-                      color:
-                        item.active || activeView === item.id
-                          ? "white"
-                          : "rgba(255,255,255,0.7)",
-                    }}
-                  />
-                )
-              ) : null}
-            </ListItemButton>
-            {item.subItems && item.subItems.length > 0 && (
-              <Collapse in={item.open} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  {item.subItems.map((subItem) => (
-                    <ListItemButton
-                      key={subItem.text}
-                      component={RouterLink}
-                      to={subItem.path}
-                      selected={activeView === subItem.id} // Compare with activeView prop
-                      sx={{
-                        pl: 4, // Indent sub-items
-                        mx: 2,
-                        borderRadius: "8px",
-                        mb: 0.5,
-                        "&.Mui-selected": {
-                          backgroundColor: "rgba(255, 255, 255, 0.22)",
-                          "&:hover": {
-                            backgroundColor: "rgba(255, 255, 255, 0.25)",
-                          },
-                        },
-                        "&:hover": {
-                          backgroundColor:
-                            activeView === subItem.id
-                              ? "rgba(255, 255, 255, 0.25)"
-                              : "rgba(255, 255, 255, 0.08)",
-                        },
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          color:
-                            activeView === subItem.id
-                              ? "white"
-                              : "rgba(255,255,255,0.7)",
-                          minWidth: "36px",
-                        }}
-                      >
-                        {subItem.icon}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={subItem.text}
-                        primaryTypographyProps={{
-                          fontWeight:
-                            activeView === subItem.id ? "bold" : "normal",
-                          color:
-                            activeView === subItem.id
-                              ? "white"
-                              : "rgba(255,255,255,0.9)",
-                        }}
-                      />
-                    </ListItemButton>
-                  ))}
-                </List>
-              </Collapse>
-            )}
-          </React.Fragment>
-        ))}
+                <ListItemIcon sx={{ color: "inherit", minWidth: "40px" }}>
+                  {" "}
+                  {item.icon}{" "}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontWeight: isItemSelected ? "bold" : "normal",
+                  }}
+                />
+                {item.subItems && item.subItems.length > 0 ? (
+                  item.open ? (
+                    <ExpandLess sx={{ color: "inherit" }} />
+                  ) : (
+                    <ExpandMore sx={{ color: "inherit" }} />
+                  )
+                ) : null}
+              </ListItemButton>
+              {item.subItems && item.subItems.length > 0 && (
+                <Collapse in={item.open} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding sx={{ pl: 2 }}>
+                    {item.subItems.map((subItem) => {
+                      const isSubItemSelected = activeView === subItem.id;
+                      return (
+                        <ListItemButton
+                          key={subItem.text}
+                          component={RouterLink}
+                          to={subItem.path}
+                          selected={isSubItemSelected}
+                          sx={{
+                            borderRadius: "8px",
+                            mb: 0.5,
+                            color: isSubItemSelected
+                              ? activeMenuItemColor
+                              : menuItemDefaultColor,
+                            backgroundColor: isSubItemSelected
+                              ? activeMenuItemBg
+                              : "transparent",
+                            "&:hover": {
+                              backgroundColor: isSubItemSelected
+                                ? activeMenuItemHoverBg
+                                : menuItemHoverBg,
+                            },
+                            "&.Mui-selected": {
+                              backgroundColor: activeMenuItemBg,
+                              color: activeMenuItemColor,
+                              "& .MuiListItemIcon-root": {
+                                color: activeMenuItemColor,
+                              },
+                              "&:hover": {
+                                backgroundColor: activeMenuItemHoverBg,
+                              },
+                            },
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{ color: "inherit", minWidth: "36px" }}
+                          >
+                            {" "}
+                            {subItem.icon}{" "}
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={subItem.text}
+                            primaryTypographyProps={{
+                              fontWeight: isSubItemSelected ? "bold" : "normal",
+                            }}
+                          />
+                        </ListItemButton>
+                      );
+                    })}
+                  </List>
+                </Collapse>
+              )}
+            </React.Fragment>
+          );
+        })}
       </List>
-      <Box>
-        <List sx={{ pb: 2 }}>
-          {bottomMenuItems.map((item) => (
-            <ListItemButton
-              key={item.text}
-              component={RouterLink}
-              to={item.path}
-              selected={activeView === item.id}
-              sx={{
-                mx: 2,
-                borderRadius: "8px",
-                mb: 0.5,
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.08)",
-                },
-                "&.Mui-selected": {
-                  backgroundColor: "rgba(255, 255, 255, 0.16)",
-                },
-              }}
-            >
-              <ListItemIcon
+      <Box sx={{ pb: 1, px: 1.5 }}>
+        <Divider sx={{ my: 1 }} />
+        <List>
+          {bottomMenuItems.map((item) => {
+            const isItemSelected = activeView === item.id;
+            return (
+              <ListItemButton
+                key={item.text}
+                component={item.onClick ? "div" : RouterLink}
+                to={item.path}
+                selected={isItemSelected && item.id !== "logout"}
+                onClick={item.onClick}
                 sx={{
+                  borderRadius: "8px",
+                  mb: 0.5,
                   color:
-                    activeView === item.id ? "white" : "rgba(255,255,255,0.7)",
-                  minWidth: "40px",
+                    isItemSelected && item.id !== "logout"
+                      ? activeMenuItemColor
+                      : item.id === "logout"
+                      ? "red"
+                      : menuItemDefaultColor,
+                  backgroundColor:
+                    isItemSelected && item.id !== "logout"
+                      ? activeMenuItemBg
+                      : "transparent",
+                  "&:hover": {
+                    backgroundColor:
+                      isItemSelected && item.id !== "logout"
+                        ? activeMenuItemHoverBg
+                        : menuItemHoverBg,
+                  },
+                  "&.Mui-selected": {
+                    backgroundColor: activeMenuItemBg,
+                    color: activeMenuItemColor,
+                    "& .MuiListItemIcon-root": {
+                      color: activeMenuItemColor,
+                    },
+                    "&:hover": {
+                      backgroundColor: activeMenuItemHoverBg,
+                    },
+                  },
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={item.text}
-                primaryTypographyProps={{
-                  color:
-                    activeView === item.id ? "white" : "rgba(255,255,255,0.9)",
-                }}
-              />
-            </ListItemButton>
-          ))}
+                <ListItemIcon sx={{ color: "inherit", minWidth: "40px" }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontWeight:
+                      isItemSelected && item.id !== "logout"
+                        ? "bold"
+                        : "normal",
+                  }}
+                />
+              </ListItemButton>
+            );
+          })}
         </List>
       </Box>
     </Box>
@@ -323,9 +365,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: "border-box",
-          backgroundColor: "#673ab7",
-          color: "white",
-          borderRight: "none",
+          backgroundColor: "#FFFFFF",
+          borderRight: `1px solid ${theme.palette.divider}`,
         },
       }}
     >

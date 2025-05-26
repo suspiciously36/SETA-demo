@@ -36,7 +36,7 @@
       // You can also define your palette, components overrides, etc. here
       palette: {
         primary: {
-          main: '#673ab7', // Example primary color from your login page
+          main: "rgba(48, 112, 196, 0.95)", // Example primary color from your login page
         },
         secondary: {
           main: '#5e35b1', // Example secondary color

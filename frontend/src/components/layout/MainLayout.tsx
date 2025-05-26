@@ -67,15 +67,17 @@ const MainLayout: React.FC = () => {
           pt: 0,
           px: 3,
           pb: 3,
-          backgroundColor: "#f4f6f8",
+          background:
+            "linear-gradient(180deg, #fff 0%,rgb(166, 197, 240) 100%)",
           overflowY: "auto",
+          color: "rgba(48, 112, 196, 1)",
         }}
       >
         <Toolbar />
         <Typography
-          variant="h4"
+          variant="h3"
           component="h1"
-          sx={{ fontWeight: "bold", my: 3 }}
+          sx={{ fontWeight: "500", my: 3, color: "#666" }}
         >
           {pageTitle}
         </Typography>
@@ -107,6 +109,7 @@ const MainLayout: React.FC = () => {
               value="users"
               label={`User | ${usersCount}`}
               sx={{
+                // color: "rgba(48, 112, 196, 0.95)",
                 textTransform: "none",
                 fontWeight: activeView === "users" ? "bold" : 500,
                 fontSize: "0.95rem",

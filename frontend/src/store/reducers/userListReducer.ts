@@ -1,5 +1,5 @@
 import type { PaginatedUsersResponse } from '../../services/userService.ts';
-import { DetailedUser } from '../../types/user.types'; // Adjust path as needed
+import { DetailedUser } from '../../types/user.types';
 import { FETCH_USERS_REQUEST, FETCH_USERS_SUCCESS, FETCH_USERS_FAILURE, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, CREATE_USER_FAILURE, DELETE_USER_REQUEST, DELETE_USER_SUCCESS, DELETE_USER_FAILURE } from '../actions/actionTypes';
 
 export interface PaginationInfo {
@@ -34,9 +34,8 @@ const initialState: UserListState = {
   pagination: null
 };
 
-// Define action interfaces for user list
 interface FetchUsersRequestAction { type: typeof FETCH_USERS_REQUEST; }
-interface FetchUsersSuccessAction { type: typeof FETCH_USERS_SUCCESS; payload: PaginatedUsersResponse; } // Or { payload: { users: DetailedUser[], total: number } } for pagination
+interface FetchUsersSuccessAction { type: typeof FETCH_USERS_SUCCESS; payload: PaginatedUsersResponse; } 
 interface FetchUsersFailureAction { type: typeof FETCH_USERS_FAILURE; payload: string; }
 
 interface CreateUserRequestAction { type: typeof CREATE_USER_REQUEST; }
@@ -57,7 +56,6 @@ export type UserListActionTypes =
   | DeleteUserRequestAction
   | DeleteUserSuccessAction
   | DeleteUserFailureAction
-  // Add other user list action types here later
 
 const userListReducer = (state: UserListState = initialState, action: UserListActionTypes): UserListState => {
             const newTotalRecords = state.pagination ? state.pagination.totalRecords - 1 : 0;
@@ -75,7 +73,7 @@ const userListReducer = (state: UserListState = initialState, action: UserListAc
       return {
         ...state,
         loading: false,
-        users: action.payload.users, // If paginated: action.payload.users
+        users: action.payload.users, 
         pagination: action.payload.pagination,
         error: null,
       };
@@ -94,7 +92,6 @@ const userListReducer = (state: UserListState = initialState, action: UserListAc
         return {
           ...state,
           creatingUserLoading: false,
-          // users: [action.payload, ...state.users], // Add new user to the beginning of the list
           creatingUserError: null,
         };
     case CREATE_USER_FAILURE:

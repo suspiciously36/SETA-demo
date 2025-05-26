@@ -8,7 +8,6 @@ import { AuthPayload } from '../../../models/tokens/token.interface.js';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private readonly authResolver: AuthResolver) {
-    console.log('Initializing JwtStrategy...');
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: any) => {

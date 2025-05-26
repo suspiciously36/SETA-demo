@@ -1,4 +1,3 @@
-// src/store/reducers/notificationReducer.ts
 import type { NotificationState } from '../../types/notifications.types.ts';
 import { HIDE_SNACKBAR, SHOW_SNACKBAR } from '../actions/actionTypes.ts';
 import type { NotificationActionTypes } from '../actions/notificationActions.ts';
@@ -6,7 +5,7 @@ import type { NotificationActionTypes } from '../actions/notificationActions.ts'
 const initialState: NotificationState = {
   open: false,
   message: '',
-  severity: 'info', // Default severity
+  severity: 'info', 
   autoHideDuration: 6000,
 };
 
@@ -29,9 +28,6 @@ const notificationReducer = (
       return {
         ...state,
         open: false,
-        // Optionally reset message/severity here or let them persist until next SHOW_SNACKBAR
-        // message: '', 
-        // severity: 'info',
       };
     default:
       return state;

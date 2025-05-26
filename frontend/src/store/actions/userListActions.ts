@@ -1,4 +1,4 @@
-import { getAllUsers as fetchUsersService, createNewUser as createUserService, deleteUserById as deleteUserService, type PaginatedUsersResponse } from '../../services/userService'; // Adjust path
+import { getAllUsers as fetchUsersService, createNewUser as createUserService, deleteUserById as deleteUserService, type PaginatedUsersResponse } from '../../services/userService';
 import { DetailedUser, type CreateUserDto } from '../../types/user.types';
 import { AppThunk, AppDispatch } from '../index';
 import { FETCH_USERS_REQUEST, FETCH_USERS_SUCCESS, FETCH_USERS_FAILURE, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, CREATE_USER_FAILURE, DELETE_USER_REQUEST, DELETE_USER_SUCCESS, DELETE_USER_FAILURE } from './actionTypes';
@@ -64,7 +64,6 @@ export const submitNewUser = (userData: CreateUserDto): AppThunk<Promise<Detaile
   try {
     const newUser = await createUserService(userData);
     dispatch(createUserSuccess(newUser));
-    // dispatch(fetchUsers(1, 10))
     return newUser
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred while creating users.';

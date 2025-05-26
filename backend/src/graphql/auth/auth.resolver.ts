@@ -114,8 +114,6 @@ export class AuthResolver {
       .where({ id: userIdFromToken.user_id })
       .first();
 
-    console.log(user);
-
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -133,5 +131,28 @@ export class AuthResolver {
     });
 
     return { accessToken: newAccessToken };
+  }
+
+  async logout(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ success: boolean }> {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken) return { success: false };
+
+    await this.knex('tokens')
+      .where({ token: refreshToken })
+      .update({ is_revoked: true });
+
+    res.cookie('refreshToken', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      expires: new Date(0),
+      path: '/',
+    });
+
+    return { success: true };
   }
 }

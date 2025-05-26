@@ -1,4 +1,3 @@
-// src/store/reducers/teamReducer.ts
 import type { PaginatedTeamsResponse } from '../../services/teamService.ts';
 import { Team, type DetailedTeam, type UpdateTeamSuccessResponseData } from '../../types/team.types';
 import { FETCH_TEAMS_REQUEST, FETCH_TEAMS_SUCCESS, FETCH_TEAMS_FAILURE, CREATE_TEAM_REQUEST, CREATE_TEAM_SUCCESS, CREATE_TEAM_FAILURE, DELETE_TEAM_REQUEST, DELETE_TEAM_SUCCESS, DELETE_TEAM_FAILURE, FETCH_TEAM_DETAILS_REQUEST, FETCH_TEAM_DETAILS_SUCCESS, FETCH_TEAM_DETAILS_FAILURE, CLEAR_TEAM_DETAILS, UPDATE_TEAM_REQUEST, UPDATE_TEAM_SUCCESS, UPDATE_TEAM_FAILURE } from '../actions/actionTypes';
@@ -23,7 +22,7 @@ export interface TeamState {
   loadingDetails: boolean;
   errorDetails: string | null;
   updatingLoading: boolean; 
-  updatingError: string | null;   // Can be per-teamId if needed: Record<string, string | null>
+  updatingError: string | null;   
 
   pagination: PaginationInfo | null;
 }
@@ -51,11 +50,11 @@ interface FetchTeamsSuccessAction { type: typeof FETCH_TEAMS_SUCCESS; payload: P
 interface FetchTeamsFailureAction { type: typeof FETCH_TEAMS_FAILURE; payload: string; }
 
 interface CreateTeamRequestAction { type: typeof CREATE_TEAM_REQUEST; }
-interface CreateTeamSuccessAction { type: typeof CREATE_TEAM_SUCCESS; payload: Team; } // Payload is the newly created team
+interface CreateTeamSuccessAction { type: typeof CREATE_TEAM_SUCCESS; payload: Team; } 
 interface CreateTeamFailureAction { type: typeof CREATE_TEAM_FAILURE; payload: string; }
 
 interface DeleteTeamRequestAction { type: typeof DELETE_TEAM_REQUEST; payload: { teamId: string }; }
-interface DeleteTeamSuccessAction { type: typeof DELETE_TEAM_SUCCESS; payload: { teamId: string }; } // Payload is the ID of the deleted team
+interface DeleteTeamSuccessAction { type: typeof DELETE_TEAM_SUCCESS; payload: { teamId: string }; } 
 interface DeleteTeamFailureAction { type: typeof DELETE_TEAM_FAILURE; payload: { teamId: string, error: string }; }
 
 interface FetchTeamDetailsRequestAction { type: typeof FETCH_TEAM_DETAILS_REQUEST; }
@@ -63,9 +62,9 @@ interface FetchTeamDetailsSuccessAction { type: typeof FETCH_TEAM_DETAILS_SUCCES
 interface FetchTeamDetailsFailureAction { type: typeof FETCH_TEAM_DETAILS_FAILURE; payload: string; }
 interface ClearTeamDetailsAction { type: typeof CLEAR_TEAM_DETAILS; }
 
-interface UpdateTeamRequestAction { type: typeof UPDATE_TEAM_REQUEST; payload: { teamId: string } } // Include teamId if tracking per-team update state
-interface UpdateTeamSuccessAction { type: typeof UPDATE_TEAM_SUCCESS; payload: UpdateTeamSuccessResponseData; } // Updated team
-interface UpdateTeamFailureAction { type: typeof UPDATE_TEAM_FAILURE; payload: string } // Include teamId and error if per-team
+interface UpdateTeamRequestAction { type: typeof UPDATE_TEAM_REQUEST; payload: { teamId: string } } 
+interface UpdateTeamSuccessAction { type: typeof UPDATE_TEAM_SUCCESS; payload: UpdateTeamSuccessResponseData; } 
+interface UpdateTeamFailureAction { type: typeof UPDATE_TEAM_FAILURE; payload: string } 
 
 export type TeamActionTypes = 
   | FetchTeamsRequestAction
@@ -84,7 +83,6 @@ export type TeamActionTypes =
   | UpdateTeamRequestAction
   | UpdateTeamSuccessAction
   | UpdateTeamFailureAction
-  // Add other team action types here later
 
 const teamReducer = (state: TeamState = initialState, action: TeamActionTypes): TeamState => {
   switch (action.type) {
@@ -111,7 +109,7 @@ const teamReducer = (state: TeamState = initialState, action: TeamActionTypes): 
         ...state,
         loading: false,
         error: action.payload,
-        teams: [], // Optionally clear teams on failure or keep stale data
+        teams: [], 
       };
       case CREATE_TEAM_REQUEST:
         return { ...state, creatingLoading: true, creatingError: null };
@@ -119,7 +117,7 @@ const teamReducer = (state: TeamState = initialState, action: TeamActionTypes): 
         return {
           ...state,
           creatingLoading: false,
-          teams: [...state.teams, action.payload], // Add the new team to the list
+          teams: [...state.teams, action.payload], 
           creatingError: null,
         };
       case CREATE_TEAM_FAILURE:

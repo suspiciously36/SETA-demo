@@ -32,28 +32,15 @@ import {
   Checkbox,
   InputAdornment,
   FormControlLabel,
-  ListItemIcon,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import SearchIcon from "@mui/icons-material/Search";
 
-import { showSnackbar } from "../../store/actions/notificationActions";
+import { getInitials } from "../../utils/helpers/getInitials.ts";
 
-const getInitials = (name: string = "") => {
-  const nameParts = name.split(" ");
-  if (nameParts.length > 1 && nameParts[0] && nameParts[1]) {
-    return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-  } else if (
-    nameParts.length === 1 &&
-    nameParts[0] &&
-    nameParts[0].length > 0
-  ) {
-    return `${nameParts[0][0]}`.toUpperCase();
-  }
-  return "U";
-};
+import { showSnackbar } from "../../store/actions/notificationActions";
 
 interface CreateTeamModalProps {
   isOpen: boolean;
@@ -202,7 +189,6 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
         (user) => user.role === UserRole.MANAGER || user.role === UserRole.ROOT
       );
     } else {
-      // 'members' tab
       roleFilteredUsers = allUsers.filter(
         (user) => user.role === UserRole.MEMBER
       );
@@ -236,7 +222,6 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
         );
       }
     } else {
-      // Members tab
       if (checked) {
         const newMembers = filteredUsers
           .filter(
@@ -266,9 +251,6 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
     }
     if (selectedManagers.length === 0 && activeSelectionTab === "managers") {
       setLocalFormError("At least one manager must be selected for the team.");
-    }
-    if (selectedMembers.length === 0 && activeSelectionTab === "members") {
-      //
     }
     if (selectedManagers.length === 0 && selectedMembers.length === 0) {
       setLocalFormError(
@@ -442,7 +424,7 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
                     checked={
                       filteredUsers.length > 0 &&
                       selectedFilteredCount === filteredUsers.length
-                    } // Ensure not checked if filteredUsers is empty
+                    }
                     indeterminate={
                       selectedFilteredCount > 0 &&
                       selectedFilteredCount < filteredUsers.length
@@ -516,17 +498,8 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
                       pr: 1,
                     }}
                   >
-                    <ListItemIcon sx={{ minWidth: "auto", mr: 1 }}>
-                      <Checkbox
-                        edge="start"
-                        checked={isUserSelected(user)}
-                        tabIndex={-1}
-                        disableRipple
-                      />
-                    </ListItemIcon>
                     <ListItemAvatar sx={{ minWidth: "auto", mr: 1.5 }}>
                       <Avatar
-                        src={user.avatarUrl}
                         alt={user.username}
                         sx={{ width: 36, height: 36 }}
                       >

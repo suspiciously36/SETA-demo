@@ -26,9 +26,14 @@ export class AuthModulePlugin {
             accessToken: String!
           }
 
+          type _LogoutPayload {
+            success: Boolean!
+          }
+
           extend type Mutation {
             _login(input: _LoginInput!): _LoginPayload
             _refreshToken: _RefreshTokenPayload
+            _logout: _LogoutPayload
           }
         `,
 
@@ -51,15 +56,24 @@ export class AuthModulePlugin {
                 res: Response;
               },
             ) => {
-              console.log('refreshing token');
               const refreshToken = context.req.cookies?.refreshToken;
-              console.log('refreshToken', refreshToken);
 
               if (!refreshToken) {
                 throw new Error('No refresh token provided');
               }
 
               return authResolver.refreshToken(context.req, context.res);
+            },
+
+            _logout: async (
+              _query: any,
+              args: any,
+              context: {
+                req: Request;
+                res: Response;
+              },
+            ) => {
+              return authResolver.logout(context.req, context.res);
             },
           },
         },

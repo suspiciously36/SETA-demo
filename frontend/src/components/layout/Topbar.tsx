@@ -1,4 +1,3 @@
-// src/components/layout/TopBar.tsx
 import React from "react";
 import {
   AppBar,
@@ -9,64 +8,44 @@ import {
   Box,
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store"; // Adjust path as needed
+import { RootState } from "../../store";
+import { getInitials } from "../../utils/helpers/getInitials.ts";
 
-const drawerWidth = 300; // Same as Sidebar width
+const drawerWidth = 300;
 
-interface TopBarProps {
-  // Add props if needed, e.g., for handling mobile drawer toggle
-}
-
-// Helper to get initials for Avatar fallback
-const getInitials = (name: string = "") => {
-  if (!name) return "U";
-  const nameParts = name.split(" ");
-  if (nameParts.length > 1 && nameParts[0] && nameParts[1]) {
-    return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-  } else if (
-    nameParts.length === 1 &&
-    nameParts[0] &&
-    nameParts[0].length > 0
-  ) {
-    return `${nameParts[0][0]}`.toUpperCase();
-  }
-  return "U";
-};
-
-const TopBar: React.FC<TopBarProps> = () => {
-  const { user } = useSelector((state: RootState) => state.auth); // Get user from Redux store
+const TopBar: React.FC<any> = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
 
   return (
     <AppBar
-      position="fixed"
+      position="absolute"
       sx={{
         width: `calc(100% - ${drawerWidth}px)`,
-        ml: `${drawerWidth}px`, // Margin left to account for the permanent sidebar
-        backgroundColor: "#ffffff", // White background as per UI
-        color: "text.primary", // Default text color
-        boxShadow: "0 1px 3px rgba(0,0,0,0.1)", // Subtle shadow
-        zIndex: (theme) => theme.zIndex.drawer + 1, // Ensure it's above the sidebar if sidebar has its own zIndex logic for variants
+        ml: `${drawerWidth}px`,
+        backgroundColor: "rgba(255,255,255,0.1)",
+        color: "text.primary",
+        boxShadow: "0 0px 0px rgba(0,0,0,0.1)",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between", px: 3 }}>
         {" "}
-        {/* Added padding */}
-        <Box>
-          {/* Placeholder for breadcrumbs or current page title if needed */}
-          {/* <Typography variant="h6" noWrap component="div">
-            Dashboard
-          </Typography> */}
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography variant="body1" sx={{ mr: 1.5, color: "text.secondary" }}>
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ mr: 1.5, color: "rgba(48, 112, 196, 1)" }}
+          >
             Welcome, {user?.username || "User"}
-            {/* Using username from UserProfile. Adjust if 'name' field is different */}
           </Typography>
           <IconButton sx={{ p: 0 }}>
-            <Avatar
-              alt={user?.username || "User"}
-              src={user?.avatarUrl /* Assuming avatarUrl is in UserProfile */}
-            >
+            <Avatar alt={user?.username || "User"}>
               {getInitials(user?.username)}
             </Avatar>
           </IconButton>

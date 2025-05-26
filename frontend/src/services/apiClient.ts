@@ -1,12 +1,10 @@
-// src/services/apiClient.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import store from '../store'; // Your Redux store
+import store from '../store'; 
 import { attemptRefreshAuthToken, logoutUser } from '../store/actions/authActions';
 import { RootState } from '../store';
 
 const REST_API_BASE_URL = import.meta.env.VITE_REST_API_BASE_URL;
 
-// Create an Axios instance
 const apiClient = axios.create({
   baseURL: REST_API_BASE_URL,
   headers: {
@@ -14,7 +12,6 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor to add the auth token to headers
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const { accessToken } = (store.getState() as RootState).auth;
@@ -29,7 +26,6 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for handling token refresh
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (value: any) => void; reject: (reason?: any) => void }> = [];
 
@@ -55,15 +51,6 @@ apiClient.interceptors.response.use(
     if (!originalRequest) {
         return Promise.reject(error);
     }
-    
-
-    // Check if it's a 401 error and not a retry request
-    // AND that the failing request is not the GraphQL endpoint itself (if refresh calls also use this client, which they don't currently)
-    // The check for `originalRequest.url !== '/graphql'` might be too simplistic if your GraphQL endpoint is different
-    // or if your REST_API_BASE_URL already includes part of that path.
-    // For now, let's assume your refresh token calls go to a different Axios instance or have a full URL.
-    const isGraphQLEndpointForRefresh = originalRequest.url === (import.meta.env.VITE_GRAPHQL_API_ENDPOINT); // More robust check if refresh uses this client
-
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -85,7 +72,7 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const newAccessToken = await store.dispatch(attemptRefreshAuthToken() as any); // Dispatch thunk
+        const newAccessToken = await store.dispatch(attemptRefreshAuthToken() as any); 
 
         if (newAccessToken && typeof newAccessToken === 'string') {
           if (originalRequest.headers) {

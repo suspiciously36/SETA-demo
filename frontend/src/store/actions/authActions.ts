@@ -1,7 +1,7 @@
 import { jwtDecode } from 'jwt-decode';
-import { loginWithCredentials, getUserById, refreshAuthTokenService } from '../../services/authService';
+import { loginWithCredentials, getUserById, refreshAuthTokenService, logoutUserService } from '../../services/authService';
 import { UserProfile, UserRole } from '../../types/user.types';
-import { AppThunk, AppDispatch, type RootState } from '../index'; // Assuming RootState, AppDispatch, AppThunk are exported from store/index.ts
+import { AppThunk, AppDispatch, type RootState } from '../index'; 
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT, REFRESH_TOKEN_SUCCESS } from './actionTypes';
 
 interface DecodedToken {
@@ -55,15 +55,24 @@ export const loginUser = (
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'An unknown login error occurred.';
     dispatch(loginFailure(errorMessage));
-    throw error; // Re-throw to allow component to catch if needed
+    throw error; 
   }
 };
 
-export const logoutUser = (): AppThunk => (dispatch: AppDispatch) => {
-  dispatch(logoutUserAction());
+export const logoutUser = (): AppThunk<Promise<void>> => async (dispatch: AppDispatch) => {
+  console.log('[AuthActions] Starting logout process with GraphQL...'); 
+  try {
+    await logoutUserService(); 
+    
+  } catch (error) {
+    console.error("Error during backend GraphQL logout API call:", error);
+  } finally {
+    localStorage.removeItem('accessToken'); 
+    localStorage.removeItem('user');      
+    dispatch(logoutUserAction());         
+  }
 };
-// Thunk Action for Refreshing Token
-// This would typically be called by an API interceptor when a 401 is received.
+
 export const attemptRefreshAuthToken = (): AppThunk<Promise<string | null>> => async (dispatch: AppDispatch, getState) => {
   try {
       const { accessToken: newAccessToken } = await refreshAuthTokenService();
@@ -73,7 +82,7 @@ export const attemptRefreshAuthToken = (): AppThunk<Promise<string | null>> => a
   } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to refresh token.';
       dispatch(loginFailure(errorMessage)); 
-      dispatch(logoutUser()); // Force logout if refresh fails critically
-      return null; // Indicate failure
+      dispatch(logoutUser()); 
+      return null; 
   }
 };

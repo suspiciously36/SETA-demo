@@ -26,7 +26,6 @@ export class UserController {
     @Query() reqDto: ListUserReqDto,
     @CurrentUser() currentUser: UserInterface,
   ): Promise<any> {
-    console.log('Fetching users...');
     const users = await this.userService.getUsers(reqDto, currentUser.id);
     return users;
   }
@@ -34,7 +33,6 @@ export class UserController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getUserById(@CurrentUser() currentUser: UserInterface) {
-    console.log('Fetching user by ID...');
     return this.userService.getUserById(currentUser.id);
   }
 
@@ -44,7 +42,6 @@ export class UserController {
     @Body() dto: CreateUserReqDto,
     @CurrentUser() currentUser: UserInterface,
   ) {
-    console.log('Creating User...');
     return this.userService.createUser(dto, currentUser.id);
   }
 
@@ -54,7 +51,6 @@ export class UserController {
     @Param('id') id: string,
     @CurrentUser() currentUser: UserInterface,
   ) {
-    console.log('Deleting User...');
     return this.userService.deleteUser(id, currentUser.id);
   }
 }

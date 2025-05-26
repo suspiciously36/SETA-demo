@@ -68,8 +68,6 @@ export class UserService {
     const totalRow = await this.knex('users').count('id as count').first();
     const total = Number(totalRow?.count || 0);
 
-    console.log('Pagination:', { limit, page: reqDto.page, offset });
-
     return new OffsetPaginatedDto(
       result,
       new OffsetPaginationDto(total, {

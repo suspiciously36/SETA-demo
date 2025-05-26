@@ -1,11 +1,10 @@
-// src/pages/LoginPage.tsx
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Link as RouterLink } from "react-router-dom";
-import { loginUser } from "../store/actions/authActions"; // Adjust path
-import { RootState, AppDispatch } from "../store"; // Adjust path
+import { loginUser } from "../store/actions/authActions";
+import { RootState, AppDispatch } from "../store";
 
-import loginBackgroundImage from "../assets/images/login-background.jpg"; // Adjust path if necessary
+import loginBackgroundImage from "../assets/images/login-background.jpg";
 
 import {
   Alert,
@@ -24,6 +23,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import "../styles/LoginPage.css";
+import appLogo from "../assets/images/seta-removebg-preview.png";
 
 const LOGO_BOX_HEIGHT = 65;
 const LOGO_BOX_WIDTH = 175;
@@ -67,13 +67,12 @@ const LoginPage: React.FC = () => {
   };
 
   if (isAuthenticated) {
-    // Your code redirects to "/", App.tsx handles /users then
     return <Navigate to="/" replace />;
   }
 
   return (
     <Box
-      className="login-page-container" // Added class for potential global page styling
+      className="login-page-container"
       sx={{
         minHeight: "100vh",
         width: "100vw",
@@ -84,9 +83,8 @@ const LoginPage: React.FC = () => {
         overflow: "hidden",
       }}
     >
-      {/* Two-column background layer (remains full screen) */}
       <Box
-        className="login-page-bg" // Added class
+        className="login-page-bg"
         sx={{
           position: "absolute",
           top: 0,
@@ -97,17 +95,15 @@ const LoginPage: React.FC = () => {
           zIndex: 0,
         }}
       >
-        {/* Left Gradient Column */}
         <Box
           sx={{
             width: { xs: "0%", sm: "30%", md: "40%" },
             height: "100%",
             background:
-              "linear-gradient(180deg, #fff 0%,rgb(166, 197, 240) 100%)", // Your gradient
+              "linear-gradient(180deg, #fff 0%,rgb(166, 197, 240) 100%)",
             display: { xs: "none", sm: "block" },
           }}
         />
-        {/* Right Image Column */}
         <Box
           sx={{
             width: { xs: "100%", sm: "70%", md: "60%" },
@@ -121,54 +117,53 @@ const LoginPage: React.FC = () => {
         />
       </Box>
 
-      {/* Login Form Card (Upper Layer) */}
       <Paper
-        className="login-form-card-paper" // Added class
+        className="login-form-card-paper"
         elevation={16}
         sx={{
           boxShadow: "6px 8px rgba(0,0,0,0.1)",
-          p: { xs: 3, sm: 4, md: 5 }, // Keep padding for inner content
+          p: { xs: 3, sm: 4, md: 5 },
           zIndex: 1,
           backgroundColor: "#fff",
-          borderRadius: MAIN_CARD_BORDER_RADIUS, // Your borderRadius
+          borderRadius: MAIN_CARD_BORDER_RADIUS,
           width: {
             xs: "90%",
             sm: "calc(80% - 5vw)",
             md: "calc(70% - 5vw)",
             lg: "calc(60% - 5vw)",
           },
-          maxWidth: "650px", // Your maxWidth
+          maxWidth: "650px",
           marginLeft: { xs: "5%", sm: "10vw" },
           marginRight: { xs: "5%", sm: "auto" },
           marginTop: { xs: "10vh", sm: "5vh" },
           marginBottom: { xs: "10vh", sm: "5vh" },
-          minHeight: "90vh", // Your minHeight
+          minHeight: "90vh",
           height: "auto",
-          maxHeight: "90vh", // Your maxHeight
+          maxHeight: "90vh",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           position: "relative",
-          overflow: "visible", // Important for overlapping logo
+          overflow: "visible",
         }}
       >
         <Box
           className="login-form-card-tag"
           sx={{
             position: "absolute",
-            top: `40px`, // Your positioning
-            left: `750px`, // Your positioning
+            top: `40px`,
+            left: `750px`,
             width: `300px`,
             height: `75px`,
-            backgroundColor: "rgba(48, 112, 196, 0.95)", // Your logo bg color
+            backgroundColor: "rgba(48, 112, 196, 0.95)",
             color: "#fff",
             display: "flex",
             alignItems: "left",
             justifyContent: "left",
             flexFlow: "column",
-            borderRadius: "12px", // Your logo border radius
+            borderRadius: "12px",
             boxShadow: "0 8px 16px rgba(0,0,0,0.1)",
-            zIndex: 2, // Ensure logo is above the paper's pseudo-elements if any
+            zIndex: 2,
           }}
         >
           <Typography
@@ -191,19 +186,19 @@ const LoginPage: React.FC = () => {
           className="login-form-card-tag-bottom"
           sx={{
             position: "absolute",
-            top: `75px`, // Your positioning
-            left: `790px`, // Your positioning
+            top: `75px`,
+            left: `790px`,
             width: `300px`,
             height: `75px`,
-            backgroundColor: "rgba(48, 112, 196, 0.7)", // Your logo bg color
+            backgroundColor: "rgba(48, 112, 196, 0.7)",
             color: "#fff",
             display: "flex",
             alignItems: "left",
             justifyContent: "left",
             flexFlow: "column",
-            borderRadius: "12px", // Your logo border radius
+            borderRadius: "12px",
             boxShadow: "0 8px 16px rgba(0,0,0,0.1)",
-            zIndex: 1, // Ensure logo is above the paper's pseudo-elements if any
+            zIndex: 1,
           }}
         >
           <Typography
@@ -227,8 +222,8 @@ const LoginPage: React.FC = () => {
           className="login-form-card-blur-bottom"
           sx={{
             position: "absolute",
-            top: `575px`, // Your positioning
-            left: `800px`, // Your positioning
+            top: `575px`,
+            left: `800px`,
             width: `450px`,
             height: `150px`,
             color: "#fff",
@@ -236,13 +231,13 @@ const LoginPage: React.FC = () => {
             alignItems: "center",
             justifyContent: "left",
             flexFlow: "column",
-            backgroundColor: "rgba(255, 255, 255, 0.3)", // Semi-transparent background is crucial
-            backdropFilter: "blur(10px) saturate(180%)", // Apply blur and a bit of saturation
-            WebkitBackdropFilter: "blur(10px) saturate(180%)", // For Safari support
-            border: "1px solid rgba(209, 213, 219, 0.3)", // Optional subtle border
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)", // Optional subtle shadow
+            backgroundColor: "rgba(255, 255, 255, 0.3)",
+            backdropFilter: "blur(10px) saturate(180%)",
+            WebkitBackdropFilter: "blur(10px) saturate(180%)",
+            border: "1px solid rgba(209, 213, 219, 0.3)",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
             borderRadius: "12px",
-            zIndex: 2, // Ensure it's above the main background image but below the login form card if it overlaps
+            zIndex: 2,
           }}
         >
           <Typography
@@ -264,25 +259,24 @@ const LoginPage: React.FC = () => {
             12 &nbsp;&nbsp; 13 &nbsp;&nbsp; 14 &nbsp;&nbsp; 15 &nbsp;&nbsp; 16
             &nbsp;&nbsp; 17 &nbsp;&nbsp; 18
           </Typography>
-          {/* ... more calendar content ... */}
         </Box>
         <Box
           className="login-form-card-tag-white"
           sx={{
             position: "absolute",
-            top: `650px`, // Your positioning
-            left: `750px`, // Your positioning
+            top: `650px`,
+            left: `750px`,
             width: `350px`,
             height: `150px`,
-            backgroundColor: "#fff", // Your logo bg color
+            backgroundColor: "#fff",
             color: "#fff",
             display: "flex",
             alignItems: "left",
             justifyContent: "left",
             flexFlow: "column",
-            borderRadius: "12px", // Your logo border radius
+            borderRadius: "12px",
             boxShadow: "0 8px 16px rgba(0,0,0,0.1)",
-            zIndex: 2, // Ensure logo is above the paper's pseudo-elements if any
+            zIndex: 2,
           }}
         >
           <Typography
@@ -304,55 +298,60 @@ const LoginPage: React.FC = () => {
             9:30AM - 10:00AM
           </Typography>
         </Box>
-        {/* LOGO Box - Positioned to overlap top-left */}
         <Box
-          className="logo-box-wrapper" // Added class
+          className="logo-box-wrapper"
           sx={{
             position: "absolute",
-            top: `-${LOGO_BOX_HEIGHT / 3}px`, // Your positioning
-            left: `-${LOGO_BOX_WIDTH / 9}px`, // Your positioning
+            top: `-${LOGO_BOX_HEIGHT / 3}px`,
+            left: `-${LOGO_BOX_WIDTH / 9}px`,
             width: `${LOGO_BOX_WIDTH}px`,
             height: `${LOGO_BOX_HEIGHT}px`,
-            backgroundColor: "rgba(35, 99, 182, 0.8)", // Your logo bg color
+            backgroundColor: "rgba(255,255,255,0.5)",
             color: "#fff",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            borderRadius: LOGO_BORDER_RADIUS, // Your logo border radius
+            borderRadius: LOGO_BORDER_RADIUS,
             boxShadow: "0 8px 16px rgba(0,0,0,0.1)",
-            zIndex: 2, // Ensure logo is above the paper's pseudo-elements if any
+            zIndex: 2,
           }}
         >
-          <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
-            LOGO
-          </Typography>
+          <a href="https://seta-international.com">
+            <img
+              src={appLogo}
+              alt="App Logo"
+              style={{
+                height: "100%",
+                maxWidth: "100%",
+                objectFit: "contain",
+              }}
+            />
+          </a>
         </Box>
 
-        {/* Inner content of the Paper */}
         <Container
           maxWidth="xs"
-          // The paddingTop here needs to be enough to clear the overlapping LOGO
           sx={{ mt: `${LOGO_BOX_HEIGHT * 0.8}px`, width: "100%" }}
         >
           <Box
-            className="login-form-inner-content" // Added class
+            className="login-form-inner-content"
             sx={{
               display: "flex",
               flexDirection: "column",
-              alignItems: "center", // Center form items if desired, or flex-start
+              alignItems: "center",
               width: "100%",
-              paddingTop: "100px", // Your original padding, adjust based on LOGO
+              paddingTop: "100px",
             }}
           >
             <Typography
               component="h1"
-              variant="h3" // Your variant
+              variant="h3"
               sx={{
                 fontWeight: "bold",
-                mb: 9, // Your margin
-                color: "#666", // Your color
+                mb: 9,
+                color: "#666",
                 width: "100%",
-                textAlign: "left", // Your alignment
+                textAlign: "left",
               }}
             >
               Welcome!
@@ -363,7 +362,6 @@ const LoginPage: React.FC = () => {
               noValidate
               sx={{ mt: 1, width: "100%" }}
             >
-              {/* Email Field */}
               <Typography
                 variant="caption"
                 display="block"
@@ -404,7 +402,6 @@ const LoginPage: React.FC = () => {
                   },
                 }}
               />
-              {/* Password Field */}
               <Typography
                 variant="caption"
                 display="block"
@@ -461,7 +458,6 @@ const LoginPage: React.FC = () => {
                   },
                 }}
               />
-              {/* Forgot Password Link */}
               <Box
                 sx={{
                   textAlign: "right",
@@ -482,14 +478,12 @@ const LoginPage: React.FC = () => {
                   Forgot password?
                 </Link>
               </Box>
-              {/* Error Alert */}
               {localError && (
                 <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
                   {" "}
                   {localError}{" "}
                 </Alert>
               )}
-              {/* Login Button */}
               <Button
                 type="submit"
                 fullWidth
@@ -514,7 +508,6 @@ const LoginPage: React.FC = () => {
                   "Login"
                 )}
               </Button>
-              {/* Create Account Link */}
               <Typography
                 variant="body2"
                 align="center"

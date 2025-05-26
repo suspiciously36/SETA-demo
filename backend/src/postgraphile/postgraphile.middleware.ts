@@ -14,12 +14,12 @@ export function createMiddleware(
     dynamicJson: true,
     ignoreRBAC: false,
     ignoreIndexes: false,
-    appendPlugins: plugins, // Attach your plugins
+    appendPlugins: plugins,
     exportGqlSchemaPath: 'schema.graphql',
     subscriptions: true,
     simpleCollections: 'both',
     setofFunctionsContainNulls: false,
-    allowExplain: () => true, // Allow EXPLAIN for debugging
+    allowExplain: () => true,
     legacyRelations: 'omit',
 
     additionalGraphQLContextFromRequest: async (

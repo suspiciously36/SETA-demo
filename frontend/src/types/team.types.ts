@@ -1,8 +1,6 @@
 export interface Team {
     id: string;
     team_name: string;
-    // team_managers: number;
-    // team_members: number;
     created_at?: string;
     updated_at?: string; 
   }
@@ -74,6 +72,6 @@ export interface UpdateTeamSuccessResponseData {
 export interface ApiResponseDto<TData> {
   data: TData;
   message?: string;
-  statusCode: number; // Should be HttpStatus from @nestjs/common
+  statusCode: number; 
   timestamp: string;
 }

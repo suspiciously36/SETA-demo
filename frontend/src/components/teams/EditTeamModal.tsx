@@ -48,19 +48,7 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import SearchIcon from "@mui/icons-material/Search";
 import { showSnackbar } from "../../store/actions/notificationActions";
 
-const getInitials = (name: string = "") => {
-  const nameParts = name.split(" ");
-  if (nameParts.length > 1 && nameParts[0] && nameParts[1]) {
-    return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-  } else if (
-    nameParts.length === 1 &&
-    nameParts[0] &&
-    nameParts[0].length > 0
-  ) {
-    return `${nameParts[0][0]}`.toUpperCase();
-  }
-  return "U";
-};
+import { getInitials } from "../../utils/helpers/getInitials.ts";
 
 interface EditTeamModalProps {
   isOpen: boolean;
@@ -108,7 +96,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
 
   const resetFormStates = useCallback(() => {
     setTeamName("");
-    setNameAtSubmit(""); // Reset name at submit
+    setNameAtSubmit("");
     setSelectedManagers([]);
     setSelectedMemberIds([]);
     setActiveSelectionTab("members");
@@ -148,7 +136,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
       const currentNameFromDetails =
         currentTeamDetails.team_name || currentTeamDetails.name || "";
       setTeamName(currentNameFromDetails);
-      // setNameAtSubmit(currentNameFromDetails); // Set initial name for snackbar if needed before any edit
       const initialManagers: ModalSelectedManager[] =
         currentTeamDetails.managers.map((m) => ({
           userId: m.userId,
@@ -193,7 +180,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     setSearchTerm("");
   };
   const handleToggleManager = (user: DetailedUser) => {
-    /* ... (same logic) ... */
     setLocalFormError(null);
     const existingManagerIndex = selectedManagers.findIndex(
       (m) => m.userId === user.id
@@ -226,7 +212,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     }
   };
   const handleToggleMember = (user: DetailedUser) => {
-    /* ... (same logic) ... */
     setLocalFormError(null);
     if (selectedMemberIds.includes(user.id)) {
       setSelectedMemberIds(selectedMemberIds.filter((id) => id !== user.id));
@@ -242,7 +227,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     }
   };
   const handleSetMainManager = (managerUserIdToSetAsMain: string) => {
-    /* ... (same logic) ... */
     setLocalFormError(null);
     const currentMainManagers = selectedManagers.filter((m) => m.isMain);
     if (
@@ -268,7 +252,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
   const isUserMemberSelected = (user: DetailedUser): boolean =>
     selectedMemberIds.includes(user.id);
   const filteredUsers = useMemo(() => {
-    /* ... (same as before) ... */
     if (!allUsers) return [];
     const usersAvailableForSelection = allUsers.filter(
       (user) => user.id !== authUser?.id
@@ -293,7 +276,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
   const handleSelectAllFiltered = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    /* ... (same as before) ... */
     const checked = event.target.checked;
     if (activeSelectionTab === "managers") {
       const currentSelectedManagerIds = new Set(
@@ -334,7 +316,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     }
   };
   const selectedFilteredCount = useMemo(() => {
-    /* ... (same as before) ... */
     if (activeSelectionTab === "managers") {
       return filteredUsers.filter((user) =>
         selectedManagers.some((m) => m.userId === user.id)
@@ -371,7 +352,7 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
       return;
     }
 
-    setNameAtSubmit(teamName); // Capture the name at submission time for the snackbar
+    setNameAtSubmit(teamName);
 
     const originalTeamName =
       currentTeamDetails?.team_name || currentTeamDetails?.name || "";
@@ -384,20 +365,17 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
       members: selectedMemberIds,
     };
 
-    // Dispatch the action. The useEffect watching updatingLoading/updatingError will handle UI.
     dispatch(submitTeamUpdate(teamIdToEdit, updateDto));
   };
 
   const prevUpdatingLoading = React.useRef(updatingLoading);
   useEffect(() => {
     if (prevUpdatingLoading.current === true && updatingLoading === false) {
-      // Check for transition from true to false
       if (updatingError) {
         dispatch(
           showSnackbar(`Error updating team: ${updatingError}`, "error")
         );
       } else {
-        // Use nameAtSubmit for the success message, or fallback to currentTeamDetails.team_name if teamName state was reset early
         dispatch(
           showSnackbar(
             `Team "${
@@ -411,21 +389,13 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
     }
     prevUpdatingLoading.current = updatingLoading;
   }, [
+    dispatch,
     updatingLoading,
     updatingError,
-    showSnackbar,
     handleActualClose,
     nameAtSubmit,
     currentTeamDetails,
   ]);
-
-  const handleCloseSnackbar = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") return;
-    setSnackbarOpen(false);
-  };
 
   if (!isOpen) return null;
   if (loadingDetails) {
@@ -748,7 +718,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                           <Avatar
                             alt={user.username}
                             sx={{ width: 36, height: 36 }}
-                            src={user.avatarUrl}
                           >
                             {getInitials(user.username)}
                           </Avatar>{" "}

@@ -1,4 +1,3 @@
-// src/store/actions/notificationActions.ts
 import type { SnackbarSeverity } from '../../types/notifications.types.ts';
 import { SHOW_SNACKBAR, HIDE_SNACKBAR } from './actionTypes';
 
@@ -20,7 +19,7 @@ export type NotificationActionTypes = ShowSnackbarAction | HideSnackbarAction;
 export const showSnackbar = (
   message: string,
   severity: SnackbarSeverity = "info",
-  autoHideDuration: number | null = 6000 // Default 6 seconds
+  autoHideDuration: number | null = 6000 
 ): ShowSnackbarAction => ({
   type: SHOW_SNACKBAR,
   payload: { message, severity, autoHideDuration },
