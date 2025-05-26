@@ -1,9 +1,12 @@
-User and Team Management Dashboard
-Project Overview
+# User and Team Management Dashboard
+
+## Project Overview
 
 This project is a comprehensive User and Team Management system designed primarily for users in a "Manager" role. It provides a frontend interface to interact with backend services for managing users, their roles, team formations, and authentication. The application features a role-based access control (RBAC) system, allowing different levels of functionality based on whether the user is a member, manager, or root administrator.
-Technologies Used
-Backend
+
+## Technologies Used
+
+### Backend
 
     Runtime/Framework: Node.js with NestJS
 
@@ -19,7 +22,7 @@ Backend
 
         GraphQL APIs with Postgraphile (primarily for user authentication)
 
-Frontend
+### Frontend
 
     Framework/Library: React.js (with Vite for tooling)
 
@@ -31,7 +34,7 @@ Frontend
 
     HTTP Client: Axios
 
-Core Features
+### Core Features
 
 1.  Authentication (GraphQL APIs)
 
@@ -89,7 +92,7 @@ The application enforces different permissions based on user roles:
 
         Displays a table of users with details such as avatar, name, email, user ID/handle, role, associated teams (as colored chips), and status.
 
-        Includes action menus for each user (e.g.,  delete user), accessible based on RBAC.
+        Includes action menus for each user (e.g., delete user), accessible based on RBAC.
 
         Pagination: The user table supports pagination to efficiently handle large numbers of users.
 
@@ -127,4 +130,4 @@ Project Status & Next Steps (Implied)
 
     Focus on improving UX with live data updates, robust error handling, and intuitive navigation.
 
-Database table design: https://dbdiagram.io/d/Management-dashboard-68220b965b2fc4582f3cb992
+### Database Table Design: https://dbdiagram.io/d/Management-dashboard-68220b965b2fc4582f3cb992
