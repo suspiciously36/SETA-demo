@@ -52,6 +52,8 @@ const TeamList: React.FC = () => {
 
   const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
+  const canDeleteTeams = loggedInUser?.role === UserRole.ROOT;
+
   const canManageTeams =
     loggedInUser?.role === UserRole.ROOT ||
     loggedInUser?.role === UserRole.MANAGER;
@@ -69,32 +71,28 @@ const TeamList: React.FC = () => {
   const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    if (
-      teams.length === 0 ||
-      (pagination && pagination.page !== 1 && currentPage !== 1)
-    ) {
-      dispatch(fetchTeams(1, ITEMS_PER_PAGE));
-      setCurrentPage(1);
-    } else if (teams.length === 0 && !loading) {
+    if (teams.length === 0 && !loading) {
       dispatch(fetchTeams(1, ITEMS_PER_PAGE));
       setCurrentPage(1);
     }
-  }, [dispatch]);
+  }, [dispatch, teams.length, loading]);
 
   useEffect(() => {
-    if (pagination && pagination.page === 1) {
-      setCurrentPage(1);
+    if (pagination && pagination.page) {
+      setCurrentPage(pagination.page);
     }
   }, [pagination]);
 
   const handleLoadMore = useCallback(() => {
-    if (!loading && pagination && teams.length < pagination.totalRecords) {
+    if (
+      !loading &&
+      !isFetchingMore &&
+      pagination &&
+      teams.length < pagination.totalRecords
+    ) {
       const nextPageToFetch = currentPage + 1;
       setIsFetchingMore(true);
       dispatch(fetchTeams(nextPageToFetch, ITEMS_PER_PAGE))
-        .then(() => {
-          setCurrentPage(nextPageToFetch);
-        })
         .catch(() => {
           dispatch(showSnackbar("Failed to load more teams.", "error"));
         })
@@ -102,7 +100,15 @@ const TeamList: React.FC = () => {
           setIsFetchingMore(false);
         });
     }
-  }, [dispatch, loading, pagination, teams.length, currentPage, showSnackbar]);
+  }, [
+    dispatch,
+    loading,
+    pagination,
+    teams.length,
+    isFetchingMore,
+    currentPage,
+    showSnackbar,
+  ]);
 
   // Setup IntersectionObserver
   useEffect(() => {
@@ -373,7 +379,7 @@ const TeamList: React.FC = () => {
                               </span>
                             </Tooltip>
                           )}
-                          {canManageTeams && (
+                          {canDeleteTeams && (
                             <Tooltip
                               title={isDeleting ? "Deleting..." : "Delete Team"}
                             >

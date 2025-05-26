@@ -83,6 +83,8 @@ const UserManagementTable: React.FC = () => {
     loggedInUser?.role === UserRole.ROOT ||
     loggedInUser?.role === UserRole.MANAGER;
 
+  const canDeleteUsers = loggedInUser?.role === UserRole.ROOT;
+
   useEffect(() => {
     dispatch(fetchUsers(currentPage, rowsPerPage));
   }, [dispatch, currentPage, rowsPerPage]);
@@ -562,6 +564,7 @@ const UserManagementTable: React.FC = () => {
             </MenuItem>
             <MenuItem
               onClick={handleDeleteUserConfirmed}
+              disabled={!canDeleteUsers}
               sx={{ color: "error.main" }}
             >
               <ListItemIcon>
