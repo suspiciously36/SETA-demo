@@ -5,7 +5,7 @@ import { FETCH_TEAMS_REQUEST, FETCH_TEAMS_SUCCESS, FETCH_TEAMS_FAILURE, CREATE_T
 export interface PaginationInfo {
     totalRecords: number;
     limit: number;
-    page: number;
+    currentPage: number;
     offset?: number; 
     totalPages?: number; 
 }
@@ -93,7 +93,7 @@ const teamReducer = (state: TeamState = initialState, action: TeamActionTypes): 
         error: null,
       };
     case FETCH_TEAMS_SUCCESS:
-      {const newTeams = action.payload.pagination.page === 1 ? action.payload.teams : [...state.teams, ...action.payload.teams]
+      {const newTeams = action.payload.pagination.currentPage === 1 ? action.payload.teams : [...state.teams, ...action.payload.teams]
       const uniqueTeams = newTeams.filter((team, index, self) => index === self.findIndex((t) => t.id === team.id))
       return {
         ...state,

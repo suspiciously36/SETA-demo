@@ -33,6 +33,23 @@ export class TeamService {
     private readonly teamPolicyService: TeamPolicyService,
   ) {}
 
+  async doesTeamExist(teamId: string): Promise<boolean> {
+    const team = await this.knex('teams').where({ id: teamId }).first();
+
+    return !!team;
+  }
+
+  async getAllTeamMembers(teamId: string) {
+    const teamMembers = await this.knex('team_users')
+      .where({
+        team_id: teamId,
+        role: 'member',
+      })
+      .returning('*');
+
+    return teamMembers;
+  }
+
   async getTeams(
     reqDto: TeamResDto,
     currentUserId: string,

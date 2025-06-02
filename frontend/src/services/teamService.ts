@@ -10,7 +10,6 @@ export interface PaginatedTeamsResponse {
     pagination: PaginationInfo; 
 }
 
-
 // Fetch all teams
 export const getAllTeams = async (page: number, limit: number): Promise<PaginatedTeamsResponse> => {
   try {

@@ -6,6 +6,12 @@ import { AppService } from './app.service';
 import { TeamModule } from './models/teams/team.module.js';
 import { UserModule } from './models/users/user.module.js';
 import { PostgraphileModule } from './postgraphile/postgraphile.module.js';
+import { NoteModule } from './models/notes/note.module.js';
+import { FolderModule } from './models/folders/folder.module.js';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthenticatedThrottlerGuard } from './guards/throttler/throttler.guard.js';
+import { JwtAuthGuard } from './guards/auth/jwt.guard.js';
 
 @Module({
   imports: [
@@ -22,8 +28,16 @@ import { PostgraphileModule } from './postgraphile/postgraphile.module.js';
         },
       },
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 6000,
+        limit: 30,
+      },
+    ]),
     UserModule,
     TeamModule,
+    NoteModule,
+    FolderModule,
     PostgraphileModule,
   ],
   controllers: [AppController],

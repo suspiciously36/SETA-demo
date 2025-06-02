@@ -70,6 +70,8 @@ const UserManagementTable: React.FC = () => {
   );
   const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
+  const canDeleteUsers = loggedInUser?.role === UserRole.ROOT;
+
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
   const [selected, setSelected] = useState<readonly string[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -562,6 +564,7 @@ const UserManagementTable: React.FC = () => {
             </MenuItem>
             <MenuItem
               onClick={handleDeleteUserConfirmed}
+              disabled={!canDeleteUsers}
               sx={{ color: "error.main" }}
             >
               <ListItemIcon>

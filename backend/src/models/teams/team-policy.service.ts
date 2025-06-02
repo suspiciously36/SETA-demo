@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 
@@ -48,6 +48,31 @@ export class TeamPolicyService {
         role: 'manager',
       })
       .first();
+    return !!result;
+  }
+
+  async getTeamsManagedBy(userId: string): Promise<string[]> {
+    const managedTeams = await this.knex('team_users')
+      .where({
+        user_id: userId,
+        role: 'manager',
+      })
+      .select('team_id');
+
+    if (!managedTeams) throw new NotFoundException('Teams not found');
+
+    return managedTeams.map((team) => team.team_id);
+  }
+
+  async isMemberOfATeam(teamId: string, userId: string): Promise<boolean> {
+    const result = await this.knex<TeamUserInterface>('team_users')
+      .where({
+        team_id: teamId,
+        user_id: userId,
+        role: 'member',
+      })
+      .first();
+
     return !!result;
   }
 

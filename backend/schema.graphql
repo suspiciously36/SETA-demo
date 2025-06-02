@@ -17,6 +17,98 @@ type Query implements Node {
     nodeId: ID!
   ): Node
 
+  """Reads and enables pagination through a set of `FolderPermission`."""
+  allFolderPermissions(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `FolderPermission`."""
+    orderBy: [FolderPermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: FolderPermissionCondition
+  ): FolderPermissionsConnection
+
+  """Reads a set of `FolderPermission`."""
+  allFolderPermissionsList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `FolderPermission`."""
+    orderBy: [FolderPermissionsOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: FolderPermissionCondition
+  ): [FolderPermission!]
+
+  """Reads and enables pagination through a set of `Folder`."""
+  allFolders(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Folder`."""
+    orderBy: [FoldersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: FolderCondition
+  ): FoldersConnection
+
+  """Reads a set of `Folder`."""
+  allFoldersList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `Folder`."""
+    orderBy: [FoldersOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: FolderCondition
+  ): [Folder!]
+
   """Reads and enables pagination through a set of `KnexMigration`."""
   allKnexMigrations(
     """Only read the first `n` values of the set."""
@@ -108,6 +200,98 @@ type Query implements Node {
     """
     condition: KnexMigrationsLockCondition
   ): [KnexMigrationsLock!]
+
+  """Reads and enables pagination through a set of `NotePermission`."""
+  allNotePermissions(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `NotePermission`."""
+    orderBy: [NotePermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: NotePermissionCondition
+  ): NotePermissionsConnection
+
+  """Reads a set of `NotePermission`."""
+  allNotePermissionsList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `NotePermission`."""
+    orderBy: [NotePermissionsOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: NotePermissionCondition
+  ): [NotePermission!]
+
+  """Reads and enables pagination through a set of `Note`."""
+  allNotes(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Note`."""
+    orderBy: [NotesOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: NoteCondition
+  ): NotesConnection
+
+  """Reads a set of `Note`."""
+  allNotesList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `Note`."""
+    orderBy: [NotesOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: NoteCondition
+  ): [Note!]
 
   """Reads and enables pagination through a set of `TeamUser`."""
   allTeamUsers(
@@ -292,13 +476,32 @@ type Query implements Node {
     """
     condition: UserCondition
   ): [User!]
+  folderPermissionByFolderId(folderId: UUID!): FolderPermission
+  folderPermissionByFolderIdAndUserId(folderId: UUID!, userId: UUID!): FolderPermission
+  folderById(id: UUID!): Folder
   knexMigrationById(id: Int!): KnexMigration
   knexMigrationsLockByIndex(index: Int!): KnexMigrationsLock
+  notePermissionByNoteId(noteId: UUID!): NotePermission
+  noteById(id: UUID!): Note
   teamUserByUserIdAndTeamId(userId: UUID!, teamId: UUID!): TeamUser
   teamById(id: UUID!): Team
   tokenById(id: UUID!): Token
   userById(id: UUID!): User
   userByEmail(email: String!): User
+
+  """Reads a single `FolderPermission` using its globally unique `ID`."""
+  folderPermission(
+    """
+    The globally unique `ID` to be used in selecting a single `FolderPermission`.
+    """
+    nodeId: ID!
+  ): FolderPermission
+
+  """Reads a single `Folder` using its globally unique `ID`."""
+  folder(
+    """The globally unique `ID` to be used in selecting a single `Folder`."""
+    nodeId: ID!
+  ): Folder
 
   """Reads a single `KnexMigration` using its globally unique `ID`."""
   knexMigration(
@@ -315,6 +518,20 @@ type Query implements Node {
     """
     nodeId: ID!
   ): KnexMigrationsLock
+
+  """Reads a single `NotePermission` using its globally unique `ID`."""
+  notePermission(
+    """
+    The globally unique `ID` to be used in selecting a single `NotePermission`.
+    """
+    nodeId: ID!
+  ): NotePermission
+
+  """Reads a single `Note` using its globally unique `ID`."""
+  note(
+    """The globally unique `ID` to be used in selecting a single `Note`."""
+    nodeId: ID!
+  ): Note
 
   """Reads a single `TeamUser` using its globally unique `ID`."""
   teamUser(
@@ -349,33 +566,48 @@ interface Node {
   nodeId: ID!
 }
 
-"""A connection to a list of `KnexMigration` values."""
-type KnexMigrationsConnection {
-  """A list of `KnexMigration` objects."""
-  nodes: [KnexMigration!]!
+"""A connection to a list of `FolderPermission` values."""
+type FolderPermissionsConnection {
+  """A list of `FolderPermission` objects."""
+  nodes: [FolderPermission!]!
 
   """
-  A list of edges which contains the `KnexMigration` and cursor to aid in pagination.
+  A list of edges which contains the `FolderPermission` and cursor to aid in pagination.
   """
-  edges: [KnexMigrationsEdge!]!
+  edges: [FolderPermissionsEdge!]!
 
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 
-  """The count of *all* `KnexMigration` you could get from the connection."""
+  """
+  The count of *all* `FolderPermission` you could get from the connection.
+  """
   totalCount: Int!
 }
 
-type KnexMigration implements Node {
+type FolderPermission implements Node {
   """
   A globally unique identifier. Can be used in various places throughout the system to identify this single value.
   """
   nodeId: ID!
-  id: Int!
-  name: String
-  batch: Int
-  migrationTime: Datetime
+  folderId: UUID!
+  userId: UUID!
+  accessLevel: String!
+  sharedAt: String!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+
+  """Reads a single `Folder` that is related to this `FolderPermission`."""
+  folderByFolderId: Folder
+
+  """Reads a single `User` that is related to this `FolderPermission`."""
+  userByUserId: User
 }
+
+"""
+A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
+"""
+scalar UUID
 
 """
 A point in time as described by the [ISO
@@ -383,146 +615,70 @@ A point in time as described by the [ISO
 """
 scalar Datetime
 
-"""A `KnexMigration` edge in the connection."""
-type KnexMigrationsEdge {
-  """A cursor for use in pagination."""
-  cursor: Cursor
-
-  """The `KnexMigration` at the end of the edge."""
-  node: KnexMigration!
-}
-
-"""A location in a connection that can be used for resuming pagination."""
-scalar Cursor
-
-"""Information about pagination in a connection."""
-type PageInfo {
-  """When paginating forwards, are there more items?"""
-  hasNextPage: Boolean!
-
-  """When paginating backwards, are there more items?"""
-  hasPreviousPage: Boolean!
-
-  """When paginating backwards, the cursor to continue."""
-  startCursor: Cursor
-
-  """When paginating forwards, the cursor to continue."""
-  endCursor: Cursor
-}
-
-"""Methods to use when ordering `KnexMigration`."""
-enum KnexMigrationsOrderBy {
-  NATURAL
-  ID_ASC
-  ID_DESC
-  PRIMARY_KEY_ASC
-  PRIMARY_KEY_DESC
-}
-
-"""
-A condition to be used against `KnexMigration` object types. All fields are
-tested for equality and combined with a logical ‘and.’
-"""
-input KnexMigrationCondition {
-  """Checks for equality with the object’s `id` field."""
-  id: Int
-}
-
-"""A connection to a list of `KnexMigrationsLock` values."""
-type KnexMigrationsLocksConnection {
-  """A list of `KnexMigrationsLock` objects."""
-  nodes: [KnexMigrationsLock!]!
-
-  """
-  A list of edges which contains the `KnexMigrationsLock` and cursor to aid in pagination.
-  """
-  edges: [KnexMigrationsLocksEdge!]!
-
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """
-  The count of *all* `KnexMigrationsLock` you could get from the connection.
-  """
-  totalCount: Int!
-}
-
-type KnexMigrationsLock implements Node {
+type Folder implements Node {
   """
   A globally unique identifier. Can be used in various places throughout the system to identify this single value.
   """
   nodeId: ID!
-  index: Int!
-  isLocked: Int
-}
-
-"""A `KnexMigrationsLock` edge in the connection."""
-type KnexMigrationsLocksEdge {
-  """A cursor for use in pagination."""
-  cursor: Cursor
-
-  """The `KnexMigrationsLock` at the end of the edge."""
-  node: KnexMigrationsLock!
-}
-
-"""Methods to use when ordering `KnexMigrationsLock`."""
-enum KnexMigrationsLocksOrderBy {
-  NATURAL
-  INDEX_ASC
-  INDEX_DESC
-  PRIMARY_KEY_ASC
-  PRIMARY_KEY_DESC
-}
-
-"""
-A condition to be used against `KnexMigrationsLock` object types. All fields are
-tested for equality and combined with a logical ‘and.’
-"""
-input KnexMigrationsLockCondition {
-  """Checks for equality with the object’s `index` field."""
-  index: Int
-}
-
-"""A connection to a list of `TeamUser` values."""
-type TeamUsersConnection {
-  """A list of `TeamUser` objects."""
-  nodes: [TeamUser!]!
-
-  """
-  A list of edges which contains the `TeamUser` and cursor to aid in pagination.
-  """
-  edges: [TeamUsersEdge!]!
-
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """The count of *all* `TeamUser` you could get from the connection."""
-  totalCount: Int!
-}
-
-type TeamUser implements Node {
-  """
-  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
-  """
-  nodeId: ID!
-  userId: UUID!
-  teamId: UUID!
-  role: String!
-  isMainManager: Boolean
+  id: UUID!
+  name: String!
+  description: String
+  ownerId: UUID!
   createdAt: Datetime!
   updatedAt: Datetime!
 
-  """Reads a single `User` that is related to this `TeamUser`."""
-  userByUserId: User
+  """Reads a single `User` that is related to this `Folder`."""
+  userByOwnerId: User
 
-  """Reads a single `Team` that is related to this `TeamUser`."""
-  teamByTeamId: Team
+  """Reads and enables pagination through a set of `Note`."""
+  notesByFolderId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Note`."""
+    orderBy: [NotesOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: NoteCondition
+  ): NotesConnection!
+
+  """Reads and enables pagination through a set of `Note`."""
+  notesByFolderIdList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `Note`."""
+    orderBy: [NotesOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: NoteCondition
+  ): [Note!]!
+
+  """Reads a single `FolderPermission` that is related to this `Folder`."""
+  folderPermissionByFolderId: FolderPermission
 }
-
-"""
-A universally unique identifier as defined by [RFC 4122](https://tools.ietf.org/html/rfc4122).
-"""
-scalar UUID
 
 type User implements Node {
   """
@@ -628,7 +784,241 @@ type User implements Node {
     """
     condition: TokenCondition
   ): [Token!]!
+
+  """Reads and enables pagination through a set of `Folder`."""
+  foldersByOwnerId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `Folder`."""
+    orderBy: [FoldersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: FolderCondition
+  ): FoldersConnection!
+
+  """Reads and enables pagination through a set of `Folder`."""
+  foldersByOwnerIdList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `Folder`."""
+    orderBy: [FoldersOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: FolderCondition
+  ): [Folder!]!
+
+  """Reads and enables pagination through a set of `FolderPermission`."""
+  folderPermissionsByUserId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `FolderPermission`."""
+    orderBy: [FolderPermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: FolderPermissionCondition
+  ): FolderPermissionsConnection!
+
+  """Reads and enables pagination through a set of `FolderPermission`."""
+  folderPermissionsByUserIdList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `FolderPermission`."""
+    orderBy: [FolderPermissionsOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: FolderPermissionCondition
+  ): [FolderPermission!]!
+
+  """Reads and enables pagination through a set of `NotePermission`."""
+  notePermissionsByUserId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `NotePermission`."""
+    orderBy: [NotePermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: NotePermissionCondition
+  ): NotePermissionsConnection!
+
+  """Reads and enables pagination through a set of `NotePermission`."""
+  notePermissionsByUserIdList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `NotePermission`."""
+    orderBy: [NotePermissionsOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: NotePermissionCondition
+  ): [NotePermission!]!
 }
+
+"""A connection to a list of `TeamUser` values."""
+type TeamUsersConnection {
+  """A list of `TeamUser` objects."""
+  nodes: [TeamUser!]!
+
+  """
+  A list of edges which contains the `TeamUser` and cursor to aid in pagination.
+  """
+  edges: [TeamUsersEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `TeamUser` you could get from the connection."""
+  totalCount: Int!
+}
+
+type TeamUser implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  userId: UUID!
+  teamId: UUID!
+  role: String!
+  isMainManager: Boolean
+  createdAt: Datetime!
+  updatedAt: Datetime!
+
+  """Reads a single `User` that is related to this `TeamUser`."""
+  userByUserId: User
+
+  """Reads a single `Team` that is related to this `TeamUser`."""
+  teamByTeamId: Team
+}
+
+type Team implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: UUID!
+  teamName: String!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+
+  """Reads and enables pagination through a set of `TeamUser`."""
+  teamUsersByTeamId(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Only read the last `n` values of the set."""
+    last: Int
+
+    """
+    Skip the first `n` values from our `after` cursor, an alternative to cursor
+    based pagination. May not be used with `last`.
+    """
+    offset: Int
+
+    """Read all values in the set before (above) this cursor."""
+    before: Cursor
+
+    """Read all values in the set after (below) this cursor."""
+    after: Cursor
+
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!] = [PRIMARY_KEY_ASC]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamUserCondition
+  ): TeamUsersConnection!
+
+  """Reads and enables pagination through a set of `TeamUser`."""
+  teamUsersByTeamIdList(
+    """Only read the first `n` values of the set."""
+    first: Int
+
+    """Skip the first `n` values."""
+    offset: Int
+
+    """The method to use when ordering `TeamUser`."""
+    orderBy: [TeamUsersOrderBy!]
+
+    """
+    A condition to be used in determining which values should be returned by the collection.
+    """
+    condition: TeamUserCondition
+  ): [TeamUser!]!
+}
+
+"""A location in a connection that can be used for resuming pagination."""
+scalar Cursor
 
 """Methods to use when ordering `TeamUser`."""
 enum TeamUsersOrderBy {
@@ -651,6 +1041,30 @@ input TeamUserCondition {
 
   """Checks for equality with the object’s `teamId` field."""
   teamId: UUID
+}
+
+"""A `TeamUser` edge in the connection."""
+type TeamUsersEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `TeamUser` at the end of the edge."""
+  node: TeamUser!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: Cursor
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: Cursor
 }
 
 """A connection to a list of `Token` values."""
@@ -718,70 +1132,335 @@ input TokenCondition {
   userId: UUID
 }
 
-type Team implements Node {
+"""A connection to a list of `Folder` values."""
+type FoldersConnection {
+  """A list of `Folder` objects."""
+  nodes: [Folder!]!
+
+  """
+  A list of edges which contains the `Folder` and cursor to aid in pagination.
+  """
+  edges: [FoldersEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Folder` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `Folder` edge in the connection."""
+type FoldersEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Folder` at the end of the edge."""
+  node: Folder!
+}
+
+"""Methods to use when ordering `Folder`."""
+enum FoldersOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  OWNER_ID_ASC
+  OWNER_ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `Folder` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input FolderCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+
+  """Checks for equality with the object’s `ownerId` field."""
+  ownerId: UUID
+}
+
+"""Methods to use when ordering `FolderPermission`."""
+enum FolderPermissionsOrderBy {
+  NATURAL
+  FOLDER_ID_ASC
+  FOLDER_ID_DESC
+  USER_ID_ASC
+  USER_ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `FolderPermission` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input FolderPermissionCondition {
+  """Checks for equality with the object’s `folderId` field."""
+  folderId: UUID
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: UUID
+}
+
+"""A connection to a list of `NotePermission` values."""
+type NotePermissionsConnection {
+  """A list of `NotePermission` objects."""
+  nodes: [NotePermission!]!
+
+  """
+  A list of edges which contains the `NotePermission` and cursor to aid in pagination.
+  """
+  edges: [NotePermissionsEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `NotePermission` you could get from the connection."""
+  totalCount: Int!
+}
+
+type NotePermission implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  noteId: UUID!
+  userId: UUID!
+  accessLevel: String!
+  sharedAt: String!
+  createdAt: Datetime!
+  updatedAt: Datetime!
+
+  """Reads a single `Note` that is related to this `NotePermission`."""
+  noteByNoteId: Note
+
+  """Reads a single `User` that is related to this `NotePermission`."""
+  userByUserId: User
+}
+
+type Note implements Node {
   """
   A globally unique identifier. Can be used in various places throughout the system to identify this single value.
   """
   nodeId: ID!
   id: UUID!
-  teamName: String!
+  title: String!
+  body: String
+  folderId: UUID!
   createdAt: Datetime!
   updatedAt: Datetime!
+  tags: JSON
 
-  """Reads and enables pagination through a set of `TeamUser`."""
-  teamUsersByTeamId(
-    """Only read the first `n` values of the set."""
-    first: Int
+  """Reads a single `Folder` that is related to this `Note`."""
+  folderByFolderId: Folder
 
-    """Only read the last `n` values of the set."""
-    last: Int
-
-    """
-    Skip the first `n` values from our `after` cursor, an alternative to cursor
-    based pagination. May not be used with `last`.
-    """
-    offset: Int
-
-    """Read all values in the set before (above) this cursor."""
-    before: Cursor
-
-    """Read all values in the set after (below) this cursor."""
-    after: Cursor
-
-    """The method to use when ordering `TeamUser`."""
-    orderBy: [TeamUsersOrderBy!] = [PRIMARY_KEY_ASC]
-
-    """
-    A condition to be used in determining which values should be returned by the collection.
-    """
-    condition: TeamUserCondition
-  ): TeamUsersConnection!
-
-  """Reads and enables pagination through a set of `TeamUser`."""
-  teamUsersByTeamIdList(
-    """Only read the first `n` values of the set."""
-    first: Int
-
-    """Skip the first `n` values."""
-    offset: Int
-
-    """The method to use when ordering `TeamUser`."""
-    orderBy: [TeamUsersOrderBy!]
-
-    """
-    A condition to be used in determining which values should be returned by the collection.
-    """
-    condition: TeamUserCondition
-  ): [TeamUser!]!
+  """Reads a single `NotePermission` that is related to this `Note`."""
+  notePermissionByNoteId: NotePermission
 }
 
-"""A `TeamUser` edge in the connection."""
-type TeamUsersEdge {
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""A `NotePermission` edge in the connection."""
+type NotePermissionsEdge {
   """A cursor for use in pagination."""
   cursor: Cursor
 
-  """The `TeamUser` at the end of the edge."""
-  node: TeamUser!
+  """The `NotePermission` at the end of the edge."""
+  node: NotePermission!
+}
+
+"""Methods to use when ordering `NotePermission`."""
+enum NotePermissionsOrderBy {
+  NATURAL
+  NOTE_ID_ASC
+  NOTE_ID_DESC
+  USER_ID_ASC
+  USER_ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `NotePermission` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input NotePermissionCondition {
+  """Checks for equality with the object’s `noteId` field."""
+  noteId: UUID
+
+  """Checks for equality with the object’s `userId` field."""
+  userId: UUID
+}
+
+"""A connection to a list of `Note` values."""
+type NotesConnection {
+  """A list of `Note` objects."""
+  nodes: [Note!]!
+
+  """
+  A list of edges which contains the `Note` and cursor to aid in pagination.
+  """
+  edges: [NotesEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `Note` you could get from the connection."""
+  totalCount: Int!
+}
+
+"""A `Note` edge in the connection."""
+type NotesEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `Note` at the end of the edge."""
+  node: Note!
+}
+
+"""Methods to use when ordering `Note`."""
+enum NotesOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  FOLDER_ID_ASC
+  FOLDER_ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `Note` object types. All fields are tested for equality and combined with a logical ‘and.’
+"""
+input NoteCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: UUID
+
+  """Checks for equality with the object’s `folderId` field."""
+  folderId: UUID
+}
+
+"""A `FolderPermission` edge in the connection."""
+type FolderPermissionsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `FolderPermission` at the end of the edge."""
+  node: FolderPermission!
+}
+
+"""A connection to a list of `KnexMigration` values."""
+type KnexMigrationsConnection {
+  """A list of `KnexMigration` objects."""
+  nodes: [KnexMigration!]!
+
+  """
+  A list of edges which contains the `KnexMigration` and cursor to aid in pagination.
+  """
+  edges: [KnexMigrationsEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """The count of *all* `KnexMigration` you could get from the connection."""
+  totalCount: Int!
+}
+
+type KnexMigration implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  id: Int!
+  name: String
+  batch: Int
+  migrationTime: Datetime
+}
+
+"""A `KnexMigration` edge in the connection."""
+type KnexMigrationsEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `KnexMigration` at the end of the edge."""
+  node: KnexMigration!
+}
+
+"""Methods to use when ordering `KnexMigration`."""
+enum KnexMigrationsOrderBy {
+  NATURAL
+  ID_ASC
+  ID_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `KnexMigration` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input KnexMigrationCondition {
+  """Checks for equality with the object’s `id` field."""
+  id: Int
+}
+
+"""A connection to a list of `KnexMigrationsLock` values."""
+type KnexMigrationsLocksConnection {
+  """A list of `KnexMigrationsLock` objects."""
+  nodes: [KnexMigrationsLock!]!
+
+  """
+  A list of edges which contains the `KnexMigrationsLock` and cursor to aid in pagination.
+  """
+  edges: [KnexMigrationsLocksEdge!]!
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """
+  The count of *all* `KnexMigrationsLock` you could get from the connection.
+  """
+  totalCount: Int!
+}
+
+type KnexMigrationsLock implements Node {
+  """
+  A globally unique identifier. Can be used in various places throughout the system to identify this single value.
+  """
+  nodeId: ID!
+  index: Int!
+  isLocked: Int
+}
+
+"""A `KnexMigrationsLock` edge in the connection."""
+type KnexMigrationsLocksEdge {
+  """A cursor for use in pagination."""
+  cursor: Cursor
+
+  """The `KnexMigrationsLock` at the end of the edge."""
+  node: KnexMigrationsLock!
+}
+
+"""Methods to use when ordering `KnexMigrationsLock`."""
+enum KnexMigrationsLocksOrderBy {
+  NATURAL
+  INDEX_ASC
+  INDEX_DESC
+  PRIMARY_KEY_ASC
+  PRIMARY_KEY_DESC
+}
+
+"""
+A condition to be used against `KnexMigrationsLock` object types. All fields are
+tested for equality and combined with a logical ‘and.’
+"""
+input KnexMigrationsLockCondition {
+  """Checks for equality with the object’s `index` field."""
+  index: Int
 }
 
 """A connection to a list of `Team` values."""
@@ -879,6 +1558,22 @@ input UserCondition {
 The root mutation type which contains root level fields which mutate data.
 """
 type Mutation {
+  """Creates a single `FolderPermission`."""
+  createFolderPermission(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateFolderPermissionInput!
+  ): CreateFolderPermissionPayload
+
+  """Creates a single `Folder`."""
+  createFolder(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateFolderInput!
+  ): CreateFolderPayload
+
   """Creates a single `KnexMigration`."""
   createKnexMigration(
     """
@@ -894,6 +1589,22 @@ type Mutation {
     """
     input: CreateKnexMigrationsLockInput!
   ): CreateKnexMigrationsLockPayload
+
+  """Creates a single `NotePermission`."""
+  createNotePermission(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateNotePermissionInput!
+  ): CreateNotePermissionPayload
+
+  """Creates a single `Note`."""
+  createNote(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: CreateNoteInput!
+  ): CreateNotePayload
 
   """Creates a single `TeamUser`."""
   createTeamUser(
@@ -926,6 +1637,48 @@ type Mutation {
     """
     input: CreateUserInput!
   ): CreateUserPayload
+
+  """
+  Updates a single `FolderPermission` using its globally unique id and a patch.
+  """
+  updateFolderPermission(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateFolderPermissionInput!
+  ): UpdateFolderPermissionPayload
+
+  """Updates a single `FolderPermission` using a unique key and a patch."""
+  updateFolderPermissionByFolderId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateFolderPermissionByFolderIdInput!
+  ): UpdateFolderPermissionPayload
+
+  """Updates a single `FolderPermission` using a unique key and a patch."""
+  updateFolderPermissionByFolderIdAndUserId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateFolderPermissionByFolderIdAndUserIdInput!
+  ): UpdateFolderPermissionPayload
+
+  """Updates a single `Folder` using its globally unique id and a patch."""
+  updateFolder(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateFolderInput!
+  ): UpdateFolderPayload
+
+  """Updates a single `Folder` using a unique key and a patch."""
+  updateFolderById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateFolderByIdInput!
+  ): UpdateFolderPayload
 
   """
   Updates a single `KnexMigration` using its globally unique id and a patch.
@@ -962,6 +1715,40 @@ type Mutation {
     """
     input: UpdateKnexMigrationsLockByIndexInput!
   ): UpdateKnexMigrationsLockPayload
+
+  """
+  Updates a single `NotePermission` using its globally unique id and a patch.
+  """
+  updateNotePermission(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateNotePermissionInput!
+  ): UpdateNotePermissionPayload
+
+  """Updates a single `NotePermission` using a unique key and a patch."""
+  updateNotePermissionByNoteId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateNotePermissionByNoteIdInput!
+  ): UpdateNotePermissionPayload
+
+  """Updates a single `Note` using its globally unique id and a patch."""
+  updateNote(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateNoteInput!
+  ): UpdateNotePayload
+
+  """Updates a single `Note` using a unique key and a patch."""
+  updateNoteById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: UpdateNoteByIdInput!
+  ): UpdateNotePayload
 
   """Updates a single `TeamUser` using its globally unique id and a patch."""
   updateTeamUser(
@@ -1035,6 +1822,46 @@ type Mutation {
     input: UpdateUserByEmailInput!
   ): UpdateUserPayload
 
+  """Deletes a single `FolderPermission` using its globally unique id."""
+  deleteFolderPermission(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteFolderPermissionInput!
+  ): DeleteFolderPermissionPayload
+
+  """Deletes a single `FolderPermission` using a unique key."""
+  deleteFolderPermissionByFolderId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteFolderPermissionByFolderIdInput!
+  ): DeleteFolderPermissionPayload
+
+  """Deletes a single `FolderPermission` using a unique key."""
+  deleteFolderPermissionByFolderIdAndUserId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteFolderPermissionByFolderIdAndUserIdInput!
+  ): DeleteFolderPermissionPayload
+
+  """Deletes a single `Folder` using its globally unique id."""
+  deleteFolder(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteFolderInput!
+  ): DeleteFolderPayload
+
+  """Deletes a single `Folder` using a unique key."""
+  deleteFolderById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteFolderByIdInput!
+  ): DeleteFolderPayload
+
   """Deletes a single `KnexMigration` using its globally unique id."""
   deleteKnexMigration(
     """
@@ -1066,6 +1893,38 @@ type Mutation {
     """
     input: DeleteKnexMigrationsLockByIndexInput!
   ): DeleteKnexMigrationsLockPayload
+
+  """Deletes a single `NotePermission` using its globally unique id."""
+  deleteNotePermission(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteNotePermissionInput!
+  ): DeleteNotePermissionPayload
+
+  """Deletes a single `NotePermission` using a unique key."""
+  deleteNotePermissionByNoteId(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteNotePermissionByNoteIdInput!
+  ): DeleteNotePermissionPayload
+
+  """Deletes a single `Note` using its globally unique id."""
+  deleteNote(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteNoteInput!
+  ): DeleteNotePayload
+
+  """Deletes a single `Note` using a unique key."""
+  deleteNoteById(
+    """
+    The exclusive input argument for this mutation. An object type, make sure to see documentation for this object’s fields.
+    """
+    input: DeleteNoteByIdInput!
+  ): DeleteNotePayload
 
   """Deletes a single `TeamUser` using its globally unique id."""
   deleteTeamUser(
@@ -1146,6 +2005,105 @@ type Mutation {
   ): _LoginPayload
   _refreshToken: _RefreshTokenPayload
   _logout: _LogoutPayload
+}
+
+"""The output of our create `FolderPermission` mutation."""
+type CreateFolderPermissionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `FolderPermission` that was created by this mutation."""
+  folderPermission: FolderPermission
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Folder` that is related to this `FolderPermission`."""
+  folderByFolderId: Folder
+
+  """Reads a single `User` that is related to this `FolderPermission`."""
+  userByUserId: User
+
+  """An edge for our `FolderPermission`. May be used by Relay 1."""
+  folderPermissionEdge(
+    """The method to use when ordering `FolderPermission`."""
+    orderBy: [FolderPermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): FolderPermissionsEdge
+}
+
+"""All input for the create `FolderPermission` mutation."""
+input CreateFolderPermissionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `FolderPermission` to be created by this mutation."""
+  folderPermission: FolderPermissionInput!
+}
+
+"""An input for mutations affecting `FolderPermission`"""
+input FolderPermissionInput {
+  folderId: UUID!
+  userId: UUID!
+  accessLevel: String!
+  sharedAt: String!
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""The output of our create `Folder` mutation."""
+type CreateFolderPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Folder` that was created by this mutation."""
+  folder: Folder
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `Folder`."""
+  userByOwnerId: User
+
+  """An edge for our `Folder`. May be used by Relay 1."""
+  folderEdge(
+    """The method to use when ordering `Folder`."""
+    orderBy: [FoldersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): FoldersEdge
+}
+
+"""All input for the create `Folder` mutation."""
+input CreateFolderInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `Folder` to be created by this mutation."""
+  folder: FolderInput!
+}
+
+"""An input for mutations affecting `Folder`"""
+input FolderInput {
+  id: UUID
+  name: String!
+  description: String
+  ownerId: UUID!
+  createdAt: Datetime
+  updatedAt: Datetime
 }
 
 """The output of our create `KnexMigration` mutation."""
@@ -1230,6 +2188,106 @@ input CreateKnexMigrationsLockInput {
 input KnexMigrationsLockInput {
   index: Int
   isLocked: Int
+}
+
+"""The output of our create `NotePermission` mutation."""
+type CreateNotePermissionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `NotePermission` that was created by this mutation."""
+  notePermission: NotePermission
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Note` that is related to this `NotePermission`."""
+  noteByNoteId: Note
+
+  """Reads a single `User` that is related to this `NotePermission`."""
+  userByUserId: User
+
+  """An edge for our `NotePermission`. May be used by Relay 1."""
+  notePermissionEdge(
+    """The method to use when ordering `NotePermission`."""
+    orderBy: [NotePermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): NotePermissionsEdge
+}
+
+"""All input for the create `NotePermission` mutation."""
+input CreateNotePermissionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `NotePermission` to be created by this mutation."""
+  notePermission: NotePermissionInput!
+}
+
+"""An input for mutations affecting `NotePermission`"""
+input NotePermissionInput {
+  noteId: UUID!
+  userId: UUID!
+  accessLevel: String!
+  sharedAt: String!
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""The output of our create `Note` mutation."""
+type CreateNotePayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Note` that was created by this mutation."""
+  note: Note
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Folder` that is related to this `Note`."""
+  folderByFolderId: Folder
+
+  """An edge for our `Note`. May be used by Relay 1."""
+  noteEdge(
+    """The method to use when ordering `Note`."""
+    orderBy: [NotesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): NotesEdge
+}
+
+"""All input for the create `Note` mutation."""
+input CreateNoteInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """The `Note` to be created by this mutation."""
+  note: NoteInput!
+}
+
+"""An input for mutations affecting `Note`"""
+input NoteInput {
+  id: UUID
+  title: String!
+  body: String
+  folderId: UUID!
+  createdAt: Datetime
+  updatedAt: Datetime
+  tags: JSON
 }
 
 """The output of our create `TeamUser` mutation."""
@@ -1421,6 +2479,171 @@ input UserInput {
   updatedAt: Datetime
 }
 
+"""The output of our update `FolderPermission` mutation."""
+type UpdateFolderPermissionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `FolderPermission` that was updated by this mutation."""
+  folderPermission: FolderPermission
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Folder` that is related to this `FolderPermission`."""
+  folderByFolderId: Folder
+
+  """Reads a single `User` that is related to this `FolderPermission`."""
+  userByUserId: User
+
+  """An edge for our `FolderPermission`. May be used by Relay 1."""
+  folderPermissionEdge(
+    """The method to use when ordering `FolderPermission`."""
+    orderBy: [FolderPermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): FolderPermissionsEdge
+}
+
+"""All input for the `updateFolderPermission` mutation."""
+input UpdateFolderPermissionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `FolderPermission` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `FolderPermission` being updated.
+  """
+  folderPermissionPatch: FolderPermissionPatch!
+}
+
+"""
+Represents an update to a `FolderPermission`. Fields that are set will be updated.
+"""
+input FolderPermissionPatch {
+  folderId: UUID
+  userId: UUID
+  accessLevel: String
+  sharedAt: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""All input for the `updateFolderPermissionByFolderId` mutation."""
+input UpdateFolderPermissionByFolderIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `FolderPermission` being updated.
+  """
+  folderPermissionPatch: FolderPermissionPatch!
+  folderId: UUID!
+}
+
+"""
+All input for the `updateFolderPermissionByFolderIdAndUserId` mutation.
+"""
+input UpdateFolderPermissionByFolderIdAndUserIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `FolderPermission` being updated.
+  """
+  folderPermissionPatch: FolderPermissionPatch!
+  folderId: UUID!
+  userId: UUID!
+}
+
+"""The output of our update `Folder` mutation."""
+type UpdateFolderPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Folder` that was updated by this mutation."""
+  folder: Folder
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `Folder`."""
+  userByOwnerId: User
+
+  """An edge for our `Folder`. May be used by Relay 1."""
+  folderEdge(
+    """The method to use when ordering `Folder`."""
+    orderBy: [FoldersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): FoldersEdge
+}
+
+"""All input for the `updateFolder` mutation."""
+input UpdateFolderInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Folder` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `Folder` being updated.
+  """
+  folderPatch: FolderPatch!
+}
+
+"""
+Represents an update to a `Folder`. Fields that are set will be updated.
+"""
+input FolderPatch {
+  id: UUID
+  name: String
+  description: String
+  ownerId: UUID
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""All input for the `updateFolderById` mutation."""
+input UpdateFolderByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Folder` being updated.
+  """
+  folderPatch: FolderPatch!
+  id: UUID!
+}
+
 """The output of our update `KnexMigration` mutation."""
 type UpdateKnexMigrationPayload {
   """
@@ -1551,6 +2774,152 @@ input UpdateKnexMigrationsLockByIndexInput {
   """
   knexMigrationsLockPatch: KnexMigrationsLockPatch!
   index: Int!
+}
+
+"""The output of our update `NotePermission` mutation."""
+type UpdateNotePermissionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `NotePermission` that was updated by this mutation."""
+  notePermission: NotePermission
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Note` that is related to this `NotePermission`."""
+  noteByNoteId: Note
+
+  """Reads a single `User` that is related to this `NotePermission`."""
+  userByUserId: User
+
+  """An edge for our `NotePermission`. May be used by Relay 1."""
+  notePermissionEdge(
+    """The method to use when ordering `NotePermission`."""
+    orderBy: [NotePermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): NotePermissionsEdge
+}
+
+"""All input for the `updateNotePermission` mutation."""
+input UpdateNotePermissionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `NotePermission` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `NotePermission` being updated.
+  """
+  notePermissionPatch: NotePermissionPatch!
+}
+
+"""
+Represents an update to a `NotePermission`. Fields that are set will be updated.
+"""
+input NotePermissionPatch {
+  noteId: UUID
+  userId: UUID
+  accessLevel: String
+  sharedAt: String
+  createdAt: Datetime
+  updatedAt: Datetime
+}
+
+"""All input for the `updateNotePermissionByNoteId` mutation."""
+input UpdateNotePermissionByNoteIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `NotePermission` being updated.
+  """
+  notePermissionPatch: NotePermissionPatch!
+  noteId: UUID!
+}
+
+"""The output of our update `Note` mutation."""
+type UpdateNotePayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Note` that was updated by this mutation."""
+  note: Note
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Folder` that is related to this `Note`."""
+  folderByFolderId: Folder
+
+  """An edge for our `Note`. May be used by Relay 1."""
+  noteEdge(
+    """The method to use when ordering `Note`."""
+    orderBy: [NotesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): NotesEdge
+}
+
+"""All input for the `updateNote` mutation."""
+input UpdateNoteInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Note` to be updated.
+  """
+  nodeId: ID!
+
+  """
+  An object where the defined keys will be set on the `Note` being updated.
+  """
+  notePatch: NotePatch!
+}
+
+"""Represents an update to a `Note`. Fields that are set will be updated."""
+input NotePatch {
+  id: UUID
+  title: String
+  body: String
+  folderId: UUID
+  createdAt: Datetime
+  updatedAt: Datetime
+  tags: JSON
+}
+
+"""All input for the `updateNoteById` mutation."""
+input UpdateNoteByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  An object where the defined keys will be set on the `Note` being updated.
+  """
+  notePatch: NotePatch!
+  id: UUID!
 }
 
 """The output of our update `TeamUser` mutation."""
@@ -1850,6 +3219,124 @@ input UpdateUserByEmailInput {
   email: String!
 }
 
+"""The output of our delete `FolderPermission` mutation."""
+type DeleteFolderPermissionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `FolderPermission` that was deleted by this mutation."""
+  folderPermission: FolderPermission
+  deletedFolderPermissionId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Folder` that is related to this `FolderPermission`."""
+  folderByFolderId: Folder
+
+  """Reads a single `User` that is related to this `FolderPermission`."""
+  userByUserId: User
+
+  """An edge for our `FolderPermission`. May be used by Relay 1."""
+  folderPermissionEdge(
+    """The method to use when ordering `FolderPermission`."""
+    orderBy: [FolderPermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): FolderPermissionsEdge
+}
+
+"""All input for the `deleteFolderPermission` mutation."""
+input DeleteFolderPermissionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `FolderPermission` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteFolderPermissionByFolderId` mutation."""
+input DeleteFolderPermissionByFolderIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  folderId: UUID!
+}
+
+"""
+All input for the `deleteFolderPermissionByFolderIdAndUserId` mutation.
+"""
+input DeleteFolderPermissionByFolderIdAndUserIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  folderId: UUID!
+  userId: UUID!
+}
+
+"""The output of our delete `Folder` mutation."""
+type DeleteFolderPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Folder` that was deleted by this mutation."""
+  folder: Folder
+  deletedFolderId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `User` that is related to this `Folder`."""
+  userByOwnerId: User
+
+  """An edge for our `Folder`. May be used by Relay 1."""
+  folderEdge(
+    """The method to use when ordering `Folder`."""
+    orderBy: [FoldersOrderBy!] = [PRIMARY_KEY_ASC]
+  ): FoldersEdge
+}
+
+"""All input for the `deleteFolder` mutation."""
+input DeleteFolderInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Folder` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteFolderById` mutation."""
+input DeleteFolderByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: UUID!
+}
+
 """The output of our delete `KnexMigration` mutation."""
 type DeleteKnexMigrationPayload {
   """
@@ -1944,6 +3431,111 @@ input DeleteKnexMigrationsLockByIndexInput {
   """
   clientMutationId: String
   index: Int!
+}
+
+"""The output of our delete `NotePermission` mutation."""
+type DeleteNotePermissionPayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `NotePermission` that was deleted by this mutation."""
+  notePermission: NotePermission
+  deletedNotePermissionId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Note` that is related to this `NotePermission`."""
+  noteByNoteId: Note
+
+  """Reads a single `User` that is related to this `NotePermission`."""
+  userByUserId: User
+
+  """An edge for our `NotePermission`. May be used by Relay 1."""
+  notePermissionEdge(
+    """The method to use when ordering `NotePermission`."""
+    orderBy: [NotePermissionsOrderBy!] = [PRIMARY_KEY_ASC]
+  ): NotePermissionsEdge
+}
+
+"""All input for the `deleteNotePermission` mutation."""
+input DeleteNotePermissionInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `NotePermission` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteNotePermissionByNoteId` mutation."""
+input DeleteNotePermissionByNoteIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  noteId: UUID!
+}
+
+"""The output of our delete `Note` mutation."""
+type DeleteNotePayload {
+  """
+  The exact same `clientMutationId` that was provided in the mutation input,
+  unchanged and unused. May be used by a client to track mutations.
+  """
+  clientMutationId: String
+
+  """The `Note` that was deleted by this mutation."""
+  note: Note
+  deletedNoteId: ID
+
+  """
+  Our root query field type. Allows us to run any query from our mutation payload.
+  """
+  query: Query
+
+  """Reads a single `Folder` that is related to this `Note`."""
+  folderByFolderId: Folder
+
+  """An edge for our `Note`. May be used by Relay 1."""
+  noteEdge(
+    """The method to use when ordering `Note`."""
+    orderBy: [NotesOrderBy!] = [PRIMARY_KEY_ASC]
+  ): NotesEdge
+}
+
+"""All input for the `deleteNote` mutation."""
+input DeleteNoteInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+
+  """
+  The globally unique `ID` which will identify a single `Note` to be deleted.
+  """
+  nodeId: ID!
+}
+
+"""All input for the `deleteNoteById` mutation."""
+input DeleteNoteByIdInput {
+  """
+  An arbitrary string value with no semantic meaning. Will be included in the
+  payload verbatim. May be used to track mutations by the client.
+  """
+  clientMutationId: String
+  id: UUID!
 }
 
 """The output of our delete `TeamUser` mutation."""

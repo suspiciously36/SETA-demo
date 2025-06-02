@@ -52,6 +52,8 @@ const TeamList: React.FC = () => {
 
   const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
+  const canDeleteTeams = loggedInUser?.role === UserRole.ROOT;
+
   const canManageTeams =
     loggedInUser?.role === UserRole.ROOT ||
     loggedInUser?.role === UserRole.MANAGER;
@@ -65,73 +67,55 @@ const TeamList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-  const observerRef = useRef<HTMLDivElement | null>(null);
-  const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const fetchNextPage = useCallback(async () => {
+    if (
+      !isFetchingMore &&
+      !loading &&
+      pagination &&
+      pagination.currentPage < pagination.totalPages
+    ) {
+      setIsFetchingMore(true);
+      dispatch(fetchTeams(pagination.currentPage + 1, ITEMS_PER_PAGE)).finally(
+        () => setIsFetchingMore(false)
+      );
+    }
+  }, [dispatch, isFetchingMore, loading, pagination]);
+
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+
+    observer.current?.disconnect();
+
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      {
+        root: null,
+        rootMargin: "100px",
+        threshold: 1.0,
+      }
+    );
+
+    observer.current.observe(sentinelRef.current);
+
+    return () => observer.current?.disconnect();
+  }, [fetchNextPage]);
 
   useEffect(() => {
     if (
       teams.length === 0 ||
-      (pagination && pagination.page !== 1 && currentPage !== 1)
+      (pagination && pagination.currentPage !== 1 && currentPage !== 1)
     ) {
-      dispatch(fetchTeams(1, ITEMS_PER_PAGE));
-      setCurrentPage(1);
-    } else if (teams.length === 0 && !loading) {
       dispatch(fetchTeams(1, ITEMS_PER_PAGE));
       setCurrentPage(1);
     }
   }, [dispatch]);
-
-  useEffect(() => {
-    if (pagination && pagination.page === 1) {
-      setCurrentPage(1);
-    }
-  }, [pagination]);
-
-  const handleLoadMore = useCallback(() => {
-    if (!loading && pagination && teams.length < pagination.totalRecords) {
-      const nextPageToFetch = currentPage + 1;
-      setIsFetchingMore(true);
-      dispatch(fetchTeams(nextPageToFetch, ITEMS_PER_PAGE))
-        .then(() => {
-          setCurrentPage(nextPageToFetch);
-        })
-        .catch(() => {
-          dispatch(showSnackbar("Failed to load more teams.", "error"));
-        })
-        .finally(() => {
-          setIsFetchingMore(false);
-        });
-    }
-  }, [dispatch, loading, pagination, teams.length, currentPage, showSnackbar]);
-
-  // Setup IntersectionObserver
-  useEffect(() => {
-    const currentObserverTarget = observerRef.current;
-    if (currentObserverTarget) {
-      intersectionObserverRef.current = new IntersectionObserver(
-        (entries) => {
-          if (
-            entries[0].isIntersecting &&
-            !loading &&
-            !isFetchingMore &&
-            pagination &&
-            teams.length < pagination.totalRecords
-          ) {
-            console.log("Sentinel visible, loading more teams...");
-            handleLoadMore();
-          }
-        },
-        { threshold: 1.0 }
-      );
-      intersectionObserverRef.current.observe(currentObserverTarget);
-    }
-
-    return () => {
-      if (intersectionObserverRef.current && currentObserverTarget) {
-        intersectionObserverRef.current.unobserve(currentObserverTarget);
-      }
-    };
-  }, [handleLoadMore, loading, isFetchingMore, pagination, teams]);
 
   const handleOpenEditModal = (teamId: string) => {
     if (!canManageTeams) return;
@@ -205,9 +189,6 @@ const TeamList: React.FC = () => {
       </Alert>
     );
   }
-
-  const canLoadMore =
-    pagination && teams && teams.length < pagination.totalRecords;
 
   return (
     <Box sx={{ minHeight: "100vh" }}>
@@ -373,7 +354,7 @@ const TeamList: React.FC = () => {
                               </span>
                             </Tooltip>
                           )}
-                          {canManageTeams && (
+                          {canDeleteTeams && (
                             <Tooltip
                               title={isDeleting ? "Deleting..." : "Delete Team"}
                             >
@@ -507,12 +488,15 @@ const TeamList: React.FC = () => {
             })}
         </Grid>
       )}
-      {canLoadMore && !isFetchingMore && !loading && (
-        <div ref={observerRef} style={{ height: "1px", marginTop: "20px" }} />
-      )}
-      {(isFetchingMore ||
-        (loading && teams && teams.length > 0 && currentPage > 1)) && (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}>
+      {pagination && pagination.currentPage < pagination.totalPages && (
+        <Box
+          ref={sentinelRef}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            py: 4,
+          }}
+        >
           <CircularProgress />
         </Box>
       )}

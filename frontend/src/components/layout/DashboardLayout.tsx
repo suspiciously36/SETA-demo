@@ -18,7 +18,7 @@ const drawerWidth = 260;
 
 type ViewType = "users" | "teams" | "managers" | string;
 
-const MainLayout: React.FC = () => {
+const DashboardLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -147,4 +147,4 @@ const MainLayout: React.FC = () => {
   );
 };
 
-export default MainLayout;
+export default DashboardLayout;

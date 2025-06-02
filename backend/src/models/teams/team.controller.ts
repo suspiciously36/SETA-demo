@@ -26,13 +26,20 @@ import { TeamInterface } from './interfaces/team.interface.js';
 import { CreateDto } from '../../common/dtos/create.dto.js';
 import { OffsetPaginatedDto } from '../../common/dtos/offset-pagination/paginated.dto.js';
 import { TeamResDto } from './dtos/team.res.dto.js';
+import { TeamAssetsService } from './team-assets.service.js';
+import { FoldersQueryReqDto } from '../users/dtos/folders-query.req.dto.js';
+import { NotesQueryReqDto } from '../users/dtos/notes-query.req.dto.js';
+import { AuthenticatedThrottlerGuard } from '../../guards/throttler/throttler.guard.js';
 
 @Controller('teams')
 export class TeamController {
-  constructor(private readonly teamService: TeamService) {}
+  constructor(
+    private readonly teamAssetsService: TeamAssetsService,
+    private readonly teamService: TeamService,
+  ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   getTeams(
     @Query() reqDto: TeamResDto,
     @CurrentUser() currentUser: UserInterface,
@@ -41,7 +48,7 @@ export class TeamController {
   }
 
   @Get(':teamId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   getTeamById(
     @Param('teamId') teamId: string,
     @CurrentUser() currentUser: UserInterface,
@@ -49,8 +56,24 @@ export class TeamController {
     return this.teamService.getTeamById(teamId, currentUser.id);
   }
 
+  @Get(':teamId/assets')
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
+  async getTeamAssets(
+    @Param('teamId') teamId: string,
+    @CurrentUser() currentUser: UserInterface,
+    @Query() foldersQueryReqDto: FoldersQueryReqDto,
+    @Query() notesQueryReqDto: NotesQueryReqDto,
+  ) {
+    return this.teamAssetsService.getAssetsForTeam(
+      teamId,
+      currentUser.id,
+      foldersQueryReqDto,
+      notesQueryReqDto,
+    );
+  }
+
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async createTeam(
     @Body() dto: CreateTeamReqDto,
     @CurrentUser() currentUser: UserInterface,
@@ -60,7 +83,7 @@ export class TeamController {
   }
 
   @Post(':teamId/members')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async addMemberToTeam(
     @Param('teamId') teamId: string,
     @Body() dto: AddMemberReqDto,
@@ -70,7 +93,7 @@ export class TeamController {
   }
 
   @Post(':teamId/managers')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async addManagerToTeam(
     @Param('teamId') teamId: string,
     @Body() dto: AddManagerReqDto,
@@ -80,7 +103,7 @@ export class TeamController {
   }
 
   @Put(':teamId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async updateTeam(
     @Param('teamId') teamId: string,
     @Body() dto: UpdateTeamDto,
@@ -90,7 +113,7 @@ export class TeamController {
   }
 
   @Delete(':teamId/members/:memberId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeMemberFromTeam(
     @Param('teamId') teamId: string,
@@ -101,7 +124,7 @@ export class TeamController {
   }
 
   @Delete(':teamId/managers/:managerId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeManagerFromTeam(
     @Param('teamId') teamId: string,
@@ -112,7 +135,7 @@ export class TeamController {
   }
 
   @Delete(':teamId')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTeam(
     @Param('teamId') teamId: string,

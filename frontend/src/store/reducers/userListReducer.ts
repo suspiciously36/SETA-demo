@@ -1,14 +1,9 @@
 import type { PaginatedUsersResponse } from '../../services/userService.ts';
 import { DetailedUser } from '../../types/user.types';
 import { FETCH_USERS_REQUEST, FETCH_USERS_SUCCESS, FETCH_USERS_FAILURE, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, CREATE_USER_FAILURE, DELETE_USER_REQUEST, DELETE_USER_SUCCESS, DELETE_USER_FAILURE } from '../actions/actionTypes';
+import type { PaginationInfo } from './teamReducer.ts';
 
-export interface PaginationInfo {
-    totalRecords: number;
-    limit: number;
-    page: number;
-    offset?: number; 
-    totalPages?: number; 
-}
+
 
 export interface UserListState {
   users: DetailedUser[];

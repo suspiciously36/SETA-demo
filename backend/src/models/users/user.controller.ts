@@ -15,13 +15,20 @@ import { CreateUserReqDto } from './dtos/create-user.req.dto.js';
 import { UserInterface } from './interfaces/user.interface.js';
 import { UserService } from './user.service.js';
 import { ListUserReqDto } from './dtos/listUser.req.dto.js';
+import { UserAssetsService } from './user-assets.service.js';
+import { FoldersQueryReqDto } from './dtos/folders-query.req.dto.js';
+import { NotesQueryReqDto } from './dtos/notes-query.req.dto.js';
+import { AuthenticatedThrottlerGuard } from '../../guards/throttler/throttler.guard.js';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userAssetsService: UserAssetsService,
+    private readonly userService: UserService,
+  ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async getUsers(
     @Query() reqDto: ListUserReqDto,
     @CurrentUser() currentUser: UserInterface,
@@ -31,13 +38,29 @@ export class UserController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async getUserById(@CurrentUser() currentUser: UserInterface) {
     return this.userService.getUserById(currentUser.id);
   }
 
+  @Get(':userId/assets')
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
+  async getAssets(
+    @Param('userId') userId: string,
+    @CurrentUser() currentUser: UserInterface,
+    @Query() foldersQueryReqDto: FoldersQueryReqDto,
+    @Query() notesQueryReqDto: NotesQueryReqDto,
+  ) {
+    return this.userAssetsService.getAssetsForUser(
+      userId,
+      currentUser.id,
+      foldersQueryReqDto,
+      notesQueryReqDto,
+    );
+  }
+
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async createUser(
     @Body() dto: CreateUserReqDto,
     @CurrentUser() currentUser: UserInterface,
@@ -46,7 +69,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async deleteUser(
     @Param('id') id: string,
     @CurrentUser() currentUser: UserInterface,

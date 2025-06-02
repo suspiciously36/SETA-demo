@@ -82,6 +82,36 @@ export class UserService {
     );
   }
 
+  async doesUserExist(userId: string): Promise<boolean> {
+    const user = await this.knex<UserInterface>('users')
+      .where({ id: userId })
+      .first();
+
+    return !!user;
+  }
+
+  async isManagerOf(
+    targetUserId: string,
+    currentUserId: string,
+  ): Promise<boolean> {
+    const teamsManagedByCurrentUser =
+      await this.teamPolicyService.getTeamsManagedBy(currentUserId);
+
+    if (!teamsManagedByCurrentUser || teamsManagedByCurrentUser.length === 0) {
+      return false;
+    }
+
+    for (const teamId of teamsManagedByCurrentUser) {
+      const isTargetUserInThisTeam =
+        await this.teamPolicyService.isMemberOfATeam(teamId, targetUserId);
+      if (isTargetUserInThisTeam) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   async getUserById(userId: string): Promise<UserInterface> {
     const user = await this.knex<UserInterface>('users')
       .where({ id: userId })
@@ -89,6 +119,7 @@ export class UserService {
     if (!user) {
       throw new ConflictException('User not found');
     }
+
     return user;
   }
 

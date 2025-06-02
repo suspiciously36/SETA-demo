@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { getInitials } from "../../utils/helpers/getInitials.ts";
 
-const drawerWidth = 300;
+const drawerWidth = 320;
 
 const TopBar: React.FC<any> = () => {
   const { user } = useSelector((state: RootState) => state.auth);
