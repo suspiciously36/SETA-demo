@@ -186,9 +186,26 @@ export class NoteService {
       throw new NotFoundException(`Folder with ID ${folderId} not found`);
     }
 
-    if (folder.owner_id !== currentUserId) {
+    // Allow if owner, or if user has write access in folder_permissions
+    let hasWriteAccess = false;
+    if (folder.owner_id === currentUserId) {
+      hasWriteAccess = true;
+    } else {
+      const folderPermission = await this.knex('folder_permissions')
+        .where({
+          folder_id: folderId,
+          user_id: currentUserId,
+          access_level: 'write',
+        })
+        .first();
+      if (folderPermission) {
+        hasWriteAccess = true;
+      }
+    }
+
+    if (!hasWriteAccess) {
       throw new ForbiddenException(
-        `You do not permission to create a note in this folder`,
+        `You do not have permission to create a note in this folder`,
       );
     }
 

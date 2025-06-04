@@ -40,6 +40,20 @@ export class FolderController {
     return folders;
   }
 
+  @Get(':folderId/shared')
+  @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
+  async getSharedFolders(
+    @Param('folderId') folderId: string,
+    @CurrentUser() currentUser: UserInterface,
+  ) {
+    const sharedFolders =
+      await this.folderService.getUsersThatAreSharedByFolderId(
+        folderId,
+        currentUser.id,
+      );
+    return sharedFolders;
+  }
+
   @Get(':folderId')
   @UseGuards(JwtAuthGuard, AuthenticatedThrottlerGuard)
   async getFolderById(

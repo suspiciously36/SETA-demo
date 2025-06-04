@@ -15,24 +15,10 @@ import UserManagementTable from "./components/users/UserManagementTable";
 import TeamList from "./components/teams/TeamList";
 // Placeholders for folder content - create these as actual components
 import { Paper, Typography } from "@mui/material";
-import { useParams } from "react-router-dom"; // For FolderContentView placeholder
 import type { RootState } from "./store/index.ts";
 import SnackbarNotifier from "./common/SnackbarNotifier.tsx";
 import NoteLayout from "./components/layout/NoteLayout.tsx";
 import MyFolderPage from "./pages/MyFolderPage.tsx";
-
-const FolderContentView: React.FC = () => {
-  const { folderId } = useParams<{ folderId: string }>();
-  // In a real app, you'd fetch notes for this folderId here
-  return (
-    <Paper sx={{ p: 3, borderRadius: "12px", boxShadow: 1, mt: 2 }}>
-      <Typography variant="h5">Folder: {folderId}</Typography>
-      <Typography sx={{ mt: 2 }}>
-        Content of the folder (e.g., notes list) will appear here.
-      </Typography>
-    </Paper>
-  );
-};
 
 const MyFoldersOverviewPage: React.FC = () => {
   return (
@@ -109,10 +95,23 @@ const App: React.FC = () => {
           <Route path=":folderId" element={<MyFolderPage />} />
         </Route>
 
-        <Route path="folders/:folderId/notes/:noteId" element={<NoteLayout />}>
-          {/* <Route index element={<YourNoteEditorComponent />} /> */}
-          {/* Other nested routes related to a specific note if any */}
+        <Route
+          path="/shared-folders"
+          element={<AuthenticatedRouteWrapper LayoutComponent={FolderLayout} />}
+        >
+          <Route index element={<MyFoldersOverviewPage />} />
+          <Route path=":folderId" element={<MyFolderPage />} />
         </Route>
+
+        <Route
+          path="folders/:folderId/notes/:noteId"
+          element={<NoteLayout />}
+        ></Route>
+
+        <Route
+          path="shared-folders/:folderId/notes/:noteId"
+          element={<NoteLayout />}
+        ></Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

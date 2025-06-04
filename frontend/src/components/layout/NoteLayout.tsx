@@ -23,6 +23,7 @@ import { Note, UpdateNoteDto } from "../../types/note.types"; // Ensure correct 
 import {
   submitNoteUpdate,
   fetchUserNotes,
+  fetchNoteDetails,
 } from "../../store/actions/noteActions"; // Ensure correct path
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
@@ -45,20 +46,31 @@ const NoteLayout: React.FC = () => {
   const isNotesListLoading = useSelector(
     (state: RootState) => state.notes.loading
   );
-  // const notesListError = useSelector((state: RootState) => state.notes.error); // For general list loading errors
+  // Add selector for currentNoteDetails
+  const currentNoteDetails = useSelector(
+    (state: RootState) => state.notes.currentNoteDetails
+  );
 
-  // Derive currentNote using useMemo
+  // Derive currentNote using currentNoteDetails if available, else from allNotes
   const currentNote = useMemo(() => {
-    if (!noteId || !allNotes || allNotes.length === 0) return null;
-    // Assuming your Note type has folderId or folder_id
+    if (!noteId) return null;
+    if (
+      currentNoteDetails &&
+      (currentNoteDetails.id === noteId ||
+        String(currentNoteDetails.id) === String(noteId))
+    ) {
+      return currentNoteDetails;
+    }
+    if (!allNotes || allNotes.length === 0) return null;
     return (
       allNotes.find(
         (n) =>
           n.id === noteId &&
-          (n.folderId === folderId || n.folder_id === folderId)
+          (String(n.folderId) === String(folderId) ||
+            String(n.folder_id) === String(folderId))
       ) || null
     );
-  }, [noteId, folderId, allNotes]);
+  }, [noteId, folderId, allNotes, currentNoteDetails]);
 
   // Select updating status for the specific note
   // Your note reducer might store updatingLoading as a single boolean or per-note.
@@ -92,7 +104,11 @@ const NoteLayout: React.FC = () => {
 
   useEffect(() => {
     if (folderId && noteId) {
-      setActiveSidebarView(`folders/${folderId}/notes/${noteId}`);
+      if (location.pathname.startsWith("/shared-folders/")) {
+        setActiveSidebarView(`shared-folders/${folderId}/notes/${noteId}`);
+      } else {
+        setActiveSidebarView(`folders/${folderId}/notes/${noteId}`);
+      }
       if (currentNote) {
         setEditableTitleText(
           currentNote.title || currentNote.name || "Untitled Note"
@@ -154,18 +170,13 @@ const NoteLayout: React.FC = () => {
       return;
     }
 
-    // Assuming UpdateNoteDto for title change is { title: string } or { name: string }
-    // Adjust based on your actual UpdateNoteDto structure
     const updateDto: UpdateNoteDto = { title: editableTitleText.trim() };
-    // If your DTO uses 'name': const updateDto: UpdateNoteDto = { name: editableTitleText.trim() };
 
     try {
       await dispatch(submitNoteUpdate(noteId, updateDto));
-      // Success snackbar is likely handled within submitNoteUpdate thunk
+      await dispatch(fetchNoteDetails(noteId)); // <-- ensure UI updates
     } catch (error) {
-      console.error("Failed to update note title:", error);
-      setEditableTitleText(currentNoteTitle); // Revert on error
-      // Error snackbar is likely handled within submitNoteUpdate thunk
+      setEditableTitleText(currentNoteTitle);
     } finally {
       setIsEditingTitle(false);
     }
@@ -194,16 +205,10 @@ const NoteLayout: React.FC = () => {
       setEditableBodyText(currentNoteBody);
       return;
     }
-    // Optionally: prevent empty body
-    // if (!editableBodyText.trim()) {
-    //   dispatch(showSnackbar("Note body cannot be empty.", "error"));
-    //   setEditableBodyText(currentNoteBody);
-    //   setIsEditingBody(false);
-    //   return;
-    // }
     const updateDto: UpdateNoteDto = { body: editableBodyText };
     try {
       await dispatch(submitNoteUpdate(noteId, updateDto));
+      await dispatch(fetchNoteDetails(noteId)); // <-- ensure UI updates
     } catch (error) {
       setEditableBodyText(currentNoteBody);
     } finally {
@@ -248,7 +253,7 @@ const NoteLayout: React.FC = () => {
 
   useEffect(() => {
     if (!currentNote && noteId) {
-      dispatch(fetchUserNotes()); // You need an action for this
+      dispatch(fetchNoteDetails(noteId));
     }
   }, [currentNote, noteId, dispatch]);
 
@@ -287,7 +292,11 @@ const NoteLayout: React.FC = () => {
                 component={RouterLink}
                 underline="hover"
                 color="inherit"
-                to={`/folders/${folderId}`}
+                to={
+                  location.pathname.startsWith("/shared-folders/")
+                    ? `/shared-folders/${folderId}`
+                    : `/folders/${folderId}`
+                }
               >
                 {currentFolder.name || currentFolder.title || "Folder"}
               </Link>
@@ -378,7 +387,7 @@ const NoteLayout: React.FC = () => {
             {currentNote && (
               <Box
                 component="form"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
                   if (
                     addTagValue.trim() &&
@@ -390,7 +399,8 @@ const NoteLayout: React.FC = () => {
                         addTagValue.trim(),
                       ]),
                     };
-                    dispatch(submitNoteUpdate(currentNote.id, updateDto));
+                    await dispatch(submitNoteUpdate(currentNote.id, updateDto));
+                    await dispatch(fetchNoteDetails(currentNote.id)); // <-- ensure UI updates
                   }
                   setAddTagValue("");
                   setAddTagEditing(false);

@@ -87,7 +87,6 @@ export const submitNewFolder = (folderData: CreateFolderDto): AppThunk => async 
         const newFolder = await createFolderService(folderData)
         dispatch(createFoldersSuccess(newFolder))
         dispatch(showSnackbar(`Folder "${newFolder.name}" created successfully!`, "success"));
-        // await dispatch(fetchUserFolders());
         return newFolder;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "An unknown error has occurred while creating new folder";

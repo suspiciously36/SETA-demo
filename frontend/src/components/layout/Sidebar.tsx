@@ -36,6 +36,7 @@ import SortIcon from "@mui/icons-material/Sort";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
+import FolderSharedIcon from "@mui/icons-material/FolderShared";
 
 import { logoutUser } from "../../store/actions/authActions";
 import { AppDispatch, type RootState } from "../../store";
@@ -54,6 +55,8 @@ import {
   fetchUserNotes,
   submitNewNote,
 } from "../../store/actions/noteActions.ts";
+import { AccessLevel as ShareAccessLevel } from "../../store/reducers/folderShareReducer"; // For dialog, if needed
+import { FolderAccessLevel, type Folder } from "../../types/folder.types.ts";
 
 const drawerWidth = 320;
 
@@ -63,6 +66,8 @@ type ActiveViewType =
   | "managers"
   | `folders/${string}`
   | `folders/${string}/notes/${string}`
+  | `shared-folders/${string}`
+  | `shared-folders/${string}/notes/${string}`
   | "notifications"
   | "profile"
   | "settings"
@@ -82,9 +87,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
   const navigate = useNavigate();
 
   const authUser = useSelector((state: RootState) => state.auth.user);
-
   const {
-    folders,
+    folders, // Folder[] with accessLevel
     loading: foldersLoading,
     creatingLoading: creatingFolderLoading,
   } = useSelector((state: RootState) => state.folders);
@@ -96,6 +100,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
   );
 
   const [openFolders, setOpenFolders] = useState<Record<string, boolean>>({});
+  const [openSharedFolders, setOpenSharedFolders] = useState<
+    Record<string, boolean>
+  >({});
   const [folderOptionsAnchorEl, setFolderOptionsAnchorEl] =
     useState<null | HTMLElement>(null);
   const [showItemsCount, setShowItemsCount] = useState<number | "All">(5);
@@ -105,32 +112,54 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
   const [managementSectionOpen, setManagementSectionOpen] =
     React.useState(true);
   const [myFoldersOpen, setMyFoldersOpen] = useState(true);
+  const [sharedFoldersOpen, setSharedFoldersOpen] = useState(true);
 
   useEffect(() => {
     dispatch(fetchUserFolders());
     dispatch(fetchUserNotes());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (activeView.startsWith("folders/")) {
-      const parts = activeView.split("/");
-      if (parts.length >= 2) {
-        const folderId = parts[1];
-        const folderHasNotes =
-          Array.isArray(notes) &&
-          notes.some((n) => (n.folderId || n.folder_id) === folderId);
+  // useEffect(() => {
+  //   if (activeView.startsWith("folders/")) {
+  //     const parts = activeView.split("/");
+  //     if (parts.length >= 2) {
+  //       const folderId = parts[1];
+  //       const folderHasNotes =
+  //         Array.isArray(notes) &&
+  //         notes.some((n) => (n.folderId || n.folder_id) === folderId);
 
-        if (!openFolders[folderId] && folderHasNotes) {
-          const currentPathIsRelatedToFolder = location.pathname.startsWith(
-            `/folders/${folderId}`
-          );
-          if (currentPathIsRelatedToFolder) {
-            setOpenFolders((prev) => ({ ...prev, [folderId]: true }));
-          }
-        }
-      }
-    }
-  }, [activeView, location.pathname, notes, openFolders]);
+  //       if (!openFolders[folderId] && folderHasNotes) {
+  //         const currentPathIsRelatedToFolder = location.pathname.startsWith(
+  //           `/folders/${folderId}`
+  //         );
+  //         if (currentPathIsRelatedToFolder) {
+  //           setOpenFolders((prev) => ({ ...prev, [folderId]: true }));
+  //         }
+  //       }
+  //     }
+  //   }
+  // }, [activeView, location.pathname, notes, openFolders]);
+
+  // useEffect(() => {
+  //   if (activeView.startsWith("shared-folders/")) {
+  //     const parts = activeView.split("/");
+  //     if (parts.length >= 2) {
+  //       const folderId = parts[1];
+  //       const folderHasNotes =
+  //         Array.isArray(notes) &&
+  //         notes.some((n) => (n.folderId || n.folder_id) === folderId);
+
+  //       if (!openSharedFolders[folderId] && folderHasNotes) {
+  //         const currentPathIsRelatedToFolder = location.pathname.startsWith(
+  //           `/shared-folders/${folderId}`
+  //         );
+  //         if (currentPathIsRelatedToFolder) {
+  //           setOpenSharedFolders((prev) => ({ ...prev, [folderId]: true }));
+  //         }
+  //       }
+  //     }
+  //   }
+  // }, [activeView, location.pathname, notes, openSharedFolders]);
 
   useEffect(() => {
     if (
@@ -140,10 +169,17 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
     ) {
       setManagementSectionOpen(true);
       setMyFoldersOpen(false);
+      setSharedFoldersOpen(false);
     }
     if (location.pathname.startsWith("/folders")) {
       setMyFoldersOpen(true);
       setManagementSectionOpen(false);
+      setSharedFoldersOpen(false);
+    }
+    if (location.pathname.startsWith("/shared-folders")) {
+      setSharedFoldersOpen(true);
+      setManagementSectionOpen(false);
+      setMyFoldersOpen(false);
     }
   }, [location.pathname]);
 
@@ -152,6 +188,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
   };
 
   const handleMyFoldersToggle = () => setMyFoldersOpen(!myFoldersOpen);
+  const handleSharedFoldersToggle = () =>
+    setSharedFoldersOpen(!sharedFoldersOpen);
 
   const handleCreateNewFolder = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -181,11 +219,24 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
     const noteData: CreateNoteDto = {
       title: "Untitled Note",
       body: "",
-      tags: ["moon"],
+      tags: [],
       folderId,
     };
     try {
-      (await dispatch(submitNewNote(folderId, noteData))) as Note | void;
+      if (folderId) {
+        // Find the folder to check if it's shared
+        const folder = folders.find((f: Folder) => f.id === folderId);
+        const isShared =
+          folder &&
+          (folder.access_level === FolderAccessLevel.READ ||
+            folder.access_level === FolderAccessLevel.WRITE);
+        await dispatch(submitNewNote(folderId, noteData));
+        if (isShared) {
+          navigate(`/shared-folders/${folderId}`);
+        } else {
+          navigate(`/folders/${folderId}`);
+        }
+      }
     } catch (error) {
       console.error("Failed to create note from sidebar:", error);
     }
@@ -251,11 +302,42 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
   const activeMenuItemColor = "#FFFFFF";
   const activeMenuItemHoverBg = "rgba(40, 90, 160, 0.9)";
 
-  const displayedFolders = useMemo(() => {
-    if (showItemsCount === "All" || !Array.isArray(folders))
-      return folders || [];
-    return folders.slice(0, showItemsCount);
-  }, [folders, showItemsCount]);
+  // Separate folders into "My Folders" and "Shared Folders"
+  const myFolders = useMemo(
+    () =>
+      Array.isArray(folders)
+        ? folders.filter(
+            (f: Folder) => f.access_level === FolderAccessLevel.OWNER
+          )
+        : [],
+    [folders]
+  );
+
+  const sharedFolders = useMemo(
+    () =>
+      Array.isArray(folders)
+        ? folders.filter(
+            (f: Folder) =>
+              f.access_level === FolderAccessLevel.READ ||
+              f.access_level === FolderAccessLevel.WRITE
+          )
+        : [],
+    [folders]
+  );
+
+  const displayedMyFolders = useMemo(() => {
+    if (showItemsCount === "All" || !Array.isArray(myFolders))
+      return myFolders || [];
+    return myFolders.slice(0, showItemsCount);
+  }, [myFolders, showItemsCount]);
+
+  const displayedSharedFolders = useMemo(() => {
+    if (showItemsCount === "All" || !Array.isArray(sharedFolders))
+      return sharedFolders || [];
+    return sharedFolders.slice(0, showItemsCount);
+  }, [sharedFolders, showItemsCount]);
+
+  console.log(activeView);
 
   const menuItems = [
     {
@@ -291,10 +373,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
       icon: <FolderCopyIcon />,
       onClick: handleMyFoldersToggle,
       open: myFoldersOpen,
+      // Only highlight if not in shared folder
       active: activeView.startsWith("folders"),
       isHeader: true,
       subItems:
-        foldersLoading && (!folders || folders.length === 0)
+        foldersLoading && (!myFolders || myFolders.length === 0)
           ? [
               {
                 text: "Loading folders...",
@@ -303,11 +386,36 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
                 disabled: true,
               },
             ]
-          : displayedFolders.map((folder) => ({
+          : displayedMyFolders.map((folder) => ({
               text: folder.name,
               icon: <FolderIcon fontSize="small" />,
               path: `/folders/${folder.id}`,
               id: `folders/${folder.id}`,
+              originalFolder: folder,
+            })),
+    },
+    {
+      text: "Shared Folders",
+      icon: <FolderSharedIcon />,
+      onClick: handleSharedFoldersToggle,
+      open: sharedFoldersOpen,
+      active: activeView.startsWith("shared-folders"),
+      isHeader: true,
+      subItems:
+        foldersLoading && (!sharedFolders || sharedFolders.length === 0)
+          ? [
+              {
+                text: "Loading folders...",
+                icon: <CircularProgress size={18} sx={{ ml: 0.5 }} />,
+                id: "loading-shared",
+                disabled: true,
+              },
+            ]
+          : displayedSharedFolders.map((folder) => ({
+              text: folder.name,
+              icon: <FolderSharedIcon fontSize="small" />,
+              path: `/shared-folders/${folder.id}`,
+              id: `shared-folders/${folder.id}`,
               originalFolder: folder,
             })),
     },
@@ -350,6 +458,15 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
         isActive =
           location.pathname === folderPath ||
           location.pathname.startsWith(`${folderPath}/`);
+      } else if (
+        item.id &&
+        typeof item.id === "string" &&
+        item.id.startsWith("shared-folders/")
+      ) {
+        const sharedFolderPath = `/shared-folders/${item.originalFolder?.id}`;
+        isActive =
+          location.pathname === sharedFolderPath ||
+          location.pathname.startsWith(`${sharedFolderPath}/`);
       } else {
         isActive = activeView === item.id || location.pathname === item.path;
       }
@@ -362,9 +479,24 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
       authUser &&
       folderData &&
       (authUser.role === UserRole.ROOT || authUser.id === folderData.owner_id);
-    const canAddNoteToThisFolder = authUser && folderData;
 
-    if (item.isHeader && item.text === "My Folders") {
+    // --- Add logic for canAddNoteToThisFolder ---
+    let canAddNoteToThisFolder = false;
+    if (authUser && folderData && folderData.access_level) {
+      if (
+        authUser.role === UserRole.ROOT ||
+        folderData.access_level === FolderAccessLevel.OWNER ||
+        folderData.access_level === FolderAccessLevel.WRITE
+      ) {
+        canAddNoteToThisFolder = true;
+      }
+    }
+    // --- End logic for canAddNoteToThisFolder ---
+
+    if (
+      (item.isHeader && item.text === "My Folders") ||
+      item.text === "Shared Folders"
+    ) {
       return (
         <ListItemButton
           onClick={item.onClick}
@@ -380,6 +512,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
               backgroundColor: isActive
                 ? activeMenuItemHoverBg
                 : menuItemHoverBg,
+              // Show action buttons on hover
+              "& .sidebar-parent-action": {
+                opacity: 1,
+                pointerEvents: "auto",
+              },
             },
             "&.Mui-selected": {
               backgroundColor: activeMenuItemBg,
@@ -411,30 +548,52 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
               },
             }}
           />
-          <Tooltip title="More options">
-            <IconButton
-              onClick={handleFolderOptionsOpen}
-              edge="end"
-              size="small"
-              sx={{ mr: 0.5, color: "inherit" }}
-            >
-              <MoreHorizIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="New Folder">
-            <IconButton
-              onClick={handleCreateNewFolder}
-              edge="end"
-              size="small"
-              disabled={creatingFolderLoading}
-            >
-              {creatingFolderLoading ? (
-                <CircularProgress size={20} color="inherit" />
-              ) : (
-                <AddCircleOutlineIcon fontSize="small" />
-              )}
-            </IconButton>
-          </Tooltip>
+          <Box
+            className="sidebar-parent-action"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              opacity: 0,
+              pointerEvents: "none",
+              transition: (t) =>
+                t.transitions.create("opacity", {
+                  duration: t.transitions.duration.shortest,
+                }),
+            }}
+          >
+            <Tooltip title="More options">
+              <IconButton
+                onClick={handleFolderOptionsOpen}
+                edge="end"
+                size="small"
+                sx={{ mr: 0.5, color: "inherit" }}
+              >
+                <MoreHorizIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            {item.text === "My Folders" ? (
+              <Tooltip title="New Folder">
+                <IconButton
+                  onClick={handleCreateNewFolder}
+                  edge="end"
+                  size="small"
+                  disabled={creatingFolderLoading}
+                >
+                  {creatingFolderLoading ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <AddCircleOutlineIcon fontSize="small" />
+                  )}
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Tooltip title="You cannot create new folder in Shared Folders">
+                <IconButton edge="end" size="small" disabled>
+                  <AddCircleOutlineIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
         </ListItemButton>
       );
     }

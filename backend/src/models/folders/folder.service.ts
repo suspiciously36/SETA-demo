@@ -173,10 +173,24 @@ export class FolderService {
       throw new NotFoundException(`Folder with ID ${folderId} not found`);
     }
 
-    if (folder.owner_id !== currentUserId) {
-      throw new ForbiddenException(
-        'You do not have permission to update this folder.',
-      );
+    let hasWriteAccess = false;
+    if (folder.owner_id === currentUserId) {
+      hasWriteAccess = true;
+    } else {
+      const folderPermission = await this.knex('folder_permissions')
+        .where({
+          folder_id: folderId,
+          user_id: currentUserId,
+          access_level: 'write',
+        })
+        .first();
+      if (folderPermission) {
+        hasWriteAccess = true;
+      }
+    }
+
+    if (!hasWriteAccess) {
+      throw new ForbiddenException(`You do not have permission to edit folder`);
     }
 
     await this.knex('folders').where({ id: folderId }).update(updatedFolder);
@@ -229,7 +243,6 @@ export class FolderService {
     if (!isUserToShareWithExist) {
       throw new NotFoundException("User you want to share this doesn't exist.");
     }
-
     const permissionData = {
       folder_id: folderId,
       user_id: userIdToShareWith,
@@ -237,20 +250,22 @@ export class FolderService {
       shared_at: new Date(),
     };
 
-    try {
-      await this.knex('folder_permissions')
-        .insert(permissionData)
-        .onConflict(['folder_id', 'user_id'])
-        .merge({
-          access_level: accessLevel,
-          shared_at: new Date(),
-        });
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Could not share folder.',
-        error.message,
-      );
-    }
+    await this.knex.transaction(async (trx) => {
+      const existingPermission = await trx('folder_permissions')
+        .where({ folder_id: folderId, user_id: userIdToShareWith })
+        .first();
+
+      if (existingPermission) {
+        await trx('folder_permissions')
+          .where({ folder_id: folderId, user_id: userIdToShareWith })
+          .update({
+            access_level: accessLevel,
+            shared_at: new Date(),
+          });
+      } else {
+        await trx('folder_permissions').insert(permissionData);
+      }
+    });
   }
 
   async revokeFolderShare(
@@ -281,5 +296,14 @@ export class FolderService {
         `No share found for folder ${folderId} and user ${userIdToRevoke} to revoke, or already revoked.`,
       );
     }
+  }
+
+  async getUsersThatAreSharedByFolderId(
+    folderId: string,
+    currentUserId: string,
+  ) {
+    return await this.knex('folder_permissions')
+      .where({ folder_id: folderId })
+      .select('user_id as userId', 'access_level as accessLevel');
   }
 }

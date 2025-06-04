@@ -1,3 +1,8 @@
+export enum FolderAccessLevel {
+    READ = "read",
+    WRITE = "write",
+    OWNER = "owner"
+}
 export interface Folder {
     id: string;
     owner_id: string;
@@ -5,6 +10,7 @@ export interface Folder {
     description?: string;
     created_at: Date;
     updated_at: Date;
+    access_level: FolderAccessLevel;
 }
 
 export interface CreateFolderDto {

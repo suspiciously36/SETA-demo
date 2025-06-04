@@ -20,6 +20,7 @@ import { submitFolderUpdate } from "../../store/actions/folderActions"; // Remov
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import { showSnackbar } from "../../store/actions/notificationActions";
+import { UserRole } from "../../types/user.types"; // Add this import if not already present
 
 const FolderLayout: React.FC = () => {
   const location = useLocation();
@@ -29,21 +30,16 @@ const FolderLayout: React.FC = () => {
 
   const [activeSidebarView, setActiveSidebarView] = useState<string>("folders");
 
-  // **MODIFIED SELECTORS**
-  // Select individual pieces of state
   const allFolders = useSelector((state: RootState) => state.folders.folders);
   const isListLoading = useSelector(
     (state: RootState) => state.folders.loading
   );
-  // const listError = useSelector((state: RootState) => state.folders.error); // Not used in current JSX
 
-  // Derive currentFolder using useMemo to avoid re-calculating on every render unless dependencies change
   const currentFolder = useMemo(() => {
     if (!folderId || !allFolders) return null;
     return allFolders.find((f) => f.id === folderId) || null;
   }, [folderId, allFolders]);
 
-  // Select updating status for the specific folder if folderId is present
   const isUpdatingThisFolder = useSelector((state: RootState) =>
     folderId ? state.folders.updatingLoading[folderId] || false : false
   );
@@ -52,6 +48,8 @@ const FolderLayout: React.FC = () => {
       ? state.folders.updatingError[folderId] || null
       : null
   );
+
+  const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editableTitleText, setEditableTitleText] = useState("");
@@ -62,7 +60,14 @@ const FolderLayout: React.FC = () => {
 
   useEffect(() => {
     if (folderId) {
-      setActiveSidebarView(`folders/${folderId}`);
+      // Detect if this is a shared folder route
+      if (location.pathname.startsWith("/shared-folders/")) {
+        console.log("Detected shared folder route");
+        setActiveSidebarView(`shared-folders/${folderId}`);
+      } else {
+        console.log("Detected regular folder route");
+        setActiveSidebarView(`folders/${folderId}`);
+      }
       if (currentFolder) {
         setEditableTitleText(currentFolder.name);
         setEditableDescriptionText(currentFolder.description);
@@ -77,6 +82,7 @@ const FolderLayout: React.FC = () => {
         setHasAttemptedLoad(false);
       }
     } else {
+      console.log("No folderId provided, setting default view");
       setActiveSidebarView("folders");
       setEditableTitleText("My Folders Overview");
       setEditableDescriptionText("My Folders Description");
@@ -92,6 +98,14 @@ const FolderLayout: React.FC = () => {
     navigate,
     isUpdatingThisFolder,
   ]);
+
+  // Determine if user can edit folder title/description
+  const canEditFolder =
+    currentFolder &&
+    loggedInUser &&
+    (loggedInUser.id === currentFolder.owner_id ||
+      currentFolder.access_level === "write" ||
+      loggedInUser.role === UserRole.ROOT);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditableTitleText(event.target.value);
@@ -236,14 +250,15 @@ const FolderLayout: React.FC = () => {
                 endAdornment: isUpdatingThisFolder ? (
                   <CircularProgress size={20} />
                 ) : (
-                  <IconButton
-                    onClick={handleTitleEditSubmit}
-                    size="small"
-                    edge="end"
-                  >
-                    {" "}
-                    <CheckIcon fontSize="small" />{" "}
-                  </IconButton>
+                  canEditFolder && (
+                    <IconButton
+                      onClick={handleTitleEditSubmit}
+                      size="small"
+                      edge="end"
+                    >
+                      <CheckIcon fontSize="small" />
+                    </IconButton>
+                  )
                 ),
               }}
             />
@@ -254,24 +269,29 @@ const FolderLayout: React.FC = () => {
               sx={{
                 fontWeight: "bold",
                 flexGrow: 1,
-                cursor: folderId && currentFolder ? "pointer" : "default",
+                cursor:
+                  folderId && currentFolder && canEditFolder
+                    ? "pointer"
+                    : "default",
               }}
               onClick={() =>
-                folderId && currentFolder && setIsEditingTitle(true)
+                folderId &&
+                currentFolder &&
+                canEditFolder &&
+                setIsEditingTitle(true)
               }
             >
               {displayTitle}
             </Typography>
           )}
 
-          {folderId && currentFolder && !isEditingTitle && (
+          {folderId && currentFolder && !isEditingTitle && canEditFolder && (
             <IconButton
               onClick={() => setIsEditingTitle(true)}
               size="small"
               sx={{ ml: 1 }}
             >
-              {" "}
-              <EditIcon fontSize="small" />{" "}
+              <EditIcon fontSize="small" />
             </IconButton>
           )}
         </Box>
@@ -304,14 +324,15 @@ const FolderLayout: React.FC = () => {
                 endAdornment: isUpdatingThisFolder ? (
                   <CircularProgress size={20} />
                 ) : (
-                  <IconButton
-                    onClick={handleDescriptionEditSubmit}
-                    size="small"
-                    edge="end"
-                  >
-                    {" "}
-                    <CheckIcon fontSize="small" />{" "}
-                  </IconButton>
+                  canEditFolder && (
+                    <IconButton
+                      onClick={handleDescriptionEditSubmit}
+                      size="small"
+                      edge="end"
+                    >
+                      <CheckIcon fontSize="small" />
+                    </IconButton>
+                  )
                 ),
               }}
             />
@@ -323,25 +344,33 @@ const FolderLayout: React.FC = () => {
                 fontStyle: "italic",
                 fontWeight: "normal",
                 flexGrow: 1,
-                cursor: folderId && currentFolder ? "pointer" : "default",
+                cursor:
+                  folderId && currentFolder && canEditFolder
+                    ? "pointer"
+                    : "default",
               }}
               onClick={() =>
-                folderId && currentFolder && setIsEditingDescription(true)
+                folderId &&
+                currentFolder &&
+                canEditFolder &&
+                setIsEditingDescription(true)
               }
             >
               {displayDescription}
             </Typography>
           )}
-          {folderId && currentFolder && !isEditingDescription && (
-            <IconButton
-              onClick={() => setIsEditingDescription(true)}
-              size="small"
-              sx={{ ml: 1 }}
-            >
-              {" "}
-              <EditIcon fontSize="small" />{" "}
-            </IconButton>
-          )}
+          {folderId &&
+            currentFolder &&
+            !isEditingDescription &&
+            canEditFolder && (
+              <IconButton
+                onClick={() => setIsEditingDescription(true)}
+                size="small"
+                sx={{ ml: 1 }}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            )}
         </Box>
 
         <Outlet />

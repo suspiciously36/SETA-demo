@@ -1,4 +1,3 @@
-import axios from "axios"
 import type { CreateFolderDto, Folder, UpdateFolderDto } from "../types/folder.types.ts"
 import type { ApiResponseDto } from "../types/team.types.ts"
 import apiClient from "./apiClient.ts"
@@ -18,7 +17,6 @@ export const getAllUserFolders = async (page: number, limit: number): Promise<Pa
             limit: limit
             }
         });
-        console.log(response.data)
         return response.data
     } catch (error) {
          console.error('Error fetching folders:', error);

@@ -151,6 +151,7 @@ export const fetchNoteDetails = (noteId: string): AppThunk<Promise<void>> => asy
     try {
         const noteDetails = await fetchNoteDetailsService(noteId);
         dispatch(fetchNoteDetailsSuccess(noteDetails));
+        return noteDetails;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred while fetching note details.';
         dispatch(fetchNoteDetailsFailure(errorMessage));

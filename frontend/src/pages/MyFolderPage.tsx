@@ -19,12 +19,15 @@ import {
   Tooltip,
   Typography,
   Chip,
+  Button,
 } from "@mui/material";
 import type { Note } from "../types/note.types.ts";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { useParams, useNavigate } from "react-router-dom";
 import { showSnackbar } from "../store/actions/notificationActions.ts";
+import ShareFolderDialog from "./ShareFolderDialog.tsx";
+import { FolderAccessLevel, type Folder } from "../types/folder.types.ts";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -42,23 +45,17 @@ const MyFolderPage: React.FC = () => {
 
   // Only ROOT or folder owner can delete notes
   const canDeleteNotes = (note: Note) => {
-    if (!loggedInUser) return false;
-    if (loggedInUser.role === UserRole.ROOT) return true;
-    // Find folder owner
-    const folder = folders?.find(
-      (f) => f.id === (note.folderId || note.folder_id)
-    );
-    return folder && folder.owner_id === loggedInUser.id;
+    if (!loggedInUser || !currentFolder) return false;
+    return loggedInUser.id === currentFolder.owner_id;
   };
 
-  // Only ROOT or folder owner can edit notes (expand as needed)
-  const canEditNotes = (note: Note) => {
-    if (!loggedInUser) return false;
-    if (loggedInUser.role === UserRole.ROOT) return true;
-    const folder = folders?.find(
-      (f) => f.id === (note.folderId || note.folder_id)
+  // Owner and users with write access can open/edit notes
+  const canOpenNote = () => {
+    if (!loggedInUser || !currentFolder) return false;
+    return (
+      loggedInUser.id === currentFolder.owner_id ||
+      currentFolder.access_level === "write"
     );
-    return folder && folder.owner_id === loggedInUser.id;
   };
 
   const [highlightedNoteId, setHighlightedNoteId] = useState<string | null>(
@@ -67,6 +64,8 @@ const MyFolderPage: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+  const [shareOpen, setShareOpen] = useState(false);
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const observer = useRef<IntersectionObserver | null>(null);
@@ -163,10 +162,33 @@ const MyFolderPage: React.FC = () => {
     setHighlightedNoteId(noteId === highlightedNoteId ? null : noteId);
     if (folderId && noteId) {
       // Fetch note details before navigating
+      const folder = folders.find((f: Folder) => f.id === folderId);
+      const isShared =
+        folder &&
+        (folder.access_level === FolderAccessLevel.READ ||
+          folder.access_level === FolderAccessLevel.WRITE);
       await dispatch(fetchNoteDetails(noteId));
-      navigate(`/folders/${folderId}/notes/${noteId}`);
+      if (isShared) {
+        console.log(
+          "Navigating here",
+          `/shared-folders/${folderId}/notes/${noteId}`
+        );
+        navigate(`/shared-folders/${folderId}/notes/${noteId}`);
+      } else {
+        navigate(`/folders/${folderId}/notes/${noteId}`);
+      }
     }
   };
+
+  // Find the current folder object
+  const currentFolder = folders.find((f) => f.id === folderId);
+
+  // Determine if user can create notes
+  const canCreateNote =
+    currentFolder &&
+    (loggedInUser.id === currentFolder.owner_id ||
+      currentFolder.access_level === "write" ||
+      loggedInUser.role === UserRole.ROOT);
 
   if (
     loading &&
@@ -219,34 +241,63 @@ const MyFolderPage: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <IconButton
-            // Change to Button for consistent style with "+New Team"
-            component="button"
-            onClick={handleCreateNote}
-            sx={{
-              backgroundColor: "#fff",
-              "&:hover": {
-                backgroundColor: "rgba(48, 112, 196, 0.95)",
-                color: "#fff",
-              },
-              border: "1.5px solid rgba(48, 112, 196, 0.95)",
-              borderRadius: "24px",
-              minWidth: "120px",
-              padding: "10px 20px",
-              textTransform: "none",
-              fontWeight: "bold",
-              fontSize: "16px",
-              color: "rgba(48, 112, 196, 0.95)",
-              ml: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            <AddIcon sx={{ fontSize: 22, mr: 1 }} />
-            NEW NOTE
-          </IconButton>
+          {currentFolder && loggedInUser.id === currentFolder.owner_id && (
+            <IconButton
+              onClick={() => setShareOpen(true)}
+              sx={{
+                ml: 2,
+                backgroundColor: "#fff",
+                border: "1.5px solid #3070c4",
+                borderRadius: "24px",
+                minWidth: "120px",
+                padding: "10px 20px",
+                fontWeight: "bold",
+                fontSize: "16px",
+                color: "#3070c4",
+                "&:hover": {
+                  backgroundColor: "#e3f2fd",
+                },
+              }}
+            >
+              Share
+            </IconButton>
+          )}
+          {canCreateNote && (
+            <IconButton
+              // Change to Button for consistent style with "+New Team"
+              component="button"
+              onClick={handleCreateNote}
+              sx={{
+                backgroundColor: "#fff",
+                "&:hover": {
+                  backgroundColor: "rgba(48, 112, 196, 0.95)",
+                  color: "#fff",
+                },
+                border: "1.5px solid rgba(48, 112, 196, 0.95)",
+                borderRadius: "24px",
+                minWidth: "120px",
+                padding: "10px 20px",
+                textTransform: "none",
+                fontWeight: "bold",
+                fontSize: "16px",
+                color: "rgba(48, 112, 196, 0.95)",
+                ml: 2,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <AddIcon sx={{ fontSize: 22, mr: 1 }} />
+              NEW NOTE
+            </IconButton>
+          )}
         </Box>
+        <ShareFolderDialog
+          isOpen={shareOpen}
+          onClose={() => setShareOpen(false)}
+          folderId={folderId || ""}
+          folderName={currentFolder ? currentFolder.name : ""}
+        />
       </Box>
       {(!notesInFolder || notesInFolder.length === 0) && !loading && !error ? (
         <Alert severity="info" sx={{ m: 2 }}>
@@ -261,11 +312,8 @@ const MyFolderPage: React.FC = () => {
             return (
               <Grid item xs={12} sm={6} md={4} lg={4} xl={4} key={note.id}>
                 <Card
-                  onClick={
-                    () =>
-                      !isDeleting &&
-                      canEditNotes(note) &&
-                      handleCardClick(note.id) // <-- now async
+                  onClick={() =>
+                    !isDeleting && canOpenNote() && handleCardClick(note.id)
                   }
                   sx={{
                     borderRadius: "8px",

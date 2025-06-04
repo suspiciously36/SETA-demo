@@ -5,6 +5,7 @@ import userListReducer from "./userListReducer.ts";
 import notificationReducer from "./notificationReducer.ts";
 import folderReducer from "./folderReducer.ts";
 import noteReducer from "./noteReducer.ts";
+import folderShareReducer from "./folderShareReducer.ts";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     userList: userListReducer,
     notifications: notificationReducer,
     folders: folderReducer,
-    notes: noteReducer
+    notes: noteReducer,
+    folderShares: folderShareReducer
 })
 
 export default rootReducer;
