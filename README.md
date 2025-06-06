@@ -53,11 +53,11 @@ This project is a comprehensive User and Team Management system designed primari
 
     Dashboard Layout:
 
-        Fixed sidebar for main navigation (e.g., User Management, Team Management, Profile, Settings).
+        Fixed sidebar for main navigation (e.g., User Management, Team Management, My Folders, Shared Folders).
 
-        Main content area with tabbed navigation to switch between User, Manager, and Team views.
+        Main content area with tabbed navigation to switch between User, Manager, Team, My Folders, Shared Folders views.
 
-        Tab labels display live counts of entities (e.g., "User | 3953", "Team | 45").
+        Tab labels display live counts of entities (e.g., "User | 69", "Team | 45").
 
     User Management Page:
 
@@ -68,6 +68,8 @@ This project is a comprehensive User and Team Management system designed primari
         Pagination: The user table supports pagination to efficiently handle large numbers of users.
 
         "+ New User" button for creating users (visible to managers/root).
+
+        See User Assets by clicking on "View assets" button (accessible for that user or their manager).
 
     Team Management Page:
 
@@ -81,11 +83,47 @@ This project is a comprehensive User and Team Management system designed primari
 
         "+ New Team" button for creating teams (visible to managers/root).
 
+        See "Team Assets" by clicking on each team card (available for manager of the team only).
+
     Modals for Create/Edit Operations:
 
         User-friendly modals for creating and editing users and teams.
 
         Team creation/editing modals feature user selection with search functionality to add members and managers.
+
+    My Folders:
+
+        Contains self-created folders (Fast create "+" button on the sidebar, options for showing numbered items on the sidebar).
+
+        Editable Folder Name && Description (editable for owner or users with shared "write" access level).
+
+        Create notes inside the folder by clicking on button on the sidebar or "+ New Note" in the folder page (editable for owner or users with shared "write" access level).
+
+        Share folder feature (Choose people to share to with access level of "write" or "read").
+
+    Modal for Folder sharing feature:
+
+        Choose people to share with, choose access level (read/write).
+
+        Currently share with users list with Revoke button to revoke folders accessibility.
+
+    Shared Folders:
+
+        Contains folders that are shared by other users.
+
+        Accessibility is depended on access level that the others give you when they share.
+
+    Notes (inside Folders):
+
+        Are shared implicitly when sharing folders that contain its notes (Accessibility is depended on folders access level).
+
+        Title/Body is editable (live content update).
+
+        Tags are add-able.
+
+    Team/User Assets:
+
+        Pagination: The assets table supports pagination to efficiently handle large numbers of folders/notes displayed.
 
     Notifications:
 
@@ -109,6 +147,10 @@ The application enforces different permissions based on user roles:
 
             View user list with pagination.
 
+        User Assets:
+
+            View user assets (See all folders and notes owned by or shared with a specific user) - Accessible to the user or their manager.
+
         Team Management:
 
             Create new teams.
@@ -122,6 +164,21 @@ The application enforces different permissions based on user roles:
                 Edit team name.
 
                 Delete teams, view team list with lazy loading.
+
+        Team Assets:
+
+            View team assets (See all folders and notes accessible to members of the team) - Only accessible to managers of the team.
+
+        In Folders/Notes feature:
+
+            Only authenticated users can create/read/update/delete.
+
+            Owners manage sharing.
+
+            Managers can view (not modify) all assets of users in their team.
+
+            Shared access must respect permission level (read or write).
+
 
 _Project Status_
 
