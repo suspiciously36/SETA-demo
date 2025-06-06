@@ -33,6 +33,8 @@ import GroupIcon from "@mui/icons-material/Group";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import type { Folder } from "../../types/folder.types.ts";
 import type { Note } from "../../types/note.types.ts";
+import { fetchUsers } from "../../store/actions/userListActions.ts";
+import { fetchTeams } from "../../store/actions/teamActions.ts";
 
 const UserAssetsView: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -66,12 +68,19 @@ const UserAssetsView: React.FC = () => {
     setAllFolders((prev) => {
       const existingIds = new Set(prev.map((f) => f.id));
       const newFolders = foldersData.filter((f) => !existingIds.has(f.id));
+
+      if (newFolders.length === 0) {
+        return prev;
+      }
+
       return [...prev, ...newFolders];
     });
   }, [foldersData]);
 
   useEffect(() => {
     if (userId) {
+      dispatch(fetchUsers(1, 999));
+      dispatch(fetchTeams(1, 999));
       if (userId !== currentUserId || !assets) {
         dispatch(fetchUserAssets(userId, 1, 1));
       }
@@ -113,7 +122,7 @@ const UserAssetsView: React.FC = () => {
   };
 
   const getFolderNameById = (folderId: string) => {
-    const folder = allFolders.find((f) => f.id === folderId);
+    const folder = foldersData.find((f) => f.id === folderId);
     return folder ? folder.name : "Unknown";
   };
 
@@ -238,7 +247,6 @@ const UserAssetsView: React.FC = () => {
             <>
               <List dense>
                 {foldersData.map((folder: Folder) => {
-                  console.log("Rendering folder:", folder);
                   const isOwner = folder.owner_id === loggedInUser?.id;
 
                   let displayAccessLevel = folder.access_level;
@@ -246,16 +254,15 @@ const UserAssetsView: React.FC = () => {
                     displayAccessLevel = "owner";
                   }
 
+                  const folderLink = isOwner
+                    ? `/folders/${folder.id}`
+                    : `/shared-folders/${folder.id}`;
+
                   return (
                     <ListItem
                       key={folder.id}
                       component={RouterLink}
-                      to={
-                        displayAccessLevel === "read" ||
-                        displayAccessLevel === "write"
-                          ? `/shared-folders/${folder.id}`
-                          : `/folders/${folder.id}`
-                      }
+                      to={folderLink}
                       sx={{
                         "&:hover": { backgroundColor: "action.hover" },
                         borderRadius: "8px",
@@ -269,7 +276,7 @@ const UserAssetsView: React.FC = () => {
                       </ListItemIcon>
                       <ListItemText
                         primary={folder.name}
-                        secondary={`Access: ${getAccessLevelText(
+                        secondary={`Access Level: ${getAccessLevelText(
                           displayAccessLevel
                         )} | Owned by: ${
                           loggedInUser?.id === folder.owner_id
@@ -322,18 +329,17 @@ const UserAssetsView: React.FC = () => {
                   const folder = allFolders.find(
                     (f: Folder) => f.id === (note.folder_id || note.folderId)
                   );
-                  const isShared =
-                    folder &&
-                    (folder.access_level === "read" ||
-                      folder.access_level === "write");
-                  const noteLink = isShared
-                    ? `/shared-folders/${folder?.id}/notes/${note.id}`
-                    : `/folders/${folder?.id}/notes/${note.id}`;
+
+                  const isFolderOwner = folder?.owner_id === loggedInUser?.id;
+
+                  const noteLink2 = isFolderOwner
+                    ? `/folders/${folder?.id}/notes/${note.id}`
+                    : `/shared-folders/${folder?.id}/notes/${note.id}`;
                   return (
                     <ListItem
                       key={note.id}
                       component={RouterLink}
-                      to={noteLink}
+                      to={noteLink2}
                       sx={{
                         "&:hover": { backgroundColor: "action.hover" },
                         borderRadius: "8px",

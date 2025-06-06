@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import Sidebar from "./Sidebar";
 import TopBar from "./Topbar";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store";
 import { UpdateNoteDto } from "../../types/note.types";
@@ -66,6 +66,16 @@ const NoteLayout: React.FC = () => {
       ) || null
     );
   }, [noteId, folderId, allNotes, currentNoteDetails]);
+
+  const folders = useSelector((state: RootState) => state.folders.folders);
+  const currentFolder = useMemo(() => {
+    if (!folderId || !folders) return null;
+    return folders.find((f) => f.id === folderId);
+  }, [folderId, folders]);
+  const canEdit =
+    currentFolder &&
+    currentFolder.access_level &&
+    currentFolder.access_level !== "read";
 
   const isUpdatingThisNote = useSelector(
     (state: RootState) => state.notes.updatingLoading
@@ -215,12 +225,6 @@ const NoteLayout: React.FC = () => {
     }
   }
 
-  const folders = useSelector((state: RootState) => state.folders.folders);
-  const currentFolder = useMemo(() => {
-    if (!folderId || !folders) return null;
-    return folders.find((f) => f.id === folderId);
-  }, [folderId, folders]);
-
   useEffect(() => {
     if (!currentNote && noteId) {
       dispatch(fetchNoteDetails(noteId));
@@ -282,7 +286,7 @@ const NoteLayout: React.FC = () => {
           </Breadcrumbs>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", my: 3 }}>
-          {isEditingTitle && folderId && noteId && currentNote ? (
+          {isEditingTitle && folderId && noteId && currentNote && canEdit ? (
             <TextField
               value={editableTitleText}
               onChange={handleTitleChange}
@@ -321,16 +325,19 @@ const NoteLayout: React.FC = () => {
                 fontWeight: "bold",
                 flexGrow: 1,
                 cursor:
-                  folderId && noteId && currentNote ? "pointer" : "default",
+                  folderId && noteId && currentNote && canEdit
+                    ? "pointer"
+                    : "default",
               }}
               onClick={() => {
-                if (folderId && noteId && currentNote) setIsEditingTitle(true);
+                if (folderId && noteId && currentNote && canEdit)
+                  setIsEditingTitle(true);
               }}
             >
               {displayTitle}
             </Typography>
           )}
-          {folderId && noteId && currentNote && !isEditingTitle && (
+          {folderId && noteId && currentNote && !isEditingTitle && canEdit && (
             <IconButton
               onClick={() => setIsEditingTitle(true)}
               size="small"
@@ -357,7 +364,7 @@ const NoteLayout: React.FC = () => {
                 }}
               />
             ))}
-            {currentNote && (
+            {currentNote && canEdit && (
               <Box
                 component="form"
                 onSubmit={async (e) => {
@@ -475,7 +482,7 @@ const NoteLayout: React.FC = () => {
               overflowWrap: "break-word",
             }}
           >
-            {isEditingBody ? (
+            {isEditingBody && canEdit ? (
               <TextField
                 multiline
                 fullWidth
@@ -504,23 +511,29 @@ const NoteLayout: React.FC = () => {
                   minHeight: "200px",
                   fontSize: "1.15rem",
                   color: "#5a4a00",
-                  cursor: "pointer",
+                  cursor: canEdit ? "pointer" : "default",
                   fontFamily:
                     "'Segoe Print', 'Comic Sans MS', cursive, sans-serif",
-                  "&:hover": {
-                    background:
-                      "repeating-linear-gradient(to bottom,rgb(234, 254, 255) 0px,rgb(234, 251, 255) 32px,rgb(182, 240, 247) 33px)",
-                  },
+                  "&:hover": canEdit
+                    ? {
+                        background:
+                          "repeating-linear-gradient(to bottom,rgb(234, 254, 255) 0px,rgb(234, 251, 255) 32px,rgb(182, 240, 247) 33px)",
+                      }
+                    : undefined,
                   p: 1,
                   borderRadius: 2,
                   transition: "background 0.2s",
                 }}
-                onClick={() => setIsEditingBody(true)}
-                title="Click to edit note body"
+                onClick={() => {
+                  if (canEdit) setIsEditingBody(true);
+                }}
+                title={canEdit ? "Click to edit note body" : undefined}
               >
                 {currentNote.body || (
                   <span style={{ color: "#bbb" }}>
-                    Click to add note content...
+                    {canEdit
+                      ? "Click to add note content..."
+                      : "You are not able to edit this note."}
                   </span>
                 )}
               </Typography>

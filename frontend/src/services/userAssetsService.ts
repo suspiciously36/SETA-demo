@@ -16,7 +16,6 @@ export const fetchUserAssets = async (userId: string, foldersPageOptions: Fronte
                 noteLimit: notesPageOptions.limit,
             },
         });
-        console.log('Fetched user assets:', response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching user assets:', error);

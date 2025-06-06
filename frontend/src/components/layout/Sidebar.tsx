@@ -55,7 +55,6 @@ import {
   fetchUserNotes,
   submitNewNote,
 } from "../../store/actions/noteActions.ts";
-import { AccessLevel as ShareAccessLevel } from "../../store/reducers/folderShareReducer"; // For dialog, if needed
 import { FolderAccessLevel, type Folder } from "../../types/folder.types.ts";
 
 const drawerWidth = 320;
@@ -232,7 +231,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
       )
     ) {
       try {
-        console.log(location.pathname);
         await dispatch(submitFolderDelete(folder.id));
         dispatch(showSnackbar(`Folder "${folder.name}" deleted.`, "success"));
         if (location.pathname === `/folders/${folder.id}`) {
@@ -286,8 +284,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
       return sharedFolders || [];
     return sharedFolders.slice(0, showItemsCount);
   }, [sharedFolders, showItemsCount]);
-
-  console.log(activeView);
 
   const menuItems = [
     {
@@ -534,9 +530,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
               </Tooltip>
             ) : (
               <Tooltip title="You cannot create new folder in Shared Folders">
-                <IconButton edge="end" size="small" disabled>
-                  <AddCircleOutlineIcon fontSize="small" />
-                </IconButton>
+                <span>
+                  <IconButton edge="end" size="small" disabled>
+                    <AddCircleOutlineIcon fontSize="small" />
+                  </IconButton>
+                </span>
               </Tooltip>
             )}
           </Box>
@@ -546,6 +544,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
 
     return (
       <ListItemButton
+        key={item.text}
         component={item.path && !item.onClick ? RouterLink : "div"}
         to={item.path}
         selected={isActive}

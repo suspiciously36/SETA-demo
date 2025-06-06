@@ -141,7 +141,9 @@ const UserManagementTable: React.FC = () => {
       currentUserActions?.teams?.some(
         (team) =>
           team.id ===
-          users.find((u) => u.id === loggedInUser?.id)?.teams?.[0]?.id
+          users
+            .find((u) => u.id === loggedInUser?.id)
+            ?.teams?.find((t) => t.id === team.id)?.id
       );
 
     if (!isManagerOfThisUser || !currentUserActions?.id) {

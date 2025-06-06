@@ -54,6 +54,8 @@ const TeamAssetsView: React.FC = () => {
     state.teams.teams.find((t) => t.id === teamId)
   );
 
+  console.log(team);
+
   const users = useSelector((state: RootState) => state.userList.users);
 
   const [allFolders, setAllFolders] = React.useState<Folder[]>([]);
@@ -67,6 +69,11 @@ const TeamAssetsView: React.FC = () => {
     setAllFolders((prev) => {
       const existingIds = new Set(prev.map((f) => f.id));
       const newFolders = foldersData.filter((f) => !existingIds.has(f.id));
+
+      if (newFolders.length === 0) {
+        return prev;
+      }
+
       return [...prev, ...newFolders];
     });
   }, [foldersData]);

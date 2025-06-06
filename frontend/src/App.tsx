@@ -16,9 +16,9 @@ import { Paper, Typography } from "@mui/material";
 import type { RootState } from "./store/index.ts";
 import SnackbarNotifier from "./common/SnackbarNotifier.tsx";
 import NoteLayout from "./components/layout/NoteLayout.tsx";
-import MyFolderPage from "./pages/MyFolderPage.tsx";
 import TeamAssetsView from "./components/teams/TeamAssetsView.tsx";
 import UserAssetsView from "./components/users/UserAssetsView.tsx";
+import FolderPage from "./pages/FolderPage.tsx";
 
 const MyFoldersOverviewPage: React.FC = () => {
   return (
@@ -104,7 +104,7 @@ const App: React.FC = () => {
           element={<AuthenticatedRouteWrapper LayoutComponent={FolderLayout} />}
         >
           <Route index element={<MyFoldersOverviewPage />} />
-          <Route path=":folderId" element={<MyFolderPage />} />
+          <Route path=":folderId" element={<FolderPage />} />
         </Route>
 
         <Route
@@ -112,7 +112,7 @@ const App: React.FC = () => {
           element={<AuthenticatedRouteWrapper LayoutComponent={FolderLayout} />}
         >
           <Route index element={<MySharedFoldersOverviewPage />} />
-          <Route path=":folderId" element={<MyFolderPage />} />
+          <Route path=":folderId" element={<FolderPage />} />
         </Route>
 
         <Route

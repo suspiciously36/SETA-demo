@@ -31,7 +31,7 @@ import { FolderAccessLevel, type Folder } from "../types/folder.types.ts";
 
 const ITEMS_PER_PAGE = 10;
 
-const MyFolderPage: React.FC = () => {
+const FolderPage: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { folderId } = useParams<{ folderId: string }>();
   const navigate = useNavigate();
@@ -52,7 +52,8 @@ const MyFolderPage: React.FC = () => {
     if (!loggedInUser || !currentFolder) return false;
     return (
       loggedInUser.id === currentFolder.owner_id ||
-      currentFolder.access_level === "write"
+      currentFolder.access_level === "write" ||
+      currentFolder.access_level === "read"
     );
   };
 
@@ -496,4 +497,4 @@ const MyFolderPage: React.FC = () => {
   );
 };
 
-export default MyFolderPage;
+export default FolderPage;
