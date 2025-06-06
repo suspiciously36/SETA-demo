@@ -18,6 +18,7 @@ import SnackbarNotifier from "./common/SnackbarNotifier.tsx";
 import NoteLayout from "./components/layout/NoteLayout.tsx";
 import MyFolderPage from "./pages/MyFolderPage.tsx";
 import TeamAssetsView from "./components/teams/TeamAssetsView.tsx";
+import UserAssetsView from "./components/users/UserAssetsView.tsx";
 
 const MyFoldersOverviewPage: React.FC = () => {
   return (
@@ -125,6 +126,8 @@ const App: React.FC = () => {
         ></Route>
 
         <Route path="/teams/:teamId/assets" element={<TeamAssetsView />} />
+
+        <Route path="/users/:userId/assets" element={<UserAssetsView />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

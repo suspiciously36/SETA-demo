@@ -7,6 +7,7 @@ import folderReducer from "./folderReducer.ts";
 import noteReducer from "./noteReducer.ts";
 import folderShareReducer from "./folderShareReducer.ts";
 import teamAssetsReducer from "./teamAssetsReducer.ts";
+import userAssetsReducer from "./userAssetsReducer.ts";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     folders: folderReducer,
     notes: noteReducer,
     folderShares: folderShareReducer,
-    teamAssets: teamAssetsReducer
+    teamAssets: teamAssetsReducer,
+    userAssets: userAssetsReducer,
 })
 
 export default rootReducer;

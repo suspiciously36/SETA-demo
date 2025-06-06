@@ -1,43 +1,42 @@
-import React, { useEffect } from "react";
-import { useParams, Link as RouterLink, useNavigate } from "react-router-dom";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "../../store";
+import { useNavigate, useParams, Link as RouterLink } from "react-router-dom";
+import type { RootState } from "../../store/index.ts";
+import { useEffect } from "react";
 import {
-  fetchTeamAssets,
-  clearTeamAssets,
-  setTeamAssetsFolderPage,
-  setTeamAssetsNotePage,
-} from "../../store/actions/teamAssetActions";
-import type { Folder } from "../../types/folder.types";
-import type { Note } from "../../types/note.types";
+  clearUserAssets,
+  fetchUserAssets,
+  setUserAssetsFolderPage,
+  setUserAssetsNotePage,
+} from "../../store/actions/userAssetActions.ts";
 import {
-  Box,
-  Typography,
-  CircularProgress,
   Alert,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
+  Box,
   Breadcrumbs,
+  CircularProgress,
+  Paper,
+  Typography,
   Link,
   Button,
   Grid,
-  Pagination,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   Stack,
+  Pagination,
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import NoteIcon from "@mui/icons-material/Description";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupIcon from "@mui/icons-material/Group";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { fetchUsers } from "../../store/actions/userListActions.ts";
-import { fetchTeams } from "../../store/actions/teamActions.ts";
+import type { Folder } from "../../types/folder.types.ts";
+import type { Note } from "../../types/note.types.ts";
 
-const TeamAssetsView: React.FC = () => {
-  const { teamId } = useParams<{ teamId: string }>();
-  const dispatch: AppDispatch = useDispatch();
+const UserAssetsView: React.FC = () => {
+  const { userId } = useParams<{ userId: string }>();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
@@ -45,13 +44,13 @@ const TeamAssetsView: React.FC = () => {
     assets,
     loading,
     error,
-    currentTeamId,
     currentFolderPage,
     currentNotePage,
-  } = useSelector((state: RootState) => state.teamAssets);
+    currentUserId,
+  } = useSelector((state: RootState) => state.userAssets);
 
-  const team = useSelector((state: RootState) =>
-    state.teams.teams.find((t) => t.id === teamId)
+  const user = useSelector((state: RootState) =>
+    state.userList.users.find((u) => u.id === userId)
   );
 
   const users = useSelector((state: RootState) => state.userList.users);
@@ -72,26 +71,39 @@ const TeamAssetsView: React.FC = () => {
   }, [foldersData]);
 
   useEffect(() => {
-    if (teamId) {
-      dispatch(fetchUsers(1, 999));
-      dispatch(fetchTeams(1, 999));
-      if (teamId !== currentTeamId || !assets) {
-        dispatch(fetchTeamAssets(teamId, 1, 1));
+    if (userId) {
+      if (userId !== currentUserId || !assets) {
+        dispatch(fetchUserAssets(userId, 1, 1));
       }
     }
     return () => {
-      dispatch(clearTeamAssets());
+      dispatch(clearUserAssets());
     };
-  }, [dispatch, teamId, currentTeamId]);
+  }, [dispatch, userId, currentUserId]);
+
+  const handleFolderPageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    if (userId) {
+      dispatch(setUserAssetsFolderPage(value));
+      dispatch(fetchUserAssets(userId, value, currentNotePage));
+    }
+  };
+
+  const handleNotePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    if (userId) {
+      dispatch(setUserAssetsNotePage(value));
+      dispatch(fetchUserAssets(userId, currentFolderPage, value));
+    }
+  };
 
   const getAccessLevelText = (level: string | undefined): string => {
     if (!level) return "Unknown";
     return level.charAt(0).toUpperCase() + level.slice(1);
-  };
-
-  const getFolderNameById = (folderId: string) => {
-    const folder = allFolders.find((f) => f.id === folderId);
-    return folder ? folder.name : "Unknown";
   };
 
   const getUsernameById = (userId: string | undefined): string => {
@@ -100,31 +112,12 @@ const TeamAssetsView: React.FC = () => {
     return user ? user.username : "Unknown User";
   };
 
-  const handleFolderPageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    if (teamId) {
-      dispatch(setTeamAssetsFolderPage(value));
-      dispatch(fetchTeamAssets(teamId, value, currentNotePage));
-    }
+  const getFolderNameById = (folderId: string) => {
+    const folder = allFolders.find((f) => f.id === folderId);
+    return folder ? folder.name : "Unknown";
   };
 
-  const handleNotePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    if (teamId) {
-      dispatch(setTeamAssetsNotePage(value));
-      dispatch(fetchTeamAssets(teamId, currentFolderPage, value));
-    }
-  };
-
-  if (!teamId) {
-    return <Alert severity="error">No Team ID provided.</Alert>;
-  }
-
-  const initialLoading = loading && (!assets || currentTeamId !== teamId);
+  const initialLoading = loading && (!assets || !currentUserId !== userId);
 
   if (initialLoading) {
     return (
@@ -135,16 +128,16 @@ const TeamAssetsView: React.FC = () => {
         minHeight="400px"
       >
         <CircularProgress />
-        <Typography sx={{ ml: 2 }}>Loading team assets...</Typography>
+        <Typography sx={{ ml: 2 }}>Loading user assets...</Typography>
       </Box>
     );
   }
 
   if (error && !assets) {
-    return <Alert severity="error">Error loading team assets: {error}</Alert>;
+    return <Alert severity="error">Error loading user assets: {error}</Alert>;
   }
 
-  if (currentTeamId !== teamId && !loading) {
+  if (currentUserId !== userId && !loading) {
     return (
       <Box
         display="flex"
@@ -153,7 +146,7 @@ const TeamAssetsView: React.FC = () => {
         minHeight="400px"
       >
         <Typography sx={{ ml: 2 }}>
-          Loading assets for team {teamId}...
+          Loading assets for user {userId}...
         </Typography>
       </Box>
     );
@@ -185,25 +178,25 @@ const TeamAssetsView: React.FC = () => {
           </Link>
           <Link
             component={RouterLink}
-            to="/teams"
+            to="/users"
             sx={{ display: "flex", alignItems: "center" }}
             color="inherit"
           >
-            <GroupIcon sx={{ mr: 0.5 }} fontSize="inherit" /> Teams
+            <GroupIcon sx={{ mr: 0.5 }} fontSize="inherit" /> Users
           </Link>
           <Typography
             color="text.primary"
             sx={{ display: "flex", alignItems: "center" }}
           >
-            {team ? team.team_name : "Team"} Assets
+            {user ? user.username : "User"} Assets
           </Typography>
         </Breadcrumbs>
         <Button
           variant="outlined"
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate("/teams")}
+          onClick={() => navigate("/users")}
         >
-          Back to Teams
+          Back to Users
         </Button>
       </Box>
 
@@ -212,7 +205,7 @@ const TeamAssetsView: React.FC = () => {
         gutterBottom
         sx={{ fontWeight: "bold", color: "primary.main" }}
       >
-        Assets for Team: {team ? team.team_name : teamId}
+        Assets for User: {user ? user.username : userId}
       </Typography>
       {loading && (
         <CircularProgress
@@ -245,6 +238,7 @@ const TeamAssetsView: React.FC = () => {
             <>
               <List dense>
                 {foldersData.map((folder: Folder) => {
+                  console.log("Rendering folder:", folder);
                   const isOwner = folder.owner_id === loggedInUser?.id;
 
                   let displayAccessLevel = folder.access_level;
@@ -275,7 +269,7 @@ const TeamAssetsView: React.FC = () => {
                       </ListItemIcon>
                       <ListItemText
                         primary={folder.name}
-                        secondary={`Access Level: ${getAccessLevelText(
+                        secondary={`Access: ${getAccessLevelText(
                           displayAccessLevel
                         )} | Owned by: ${
                           loggedInUser?.id === folder.owner_id
@@ -300,11 +294,10 @@ const TeamAssetsView: React.FC = () => {
             </>
           ) : (
             <Typography sx={{ fontStyle: "italic" }}>
-              {!loading && "No folders accessible to this team."}
+              {!loading && "No folders accessible to this user."}
             </Typography>
           )}
         </Grid>
-
         <Grid item xs={12} md={6}>
           <Typography
             variant="h5"
@@ -373,7 +366,7 @@ const TeamAssetsView: React.FC = () => {
             </>
           ) : (
             <Typography sx={{ fontStyle: "italic" }}>
-              {!loading && "No notes directly listed for this team."}
+              {!loading && "No notes directly listed for this user."}
             </Typography>
           )}
         </Grid>
@@ -382,4 +375,4 @@ const TeamAssetsView: React.FC = () => {
   );
 };
 
-export default TeamAssetsView;
+export default UserAssetsView;

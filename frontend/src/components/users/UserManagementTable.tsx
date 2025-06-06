@@ -41,30 +41,26 @@ import CreateUserModal from "./CreateUserModal";
 
 import { showSnackbar } from "../../store/actions/notificationActions";
 import { getInitials } from "../../utils/helpers/getInitials.ts";
-
-const chipColorPalette = [
-  { backgroundColor: "#e3f2fd", color: "#1565c0" },
-  { backgroundColor: "#e8f5e9", color: "#2e7d32" },
-  { backgroundColor: "#fff3e0", color: "#ef6c00" },
-  { backgroundColor: "#f3e5f5", color: "#6a1b9a" },
-  { backgroundColor: "#ffebee", color: "#c62828" },
-  { backgroundColor: "#e0f7fa", color: "#006064" },
-  { backgroundColor: "#f9fbe7", color: "#9e9d24" },
-];
+import { useNavigate } from "react-router-dom";
 
 const getTeamChipStyle = (teamNameOrId: string) => {
   let hash = 0;
   for (let i = 0; i < teamNameOrId.length; i++) {
-    const char = teamNameOrId.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0;
+    hash = teamNameOrId.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const index = Math.abs(hash) % chipColorPalette.length;
-  return chipColorPalette[index];
+
+  const hue = Math.abs(hash) % 360;
+
+  const backgroundColor = `hsl(${hue}, 100%, 90%)`;
+  const color = `hsl(${hue}, 100%, 30%)`;
+
+  return { backgroundColor, color };
 };
 
 const UserManagementTable: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
+
   const { users, loading, error, pagination } = useSelector(
     (state: RootState) => state.userList
   );
@@ -139,10 +135,29 @@ const UserManagementTable: React.FC = () => {
     setAnchorEl(null);
     setCurrentUserActions(null);
   };
-  const handleViewProfile = () => {
-    if (currentUserActions) console.log("View profile:", currentUserActions.id);
+  const handleViewAssets = () => {
+    const isManagerOfThisUser =
+      loggedInUser?.role === UserRole.MANAGER &&
+      currentUserActions?.teams?.some(
+        (team) =>
+          team.id ===
+          users.find((u) => u.id === loggedInUser?.id)?.teams?.[0]?.id
+      );
+
+    if (!isManagerOfThisUser || !currentUserActions?.id) {
+      dispatch(
+        showSnackbar(
+          "You do not have permission to view this user's assets.",
+          "error"
+        )
+      );
+      return;
+    }
+
+    navigate(`/users/${currentUserActions.id}/assets`);
     handleMenuClose();
   };
+
   const handlePermissions = () => {
     if (currentUserActions) console.log("Permissions:", currentUserActions.id);
     handleMenuClose();
@@ -458,7 +473,7 @@ const UserManagementTable: React.FC = () => {
                                 .slice(0, 3)
                                 .map((teamInfo) => {
                                   const chipStyle = getTeamChipStyle(
-                                    teamInfo.id
+                                    teamInfo.name
                                   );
                                   return (
                                     <Chip
@@ -550,13 +565,13 @@ const UserManagementTable: React.FC = () => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={handleViewProfile}>
+            <MenuItem onClick={handleViewAssets}>
               <ListItemIcon>
                 <VisibilityIcon fontSize="small" />
               </ListItemIcon>
-              <ListItemText>View profile</ListItemText>
+              <ListItemText>View assets</ListItemText>
             </MenuItem>
-            <MenuItem onClick={handlePermissions}>
+            <MenuItem onClick={handlePermissions} disabled={true}>
               <ListItemIcon>
                 <VpnKeyIcon fontSize="small" />
               </ListItemIcon>
