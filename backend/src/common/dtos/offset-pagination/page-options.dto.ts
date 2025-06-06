@@ -5,14 +5,14 @@ export class PageOptionsDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  readonly limit: number = 10;
+  limit: number = 10;
 
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  readonly page?: number = 1;
+  page?: number = 1;
 
-  readonly orderBy?: string;
+  orderBy?: string;
 
   get offset(): number {
     return this.page ? (this.page - 1) * this.limit : 0;

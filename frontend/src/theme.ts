@@ -1,11 +1,9 @@
-    // src/theme.ts
     import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
-    // Create a base theme instance
     let theme = createTheme({
       typography: {
         fontFamily: [
-          'Outfit', // Your desired font
+          'Outfit',
           '-apple-system',
           'BlinkMacSystemFont',
           '"Segoe UI"',
@@ -17,10 +15,9 @@
           '"Segoe UI Emoji"',
           '"Segoe UI Symbol"',
         ].join(','),
-        // You can also customize specific typography variants if needed
         h1: {
-          fontFamily: 'Outfit, sans-serif', // Example: specific font for h1
-          fontWeight: 700, // Example weight
+          fontFamily: 'Outfit, sans-serif', 
+          fontWeight: 700, 
         },
         h2: {
           fontFamily: 'Outfit, sans-serif',
@@ -28,37 +25,32 @@
         },
         button: {
           fontFamily: 'Outfit, sans-serif',
-          fontWeight: 500, // Example for button text
-          textTransform: 'none', // Often desired to match designs
+          fontWeight: 500,
+          textTransform: 'none', 
         }
-        // ... other variants
       },
-      // You can also define your palette, components overrides, etc. here
       palette: {
         primary: {
-          main: "rgba(48, 112, 196, 0.95)", // Example primary color from your login page
+          main: "rgba(48, 112, 196, 0.95)",
         },
         secondary: {
-          main: '#5e35b1', // Example secondary color
+          main: '#5e35b1', 
         },
-        // ... other palette colors
       },
       components: {
-        // Example: Default props for MuiButton
         MuiButton: {
           defaultProps: {
-            disableElevation: true, // Example global button style
+            disableElevation: true, 
           },
           styleOverrides: {
             root: {
-              borderRadius: '8px', // Example global button border radius
+              borderRadius: '8px', 
             }
           }
         },
         MuiPaper: {
             styleOverrides: {
                 root: {
-                    // borderRadius: '12px', // Example global paper border radius
                 }
             }
         },
@@ -66,16 +58,14 @@
             styleOverrides: {
                 root: {
                     '& .MuiOutlinedInput-root': {
-                        borderRadius: '12px', // Example global textfield border radius
+                        borderRadius: '12px', 
                     }
                 }
             }
         }
-        // ... other component overrides
       }
     });
 
-    // Make typography responsive
     theme = responsiveFontSizes(theme);
 
     export default theme;

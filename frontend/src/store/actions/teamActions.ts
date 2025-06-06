@@ -27,13 +27,11 @@ export const deleteTeamRequest = (teamId: string) => ({ type: DELETE_TEAM_REQUES
 export const deleteTeamSuccess = (teamId: string) => ({ type: DELETE_TEAM_SUCCESS, payload: { teamId } } as const);
 export const deleteTeamFailure = (teamId: string, error: string) => ({ type: DELETE_TEAM_FAILURE, payload: { teamId, error } } as const);
 
-// New Action Creators for Fetch Team Details
 export const fetchTeamDetailsRequest = () => ({ type: FETCH_TEAM_DETAILS_REQUEST } as const);
 export const fetchTeamDetailsSuccess = (teamDetails: DetailedTeam) => ({ type: FETCH_TEAM_DETAILS_SUCCESS, payload: teamDetails } as const);
 export const fetchTeamDetailsFailure = (error: string) => ({ type: FETCH_TEAM_DETAILS_FAILURE, payload: error } as const);
 export const clearTeamDetails = () => ({ type: CLEAR_TEAM_DETAILS } as const);
 
-// New Action Creators for Update Team
 export const updateTeamRequest = (teamId: string) => ({ type: UPDATE_TEAM_REQUEST, payload: {teamId} } as const); 
 export const updateTeamSuccess = (updatedTeamData: UpdateTeamSuccessResponseData) => ({ 
     type: UPDATE_TEAM_SUCCESS, 
@@ -41,7 +39,6 @@ export const updateTeamSuccess = (updatedTeamData: UpdateTeamSuccessResponseData
 } as const);
 export const updateTeamFailure = (error: string) => ({ type: UPDATE_TEAM_FAILURE, payload: error } as const); 
 
-// Thunk Action for Fetching Teams
 export const fetchTeams = (page: number = 1, limit: number = 10): AppThunk => async (dispatch: AppDispatch) => {
   dispatch(fetchTeamsRequest(page));
   try {
@@ -82,7 +79,6 @@ export const deleteTeam = (teamId: string, currentPage: number, limit: number): 
   }
 };
 
-// Thunk Action for Fetching Single Team Details (for editing)
 export const fetchTeamForEdit = (teamId: string): AppThunk<Promise<DetailedTeam | void>> => async (dispatch: AppDispatch) => {
   dispatch(fetchTeamDetailsRequest());
   try {
@@ -96,7 +92,6 @@ export const fetchTeamForEdit = (teamId: string): AppThunk<Promise<DetailedTeam 
   }
 };
 
-// Thunk Action for Updating a Team
 export const submitTeamUpdate = (teamId: string, teamData: UpdateTeamDto): AppThunk<Promise<UpdateTeamSuccessResponseData | void>> => 
   async (dispatch: AppDispatch) => {
   dispatch(updateTeamRequest(teamId));

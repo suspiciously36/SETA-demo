@@ -24,8 +24,6 @@ import { AccessLevel, ShareFolderReqDto } from './dtos/share-folder.req.dto.js';
 export class FolderService {
   constructor(@InjectConnection() private readonly knex: Knex) {}
 
-  // In FolderService
-
   async getAllFolders(
     currentUserId: string,
     pageOptionsDto: PageOptionsDto,
@@ -79,7 +77,6 @@ export class FolderService {
       .first();
     const totalRecords = Number(totalResult?.total || 0);
 
-    // Create pagination metadata
     const paginationMeta = new OffsetPaginationDto(
       totalRecords,
       pageOptionsDto,
@@ -236,11 +233,11 @@ export class FolderService {
       throw new BadRequestException(`You cannot share a folder with yourself.`);
     }
 
-    const isUserToShareWithExist = await this.knex('users')
+    const doesUserToShareWithExist = await this.knex('users')
       .where({ id: userIdToShareWith })
       .first();
 
-    if (!isUserToShareWithExist) {
+    if (!doesUserToShareWithExist) {
       throw new NotFoundException("User you want to share this doesn't exist.");
     }
     const permissionData = {
@@ -301,7 +298,7 @@ export class FolderService {
   async getUsersThatAreSharedByFolderId(
     folderId: string,
     currentUserId: string,
-  ) {
+  ): Promise<{ userId: string; accessLevel: string }[]> {
     return await this.knex('folder_permissions')
       .where({ folder_id: folderId })
       .select('user_id as userId', 'access_level as accessLevel');

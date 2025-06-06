@@ -17,7 +17,6 @@ export const getAllTeams = async (page: number, limit: number): Promise<Paginate
       page: page,
       limit: limit
     }});
-    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error fetching teams:', error);

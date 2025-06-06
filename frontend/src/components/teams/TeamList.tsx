@@ -32,6 +32,7 @@ import { showSnackbar } from "../../store/actions/notificationActions.ts";
 import { UserRole } from "../../types/user.types.ts";
 
 import { getInitials } from "../../utils/helpers/getInitials.ts";
+import { useNavigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -49,6 +50,10 @@ const TeamList: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { teams, loading, error, pagination, deletingLoading, deletingError } =
     useSelector((state: RootState) => state.teams);
+
+  const users = useSelector((state: RootState) => state.userList.users);
+
+  const navigate = useNavigate();
 
   const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
@@ -164,7 +169,22 @@ const TeamList: React.FC = () => {
   };
 
   const handleCardClick = (teamId: string) => {
-    setHighlightedTeamId(teamId === highlightedTeamId ? null : teamId);
+    const isManagerOfTeam = users.some(
+      (user) =>
+        user.id === loggedInUser?.id &&
+        user.role === UserRole.MANAGER &&
+        user.teams.some((team) => team.id === teamId)
+    );
+    if (!isManagerOfTeam) {
+      dispatch(
+        showSnackbar(
+          "You do not have permission to view team assets.",
+          "warning"
+        )
+      );
+      return;
+    }
+    navigate(`/teams/${teamId}/assets`);
   };
 
   if (loading && currentPage === 1 && (!teams || teams.length === 0)) {

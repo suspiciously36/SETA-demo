@@ -45,6 +45,10 @@ export class TeamService {
         team_id: teamId,
         role: 'member',
       })
+      .orWhere({
+        team_id: teamId,
+        role: 'manager',
+      })
       .returning('*');
 
     return teamMembers;

@@ -1,4 +1,3 @@
-// src/components/layout/NoteLayout.tsx
 import React, { useState, useEffect, useMemo } from "react";
 import {
   Box,
@@ -14,25 +13,24 @@ import {
   Breadcrumbs,
   Link,
 } from "@mui/material";
-import Sidebar from "./Sidebar"; // Assuming Sidebar is in the same directory
-import TopBar from "./Topbar"; // Assuming Topbar is in the same directory
-import { Outlet, useLocation, useParams, useNavigate } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import TopBar from "./Topbar";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store";
-import { Note, UpdateNoteDto } from "../../types/note.types"; // Ensure correct path
+import { UpdateNoteDto } from "../../types/note.types";
 import {
   submitNoteUpdate,
   fetchUserNotes,
   fetchNoteDetails,
-} from "../../store/actions/noteActions"; // Ensure correct path
+} from "../../store/actions/noteActions";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
-import { showSnackbar } from "../../store/actions/notificationActions"; // Ensure correct path
+import { showSnackbar } from "../../store/actions/notificationActions";
 import { Link as RouterLink } from "react-router-dom";
 
 const NoteLayout: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { folderId, noteId } = useParams<{
     folderId?: string;
@@ -41,17 +39,14 @@ const NoteLayout: React.FC = () => {
 
   const [activeSidebarView, setActiveSidebarView] = useState<string>("folders");
 
-  // Selectors for notes
   const allNotes = useSelector((state: RootState) => state.notes.notes);
   const isNotesListLoading = useSelector(
     (state: RootState) => state.notes.loading
   );
-  // Add selector for currentNoteDetails
   const currentNoteDetails = useSelector(
     (state: RootState) => state.notes.currentNoteDetails
   );
 
-  // Derive currentNote using currentNoteDetails if available, else from allNotes
   const currentNote = useMemo(() => {
     if (!noteId) return null;
     if (
@@ -72,9 +67,6 @@ const NoteLayout: React.FC = () => {
     );
   }, [noteId, folderId, allNotes, currentNoteDetails]);
 
-  // Select updating status for the specific note
-  // Your note reducer might store updatingLoading as a single boolean or per-note.
-  // Assuming a single boolean for simplicity here. Adjust if it's per-note.
   const isUpdatingThisNote = useSelector(
     (state: RootState) => state.notes.updatingLoading
   );
@@ -86,16 +78,12 @@ const NoteLayout: React.FC = () => {
   const [editableTitleText, setEditableTitleText] = useState("");
   const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false);
 
-  // Editable body state
   const [isEditingBody, setIsEditingBody] = useState(false);
   const [editableBodyText, setEditableBodyText] = useState("");
 
-  // New states for tag editing
   const [addTagEditing, setAddTagEditing] = useState(false);
   const [addTagValue, setAddTagValue] = useState("");
 
-  // Effect to fetch notes if not already loaded, though Sidebar might do this.
-  // This is a fallback or explicit load trigger for the layout.
   useEffect(() => {
     if (!allNotes || allNotes.length === 0) {
       dispatch(fetchUserNotes());
@@ -112,11 +100,10 @@ const NoteLayout: React.FC = () => {
       if (currentNote) {
         setEditableTitleText(
           currentNote.title || currentNote.name || "Untitled Note"
-        ); // Handle both title/name
+        );
         setIsEditingTitle(false);
         setHasAttemptedLoad(true);
       } else if (!isNotesListLoading) {
-        // Only set to "not found" if not loading and no note
         setEditableTitleText("Note not found");
         setHasAttemptedLoad(true);
       } else if (isNotesListLoading) {
@@ -124,23 +111,13 @@ const NoteLayout: React.FC = () => {
         setHasAttemptedLoad(false);
       }
     } else {
-      // Fallback if no noteId or folderId, though this layout should ideally not be reached without them.
       setActiveSidebarView(`folders/${folderId || ""}`);
       setEditableTitleText("Note not specified");
       setIsEditingTitle(false);
       setHasAttemptedLoad(true);
     }
-  }, [
-    folderId,
-    noteId,
-    currentNote,
-    isNotesListLoading,
-    // location.pathname, // location.pathname might cause too many re-renders if not careful
-    // navigate, // navigate function itself doesn't change
-    // isUpdatingThisNote, // Only relevant for after an update attempt
-  ]);
+  }, [folderId, noteId, currentNote, isNotesListLoading]);
 
-  // Update editable body text when note changes
   useEffect(() => {
     if (currentNote) {
       setEditableBodyText(currentNote.body || "");
@@ -165,7 +142,7 @@ const NoteLayout: React.FC = () => {
     }
     if (!editableTitleText.trim()) {
       dispatch(showSnackbar("Note title cannot be empty.", "error"));
-      setEditableTitleText(currentNoteTitle); // Revert to original
+      setEditableTitleText(currentNoteTitle);
       setIsEditingTitle(false);
       return;
     }
@@ -174,7 +151,7 @@ const NoteLayout: React.FC = () => {
 
     try {
       await dispatch(submitNoteUpdate(noteId, updateDto));
-      await dispatch(fetchNoteDetails(noteId)); // <-- ensure UI updates
+      await dispatch(fetchNoteDetails(noteId));
     } catch (error) {
       setEditableTitleText(currentNoteTitle);
     } finally {
@@ -193,7 +170,6 @@ const NoteLayout: React.FC = () => {
     }
   };
 
-  // Save body edit
   const handleBodyEditSubmit = async () => {
     if (!noteId || !currentNote) {
       setIsEditingBody(false);
@@ -208,7 +184,7 @@ const NoteLayout: React.FC = () => {
     const updateDto: UpdateNoteDto = { body: editableBodyText };
     try {
       await dispatch(submitNoteUpdate(noteId, updateDto));
-      await dispatch(fetchNoteDetails(noteId)); // <-- ensure UI updates
+      await dispatch(fetchNoteDetails(noteId));
     } catch (error) {
       setEditableBodyText(currentNoteBody);
     } finally {
@@ -228,8 +204,7 @@ const NoteLayout: React.FC = () => {
     }
   };
 
-  // Determine display title
-  let displayTitle = "Note"; // Default
+  let displayTitle = "Note";
   if (folderId && noteId) {
     if (isNotesListLoading && !currentNote && !hasAttemptedLoad) {
       displayTitle = "Loading note...";
@@ -240,16 +215,11 @@ const NoteLayout: React.FC = () => {
     }
   }
 
-  // Get folders from Redux to display folder name in breadcrumb
   const folders = useSelector((state: RootState) => state.folders.folders);
   const currentFolder = useMemo(() => {
     if (!folderId || !folders) return null;
     return folders.find((f) => f.id === folderId);
   }, [folderId, folders]);
-
-  // Pseudocode for your NoteDetailPage component
-  // const { noteId } = useParams();
-  // const note = useSelector(state => state.notes.notes.find(n => n.id === noteId));
 
   useEffect(() => {
     if (!currentNote && noteId) {
@@ -276,16 +246,21 @@ const NoteLayout: React.FC = () => {
         }}
       >
         <Toolbar />
-        {/* Breadcrumbs */}
         <Box sx={{ my: 2 }}>
           <Breadcrumbs aria-label="breadcrumb">
             <Link
               component={RouterLink}
               underline="hover"
               color="inherit"
-              to="/folders"
+              to={
+                location.pathname.startsWith("/shared-folders/")
+                  ? `/shared-folders`
+                  : `/folders`
+              }
             >
-              Folders
+              {location.pathname.startsWith("/shared-folders/")
+                ? "Shared Folders"
+                : "Folders"}
             </Link>
             {folderId && currentFolder && (
               <Link
@@ -311,7 +286,7 @@ const NoteLayout: React.FC = () => {
             <TextField
               value={editableTitleText}
               onChange={handleTitleChange}
-              onBlur={handleTitleEditSubmit} // Submit on blur
+              onBlur={handleTitleEditSubmit}
               onKeyDown={handleTitleKeyDown}
               autoFocus
               variant="standard"
@@ -319,7 +294,7 @@ const NoteLayout: React.FC = () => {
               sx={{
                 flexGrow: 1,
                 "& .MuiInputBase-input": {
-                  typography: "h4", // Slightly smaller than folder title
+                  typography: "h4",
                   fontWeight: "bold",
                   paddingBottom: "2px",
                 },
@@ -340,7 +315,7 @@ const NoteLayout: React.FC = () => {
             />
           ) : (
             <Typography
-              variant="h4" // Slightly smaller than folder title
+              variant="h4"
               component="h1"
               sx={{
                 fontWeight: "bold",
@@ -365,7 +340,6 @@ const NoteLayout: React.FC = () => {
             </IconButton>
           )}
         </Box>
-        {/* Tags display */}
         {currentNote && Array.isArray(currentNote.tags) && (
           <Box sx={{ mb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
             {currentNote.tags.map((tag: string, idx: number) => (
@@ -383,7 +357,6 @@ const NoteLayout: React.FC = () => {
                 }}
               />
             ))}
-            {/* Add Tag Editable */}
             {currentNote && (
               <Box
                 component="form"
@@ -400,7 +373,7 @@ const NoteLayout: React.FC = () => {
                       ]),
                     };
                     await dispatch(submitNoteUpdate(currentNote.id, updateDto));
-                    await dispatch(fetchNoteDetails(currentNote.id)); // <-- ensure UI updates
+                    await dispatch(fetchNoteDetails(currentNote.id)); //
                   }
                   setAddTagValue("");
                   setAddTagEditing(false);
@@ -465,13 +438,11 @@ const NoteLayout: React.FC = () => {
             )}
           </Box>
         )}
-        {/* Display update error if any */}
         {updateErrorForThisNote && (
           <Alert severity="error" sx={{ mb: 2 }}>
             Failed to update note: {updateErrorForThisNote}
           </Alert>
         )}
-        {/* Display message if note not found and not loading */}
         {!isNotesListLoading &&
           !currentNote &&
           hasAttemptedLoad &&
@@ -482,7 +453,6 @@ const NoteLayout: React.FC = () => {
               have been deleted.
             </Alert>
           )}
-        {/* Editable note body */}
         {currentNote && !isNotesListLoading && (
           <Paper
             elevation={4}
@@ -557,7 +527,6 @@ const NoteLayout: React.FC = () => {
             )}
           </Paper>
         )}
-        {/* Show loading spinner for note content area if note list is loading and no specific note yet */}
         {isNotesListLoading && !currentNote && (
           <Box
             sx={{

@@ -666,7 +666,6 @@ const EditTeamModal: React.FC<EditTeamModalProps> = ({
                   <CircularProgress />{" "}
                 </Box>
               ) : (
-                /* ... List rendering ... */
                 <List dense>
                   {filteredUsers.length === 0 && searchTerm && (
                     <Typography

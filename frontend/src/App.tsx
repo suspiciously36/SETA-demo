@@ -1,24 +1,23 @@
-// src/App.tsx
 import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-} from "react-router-dom"; // Ensure Outlet is imported
+} from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import LoginPage from "./pages/LoginPage";
-import DashboardLayout from "./components/layout/DashboardLayout"; // Your main dashboard layout
-import FolderLayout from "./components/layout/FolderLayout"; // Your new folder layout
+import DashboardLayout from "./components/layout/DashboardLayout";
+import FolderLayout from "./components/layout/FolderLayout";
 import UserManagementTable from "./components/users/UserManagementTable";
 import TeamList from "./components/teams/TeamList";
-// Placeholders for folder content - create these as actual components
 import { Paper, Typography } from "@mui/material";
 import type { RootState } from "./store/index.ts";
 import SnackbarNotifier from "./common/SnackbarNotifier.tsx";
 import NoteLayout from "./components/layout/NoteLayout.tsx";
 import MyFolderPage from "./pages/MyFolderPage.tsx";
+import TeamAssetsView from "./components/teams/TeamAssetsView.tsx";
 
 const MyFoldersOverviewPage: React.FC = () => {
   return (
@@ -27,6 +26,18 @@ const MyFoldersOverviewPage: React.FC = () => {
       <Typography sx={{ mt: 2 }}>
         Select a folder from the sidebar to view its content, or create a new
         folder using the '+' button in the sidebar.
+      </Typography>
+    </Paper>
+  );
+};
+
+const MySharedFoldersOverviewPage: React.FC = () => {
+  return (
+    <Paper sx={{ p: 3, borderRadius: "12px", boxShadow: 1, mt: 2 }}>
+      <Typography variant="h5">My Shared Folders Overview</Typography>
+      <Typography sx={{ mt: 2 }}>
+        Select a shared folder from the sidebar to view its content, or
+        collaborate with others.
       </Typography>
     </Paper>
   );
@@ -99,7 +110,7 @@ const App: React.FC = () => {
           path="/shared-folders"
           element={<AuthenticatedRouteWrapper LayoutComponent={FolderLayout} />}
         >
-          <Route index element={<MyFoldersOverviewPage />} />
+          <Route index element={<MySharedFoldersOverviewPage />} />
           <Route path=":folderId" element={<MyFolderPage />} />
         </Route>
 
@@ -112,6 +123,8 @@ const App: React.FC = () => {
           path="shared-folders/:folderId/notes/:noteId"
           element={<NoteLayout />}
         ></Route>
+
+        <Route path="/teams/:teamId/assets" element={<TeamAssetsView />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

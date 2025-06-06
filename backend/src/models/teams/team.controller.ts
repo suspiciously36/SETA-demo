@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -27,9 +29,8 @@ import { CreateDto } from '../../common/dtos/create.dto.js';
 import { OffsetPaginatedDto } from '../../common/dtos/offset-pagination/paginated.dto.js';
 import { TeamResDto } from './dtos/team.res.dto.js';
 import { TeamAssetsService } from './team-assets.service.js';
-import { FoldersQueryReqDto } from '../users/dtos/folders-query.req.dto.js';
-import { NotesQueryReqDto } from '../users/dtos/notes-query.req.dto.js';
 import { AuthenticatedThrottlerGuard } from '../../guards/throttler/throttler.guard.js';
+import { PageOptionsDto } from '../../common/dtos/offset-pagination/page-options.dto.js';
 
 @Controller('teams')
 export class TeamController {
@@ -61,14 +62,32 @@ export class TeamController {
   async getTeamAssets(
     @Param('teamId') teamId: string,
     @CurrentUser() currentUser: UserInterface,
-    @Query() foldersQueryReqDto: FoldersQueryReqDto,
-    @Query() notesQueryReqDto: NotesQueryReqDto,
+    // Folder Pagination
+    @Query('folderPage', new DefaultValuePipe(1), ParseIntPipe)
+    folderPage: number,
+    @Query('folderLimit', new DefaultValuePipe(15), ParseIntPipe)
+    folderLimit: number,
+    // Note Pagination
+    @Query('notePage', new DefaultValuePipe(1), ParseIntPipe) notePage: number,
+    @Query('noteLimit', new DefaultValuePipe(15), ParseIntPipe)
+    noteLimit: number,
   ) {
+    const foldersPageOptions: PageOptionsDto = {
+      page: folderPage,
+      limit: folderLimit,
+      offset: (folderPage - 1) * folderLimit,
+    };
+    const notesPageOptions: PageOptionsDto = {
+      page: notePage,
+      limit: noteLimit,
+      offset: (notePage - 1) * noteLimit,
+    };
+
     return this.teamAssetsService.getAssetsForTeam(
       teamId,
       currentUser.id,
-      foldersQueryReqDto,
-      notesQueryReqDto,
+      foldersPageOptions,
+      notesPageOptions,
     );
   }
 

@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   UseGuards,
@@ -16,9 +18,8 @@ import { UserInterface } from './interfaces/user.interface.js';
 import { UserService } from './user.service.js';
 import { ListUserReqDto } from './dtos/listUser.req.dto.js';
 import { UserAssetsService } from './user-assets.service.js';
-import { FoldersQueryReqDto } from './dtos/folders-query.req.dto.js';
-import { NotesQueryReqDto } from './dtos/notes-query.req.dto.js';
 import { AuthenticatedThrottlerGuard } from '../../guards/throttler/throttler.guard.js';
+import { PageOptionsDto } from '../../common/dtos/offset-pagination/page-options.dto.js';
 
 @Controller('users')
 export class UserController {
@@ -48,14 +49,32 @@ export class UserController {
   async getAssets(
     @Param('userId') userId: string,
     @CurrentUser() currentUser: UserInterface,
-    @Query() foldersQueryReqDto: FoldersQueryReqDto,
-    @Query() notesQueryReqDto: NotesQueryReqDto,
+    // Folder Pagination
+    @Query('folderPage', new DefaultValuePipe(1), ParseIntPipe)
+    folderPage: number,
+    @Query('folderLimit', new DefaultValuePipe(15), ParseIntPipe)
+    folderLimit: number,
+    // Note Pagination
+    @Query('notePage', new DefaultValuePipe(1), ParseIntPipe) notePage: number,
+    @Query('noteLimit', new DefaultValuePipe(15), ParseIntPipe)
+    noteLimit: number,
   ) {
+    const foldersPageOptions: PageOptionsDto = {
+      page: folderPage,
+      limit: folderLimit,
+      offset: (folderPage - 1) * folderLimit,
+    };
+    const notesPageOptions: PageOptionsDto = {
+      page: notePage,
+      limit: noteLimit,
+      offset: (notePage - 1) * noteLimit,
+    };
+
     return this.userAssetsService.getAssetsForUser(
       userId,
       currentUser.id,
-      foldersQueryReqDto,
-      notesQueryReqDto,
+      foldersPageOptions,
+      notesPageOptions,
     );
   }
 

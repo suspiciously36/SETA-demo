@@ -50,7 +50,7 @@ export class TeamAssetsService {
     for (const memberId of memberUserIds) {
       const memberFolders = await this.folderService.getAllFolders(
         memberId,
-        foldersPageOptions,
+        { ...foldersPageOptions, limit: 999, offset: 0 }, // fetch all
       );
       memberFolders.data.forEach((folder) => {
         if (!allFoldersMap.has(folder.id)) {
@@ -60,7 +60,7 @@ export class TeamAssetsService {
 
       const memberNotes = await this.noteService.getAllNotes(
         memberId,
-        notesPageOptions,
+        { ...notesPageOptions, limit: 999, offset: 0 }, // fetch all
       );
       memberNotes.data.forEach((note) => {
         if (!allNotesMap.has(note.id)) {

@@ -273,7 +273,6 @@ export class NoteService {
       updated_at: new Date(),
     };
 
-    // Update the note in the database
     const [result] = await this.knex('notes')
       .where({ id: noteId })
       .update(updatedNote)

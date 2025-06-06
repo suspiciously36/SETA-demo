@@ -1,4 +1,3 @@
-// src/components/common/SnackbarNotifier.tsx
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Snackbar, Alert } from "@mui/material";
@@ -8,7 +7,7 @@ import { hideSnackbar } from "../store/actions/notificationActions.ts";
 const SnackbarNotifier: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { open, message, severity, autoHideDuration } = useSelector(
-    (state: RootState) => state.notifications // Assuming 'notifications' is the key in rootReducer
+    (state: RootState) => state.notifications
   );
 
   const handleClose = (
@@ -26,7 +25,7 @@ const SnackbarNotifier: React.FC = () => {
       open={open}
       autoHideDuration={autoHideDuration}
       onClose={handleClose}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }} // Or your preferred position
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
     >
       <Alert
         onClose={handleClose}

@@ -6,6 +6,7 @@ import notificationReducer from "./notificationReducer.ts";
 import folderReducer from "./folderReducer.ts";
 import noteReducer from "./noteReducer.ts";
 import folderShareReducer from "./folderShareReducer.ts";
+import teamAssetsReducer from "./teamAssetsReducer.ts";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
     notifications: notificationReducer,
     folders: folderReducer,
     notes: noteReducer,
-    folderShares: folderShareReducer
+    folderShares: folderShareReducer,
+    teamAssets: teamAssetsReducer
 })
 
 export default rootReducer;

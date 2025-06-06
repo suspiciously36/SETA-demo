@@ -100,8 +100,6 @@ export const submitNewNote = (folderId: string, noteData: CreateNoteDto): AppThu
         const newNote = await createNoteService(folderId, noteData)
         dispatch(createNotesSuccess(newNote))
         dispatch(showSnackbar(`Note created successfully!`, "success"));
-        // await dispatch(fetchUserNotes());
-        console.log(newNote)
         return newNote;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "An unknown error has occurred while creating new note";

@@ -1,15 +1,14 @@
-// src/components/ShareFolderDialog.tsx
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchFolderPermissions, // Renamed, uses new actions/services
-  shareFolder, // Renamed, uses new actions/services
-  revokeShare, // Renamed, uses new actions/services
+  fetchFolderPermissions,
+  shareFolder,
+  revokeShare,
   setDialogFolderContext,
   clearShareError,
   clearRevokeErrorForUser,
-} from "../store/actions/folderShareActions"; // Adjusted path
-import { AccessLevel, SharedUser } from "../store/reducers/folderShareReducer"; // Adjusted path
+} from "../store/actions/folderShareActions";
+import { AccessLevel } from "../store/reducers/folderShareReducer";
 import type { RootState } from "../store/index.ts";
 import {
   Dialog,
@@ -22,7 +21,6 @@ import {
   TextField,
   MenuItem,
   Select,
-  Chip,
   IconButton,
   List,
   ListItem,
@@ -57,20 +55,16 @@ const ShareFolderDialog: React.FC<ShareFolderDialogProps> = ({
     folderIdForDialog,
   } = useSelector((state: RootState) => state.folderShares);
 
-  // Use userList from Redux store
   const users = useSelector((state: RootState) => state.userList.users || []);
   const userSearchLoading = useSelector(
     (state: RootState) => state.userList.isLoading
   );
 
-  // Change to store selected user object
   const [selectedUser, setSelectedUser] = useState(null);
-  // Updated to use AccessLevel.READ as default based on new enum
   const [selectedAccessLevel, setSelectedAccessLevel] = useState<AccessLevel>(
     AccessLevel.READ
   );
 
-  // Local state for optimistic update after revoke/add
   const [optimisticSharedWith, setOptimisticSharedWith] = useState<string[]>(
     []
   );
@@ -84,10 +78,8 @@ const ShareFolderDialog: React.FC<ShareFolderDialogProps> = ({
     }
   }, [isOpen, folderId, dispatch, folderIdForDialog]);
 
-  // Fetch all users on mount
   useEffect(() => {
     if (isOpen) {
-      // @ts-ignore
       dispatch(fetchUsers(1, 999));
     }
   }, [isOpen, dispatch]);
@@ -95,7 +87,7 @@ const ShareFolderDialog: React.FC<ShareFolderDialogProps> = ({
   const handleClose = useCallback(() => {
     dispatch(setDialogFolderContext(null));
     setSelectedUser(null);
-    setSelectedAccessLevel(AccessLevel.READ); // Reset to default
+    setSelectedAccessLevel(AccessLevel.READ);
     dispatch(clearShareError());
     onClose();
   }, [dispatch, onClose]);
@@ -113,11 +105,9 @@ const ShareFolderDialog: React.FC<ShareFolderDialogProps> = ({
       return;
     }
     dispatch(clearShareError());
-    // Optimistically add to UI
     setOptimisticSharedWith((prev) =>
       prev.includes(selectedUser.id) ? prev : [...prev, selectedUser.id]
     );
-    // @ts-ignore
     dispatch(shareFolder(folderId, selectedUser.id, selectedAccessLevel));
     setSelectedUser(null);
     setSelectedAccessLevel(AccessLevel.READ);
@@ -126,15 +116,12 @@ const ShareFolderDialog: React.FC<ShareFolderDialogProps> = ({
   const handleRevokeAccess = async (userIdToRevoke: string) => {
     if (!folderId) return;
     dispatch(clearRevokeErrorForUser(userIdToRevoke));
-    // Optimistically remove from UI
     setOptimisticSharedWith((prev) =>
       prev.filter((id) => id !== userIdToRevoke)
     );
-    // @ts-ignore
     dispatch(revokeShare(folderId, userIdToRevoke));
   };
 
-  // Keep optimisticSharedWith in sync with sharedWith from redux
   useEffect(() => {
     if (sharedWith) {
       setOptimisticSharedWith(sharedWith.map((u) => u.userId));
@@ -159,7 +146,6 @@ const ShareFolderDialog: React.FC<ShareFolderDialogProps> = ({
       </DialogTitle>
       <DialogContent>
         <Box component="form" onSubmit={handleShareSubmit} sx={{ mb: 3 }}>
-          {/* Replace TextField with Autocomplete */}
           <Autocomplete
             options={users}
             getOptionLabel={(option) => `${option.username} (${option.email})`}
@@ -247,7 +233,6 @@ const ShareFolderDialog: React.FC<ShareFolderDialogProps> = ({
                 const userRevokeInfo = revokingStatus[share.userId];
                 const isRevokingThisUser = userRevokeInfo?.inProgress;
                 const revokeErrorForThisUser = userRevokeInfo?.error;
-                // Find username by userId
                 const userObj = users.find((u) => u.id === share.userId);
                 const username = userObj ? userObj.username : share.userId;
                 return (

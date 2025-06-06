@@ -14,8 +14,6 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../store/index";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
-const drawerWidth = 260;
-
 type ViewType = "users" | "teams" | "managers" | string;
 
 const DashboardLayout: React.FC = () => {
@@ -53,7 +51,7 @@ const DashboardLayout: React.FC = () => {
     navigate(`/${newValue}`);
   };
 
-  const pageTitle = "Management Dashboard"; // Default title
+  const pageTitle = "Management Dashboard";
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
@@ -109,7 +107,6 @@ const DashboardLayout: React.FC = () => {
               value="users"
               label={`User | ${usersCount}`}
               sx={{
-                // color: "rgba(48, 112, 196, 0.95)",
                 textTransform: "none",
                 fontWeight: activeView === "users" ? "bold" : 500,
                 fontSize: "0.95rem",

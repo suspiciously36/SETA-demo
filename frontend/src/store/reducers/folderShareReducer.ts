@@ -67,10 +67,8 @@ const folderSharingReducer = (
   switch (action.type) {
     case SET_DIALOG_FOLDER_CONTEXT:
       return {
-        ...initialShareFolderState, // Reset most state when context changes or clears
+        ...initialShareFolderState, 
         folderIdForDialog: action.payload,
-        // Keep revokingStatus if needed across quick dialog re-opens, or clear it too:
-        // revokingStatus: action.payload ? state.revokingStatus : {}
       };
 
     case FETCH_SHARED_USERS_REQUEST:
@@ -122,7 +120,6 @@ const folderSharingReducer = (
       if (state.folderIdForDialog === action.payload.folderId) {
         const newRevokingStatus = { ...state.revokingStatus };
         delete newRevokingStatus[action.payload.revokedUserId];
-        // List updated by re-fetch in thunk.
         return { ...state, revokingStatus: newRevokingStatus };
       }
       return state;

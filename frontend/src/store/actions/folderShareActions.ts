@@ -1,7 +1,7 @@
 import { shareFolderWithUser, revokeFolderShare, fetchSharedUsers as fetchSharedUsersService } from "../../services/folderShareService";
 import { showSnackbar } from "./notificationActions.ts";
-import type { AppDispatch } from "../index.ts";
-import { CLEAR_REVOKE_ERROR_FOR_USER, CLEAR_SHARE_ERROR, FETCH_SHARED_FOLDERS_FAILURE, FETCH_SHARED_FOLDERS_REQUEST, FETCH_SHARED_FOLDERS_SUCCESS, FETCH_SHARED_USERS_FAILURE, FETCH_SHARED_USERS_REQUEST, FETCH_SHARED_USERS_SUCCESS, REVOKE_ACCESS_FAILURE, REVOKE_ACCESS_REQUEST, REVOKE_ACCESS_SUCCESS, REVOKE_FOLDER_SHARE_FAILURE, REVOKE_FOLDER_SHARE_REQUEST, REVOKE_FOLDER_SHARE_SUCCESS, SET_DIALOG_FOLDER_CONTEXT, SHARE_FOLDER_FAILURE, SHARE_FOLDER_REQUEST, SHARE_FOLDER_SUCCESS } from "./actionTypes.ts";
+import type { AppDispatch, AppThunk } from "../index.ts";
+import { CLEAR_REVOKE_ERROR_FOR_USER, CLEAR_SHARE_ERROR, FETCH_SHARED_USERS_FAILURE, FETCH_SHARED_USERS_REQUEST, FETCH_SHARED_USERS_SUCCESS, REVOKE_ACCESS_FAILURE, REVOKE_ACCESS_REQUEST, REVOKE_ACCESS_SUCCESS, SET_DIALOG_FOLDER_CONTEXT, SHARE_FOLDER_FAILURE, SHARE_FOLDER_REQUEST, SHARE_FOLDER_SUCCESS } from "./actionTypes.ts";
 import type { AccessLevel, SharedUser } from "../reducers/folderShareReducer.ts";
 
 // Action types
@@ -89,8 +89,7 @@ export const fetchSharedUsersFailure = (folderId: string, error: string) => ({
     }
 } as const);
 
-// Share folder with user
-export const shareFolder = (folderId: string, userIdToShareWith: string, accessLevel: AccessLevel) => async (dispatch: AppDispatch) => {
+export const shareFolder = (folderId: string, userIdToShareWith: string, accessLevel: AccessLevel): AppThunk => async (dispatch: AppDispatch) => {
   try {
     await shareFolderWithUser(folderId, { userIdToShareWith, accessLevel });
     dispatch(shareFolderSuccess(folderId, userIdToShareWith, accessLevel));
@@ -101,8 +100,7 @@ export const shareFolder = (folderId: string, userIdToShareWith: string, accessL
   }
 };
 
-// Revoke user access
-export const revokeShare = (folderId: string, userId: string) => async (dispatch: AppDispatch) => {
+export const revokeShare = (folderId: string, userId: string): AppThunk => async (dispatch: AppDispatch) => {
   try {
     await revokeFolderShare(folderId, userId);
     dispatch(revokeAccessSuccess(folderId, userId));
@@ -113,10 +111,9 @@ export const revokeShare = (folderId: string, userId: string) => async (dispatch
   }
 };
 
-export const fetchFolderPermissions = (folderId: string) => async (dispatch: AppDispatch) => {
+export const fetchFolderPermissions = (folderId: string): AppThunk => async (dispatch: AppDispatch) => {
   dispatch(fetchSharedUsersRequest(folderId));
   try {
-    // Assuming you have a service to fetch shared users
     const sharedUsers = await fetchSharedUsersService(folderId);
     dispatch(fetchSharedUsersSuccess(folderId, sharedUsers));
   } catch (e: any) {

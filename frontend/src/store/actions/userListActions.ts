@@ -3,7 +3,6 @@ import { DetailedUser, type CreateUserDto } from '../../types/user.types';
 import { AppThunk, AppDispatch } from '../index';
 import { FETCH_USERS_REQUEST, FETCH_USERS_SUCCESS, FETCH_USERS_FAILURE, CREATE_USER_REQUEST, CREATE_USER_SUCCESS, CREATE_USER_FAILURE, DELETE_USER_REQUEST, DELETE_USER_SUCCESS, DELETE_USER_FAILURE } from './actionTypes';
 
-// Action Creators
 export const fetchUsersRequest = () => ({
   type: FETCH_USERS_REQUEST,
 } as const);
@@ -47,7 +46,6 @@ export const deleteUserFailure = (userId: string, error: string) => ({
   payload: {userId, error}
 } as const)
 
-// Thunk Action for Fetching Users
 export const fetchUsers = (page: number = 1, limit: number = 10): AppThunk => async (dispatch: AppDispatch) => {
   dispatch(fetchUsersRequest());
   try {

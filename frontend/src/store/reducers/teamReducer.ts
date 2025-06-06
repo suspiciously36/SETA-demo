@@ -44,7 +44,6 @@ const initialState: TeamState = {
   pagination: null
 };
 
-// Define action interfaces for teams
 interface FetchTeamsRequestAction { type: typeof FETCH_TEAMS_REQUEST; }
 interface FetchTeamsSuccessAction { type: typeof FETCH_TEAMS_SUCCESS; payload: PaginatedTeamsResponse; }
 interface FetchTeamsFailureAction { type: typeof FETCH_TEAMS_FAILURE; payload: string; }
@@ -123,7 +122,6 @@ const teamReducer = (state: TeamState = initialState, action: TeamActionTypes): 
       case CREATE_TEAM_FAILURE:
         return { ...state, creatingLoading: false, creatingError: action.payload };
 
-        // Fetch Single Team Details
     case FETCH_TEAM_DETAILS_REQUEST:
       return { ...state, loadingDetails: true, errorDetails: null, currentTeamDetails: null };
     case FETCH_TEAM_DETAILS_SUCCESS:
@@ -133,7 +131,6 @@ const teamReducer = (state: TeamState = initialState, action: TeamActionTypes): 
     case CLEAR_TEAM_DETAILS:
       return { ...state, currentTeamDetails: null, loadingDetails: false, errorDetails: null };
 
-    // Update Team
     case UPDATE_TEAM_REQUEST:
       return { ...state, updatingLoading: true, updatingError: null };
     case UPDATE_TEAM_SUCCESS:
@@ -163,7 +160,6 @@ const teamReducer = (state: TeamState = initialState, action: TeamActionTypes): 
     case UPDATE_TEAM_FAILURE:
       return { ...state, updatingLoading: false, updatingError: action.payload };
         
-    // Delete Team
     case DELETE_TEAM_REQUEST:
       return {
         ...state,

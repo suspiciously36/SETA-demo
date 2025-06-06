@@ -1,4 +1,3 @@
-// src/components/layout/FolderLayout.tsx
 import React, { useState, useEffect, useMemo } from "react";
 import {
   Box,
@@ -15,12 +14,12 @@ import TopBar from "./Topbar";
 import { Outlet, useLocation, useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "../../store";
-import { Folder, UpdateFolderDto } from "../../types/folder.types";
-import { submitFolderUpdate } from "../../store/actions/folderActions"; // Removed unused fetchUserFolders, fetchTeamForEdit
+import { UpdateFolderDto } from "../../types/folder.types";
+import { submitFolderUpdate } from "../../store/actions/folderActions";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import { showSnackbar } from "../../store/actions/notificationActions";
-import { UserRole } from "../../types/user.types"; // Add this import if not already present
+import { UserRole } from "../../types/user.types";
 
 const FolderLayout: React.FC = () => {
   const location = useLocation();
@@ -53,19 +52,16 @@ const FolderLayout: React.FC = () => {
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editableTitleText, setEditableTitleText] = useState("");
-  const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false); // To track if initial load attempt happened
+  const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false);
 
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editableDescriptionText, setEditableDescriptionText] = useState("");
 
   useEffect(() => {
     if (folderId) {
-      // Detect if this is a shared folder route
       if (location.pathname.startsWith("/shared-folders/")) {
-        console.log("Detected shared folder route");
         setActiveSidebarView(`shared-folders/${folderId}`);
       } else {
-        console.log("Detected regular folder route");
         setActiveSidebarView(`folders/${folderId}`);
       }
       if (currentFolder) {
@@ -81,11 +77,10 @@ const FolderLayout: React.FC = () => {
         setEditableTitleText("Loading folder...");
         setHasAttemptedLoad(false);
       }
-    } else {
-      console.log("No folderId provided, setting default view");
-      setActiveSidebarView("folders");
-      setEditableTitleText("My Folders Overview");
-      setEditableDescriptionText("My Folders Description");
+    } else if (location.pathname === "/shared-folders") {
+      setActiveSidebarView("shared-folders");
+      setEditableTitleText("My Shared Folders Overview");
+      setEditableDescriptionText("My Shared Folders Description");
       setIsEditingTitle(false);
       setIsEditingDescription(false);
       setHasAttemptedLoad(true);
@@ -99,7 +94,6 @@ const FolderLayout: React.FC = () => {
     isUpdatingThisFolder,
   ]);
 
-  // Determine if user can edit folder title/description
   const canEditFolder =
     currentFolder &&
     loggedInUser &&
@@ -191,7 +185,7 @@ const FolderLayout: React.FC = () => {
     }
   };
 
-  let displayTitle = "My Folders Overview";
+  let displayTitle = "Folders Overview";
   if (folderId) {
     if (isListLoading && !currentFolder && !hasAttemptedLoad)
       displayTitle = "Loading folder...";
@@ -199,7 +193,7 @@ const FolderLayout: React.FC = () => {
     else if (!isListLoading && !currentFolder)
       displayTitle = "Folder not found";
   }
-  let displayDescription = "My Folders Description";
+  let displayDescription = "Folders Description";
   if (folderId) {
     if (isListLoading && !currentFolder && !hasAttemptedLoad)
       displayDescription = "Loading folder...";

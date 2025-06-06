@@ -6,7 +6,7 @@ import {
   fetchUserNotes,
   deleteNote,
   submitNewNote,
-  fetchNoteDetails, // <-- Add this import
+  fetchNoteDetails,
 } from "../store/actions/noteActions.ts";
 import {
   Alert,
@@ -19,7 +19,6 @@ import {
   Tooltip,
   Typography,
   Chip,
-  Button,
 } from "@mui/material";
 import type { Note } from "../types/note.types.ts";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -27,6 +26,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useParams, useNavigate } from "react-router-dom";
 import { showSnackbar } from "../store/actions/notificationActions.ts";
 import ShareFolderDialog from "./ShareFolderDialog.tsx";
+import ShareIcon from "@mui/icons-material/Share";
 import { FolderAccessLevel, type Folder } from "../types/folder.types.ts";
 
 const ITEMS_PER_PAGE = 10;
@@ -43,13 +43,11 @@ const MyFolderPage: React.FC = () => {
 
   const loggedInUser = useSelector((state: RootState) => state.auth.user);
 
-  // Only ROOT or folder owner can delete notes
   const canDeleteNotes = (note: Note) => {
     if (!loggedInUser || !currentFolder) return false;
     return loggedInUser.id === currentFolder.owner_id;
   };
 
-  // Owner and users with write access can open/edit notes
   const canOpenNote = () => {
     if (!loggedInUser || !currentFolder) return false;
     return (
@@ -70,12 +68,10 @@ const MyFolderPage: React.FC = () => {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const observer = useRef<IntersectionObserver | null>(null);
 
-  // Filter notes by folderId from URL
   const notesInFolder = notes.filter(
     (note) => (note.folderId || note.folder_id) === folderId
   );
 
-  // Infinite scroll fetch logic
   const fetchNextPage = useCallback(async () => {
     if (
       !isFetchingMore &&
@@ -114,7 +110,6 @@ const MyFolderPage: React.FC = () => {
   }, [fetchNextPage]);
 
   useEffect(() => {
-    // Initial fetch or folder change
     setCurrentPage(1);
     dispatch(fetchUserNotes(1, ITEMS_PER_PAGE));
   }, [dispatch, folderId]);
@@ -131,7 +126,6 @@ const MyFolderPage: React.FC = () => {
         dispatch(
           showSnackbar(`Note "${note.title}" deleted successfully.`, "success")
         );
-        // Optionally handle pagination after deletion
       } catch (e: any) {
         dispatch(
           showSnackbar(
@@ -161,7 +155,6 @@ const MyFolderPage: React.FC = () => {
   const handleCardClick = async (noteId: string) => {
     setHighlightedNoteId(noteId === highlightedNoteId ? null : noteId);
     if (folderId && noteId) {
-      // Fetch note details before navigating
       const folder = folders.find((f: Folder) => f.id === folderId);
       const isShared =
         folder &&
@@ -169,10 +162,6 @@ const MyFolderPage: React.FC = () => {
           folder.access_level === FolderAccessLevel.WRITE);
       await dispatch(fetchNoteDetails(noteId));
       if (isShared) {
-        console.log(
-          "Navigating here",
-          `/shared-folders/${folderId}/notes/${noteId}`
-        );
         navigate(`/shared-folders/${folderId}/notes/${noteId}`);
       } else {
         navigate(`/folders/${folderId}/notes/${noteId}`);
@@ -180,10 +169,8 @@ const MyFolderPage: React.FC = () => {
     }
   };
 
-  // Find the current folder object
   const currentFolder = folders.find((f) => f.id === folderId);
 
-  // Determine if user can create notes
   const canCreateNote =
     currentFolder &&
     (loggedInUser.id === currentFolder.owner_id ||
@@ -259,12 +246,12 @@ const MyFolderPage: React.FC = () => {
                 },
               }}
             >
+              <ShareIcon sx={{ fontSize: 22, mr: 1 }} />
               Share
             </IconButton>
           )}
           {canCreateNote && (
             <IconButton
-              // Change to Button for consistent style with "+New Team"
               component="button"
               onClick={handleCreateNote}
               sx={{
@@ -287,7 +274,7 @@ const MyFolderPage: React.FC = () => {
                 gap: 1,
               }}
             >
-              <AddIcon sx={{ fontSize: 22, mr: 1 }} />
+              <AddIcon sx={{ fontSize: 22 }} />
               NEW NOTE
             </IconButton>
           )}
@@ -457,7 +444,6 @@ const MyFolderPage: React.FC = () => {
                     >
                       {note.body}
                     </Typography>
-                    {/* Tags at bottom right */}
                     {Array.isArray(note.tags) && note.tags.length > 0 && (
                       <Box
                         sx={{

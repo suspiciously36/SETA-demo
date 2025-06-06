@@ -50,7 +50,7 @@ import {
 import type { CreateFolderDto, Folder } from "../../types/folder.types.ts";
 import { showSnackbar } from "../../store/actions/notificationActions.ts";
 import { UserRole } from "../../types/user.types.ts";
-import type { CreateNoteDto, Note } from "../../types/note.types.ts";
+import type { CreateNoteDto } from "../../types/note.types.ts";
 import {
   fetchUserNotes,
   submitNewNote,
@@ -93,16 +93,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
     creatingLoading: creatingFolderLoading,
   } = useSelector((state: RootState) => state.folders);
 
-  const { notes } = useSelector((state: RootState) => state.notes);
-
   const { creatingLoading: creatingNoteLoading } = useSelector(
     (state: RootState) => state.notes
   );
 
-  const [openFolders, setOpenFolders] = useState<Record<string, boolean>>({});
-  const [openSharedFolders, setOpenSharedFolders] = useState<
-    Record<string, boolean>
-  >({});
   const [folderOptionsAnchorEl, setFolderOptionsAnchorEl] =
     useState<null | HTMLElement>(null);
   const [showItemsCount, setShowItemsCount] = useState<number | "All">(5);
@@ -118,48 +112,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
     dispatch(fetchUserFolders());
     dispatch(fetchUserNotes());
   }, [dispatch]);
-
-  // useEffect(() => {
-  //   if (activeView.startsWith("folders/")) {
-  //     const parts = activeView.split("/");
-  //     if (parts.length >= 2) {
-  //       const folderId = parts[1];
-  //       const folderHasNotes =
-  //         Array.isArray(notes) &&
-  //         notes.some((n) => (n.folderId || n.folder_id) === folderId);
-
-  //       if (!openFolders[folderId] && folderHasNotes) {
-  //         const currentPathIsRelatedToFolder = location.pathname.startsWith(
-  //           `/folders/${folderId}`
-  //         );
-  //         if (currentPathIsRelatedToFolder) {
-  //           setOpenFolders((prev) => ({ ...prev, [folderId]: true }));
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [activeView, location.pathname, notes, openFolders]);
-
-  // useEffect(() => {
-  //   if (activeView.startsWith("shared-folders/")) {
-  //     const parts = activeView.split("/");
-  //     if (parts.length >= 2) {
-  //       const folderId = parts[1];
-  //       const folderHasNotes =
-  //         Array.isArray(notes) &&
-  //         notes.some((n) => (n.folderId || n.folder_id) === folderId);
-
-  //       if (!openSharedFolders[folderId] && folderHasNotes) {
-  //         const currentPathIsRelatedToFolder = location.pathname.startsWith(
-  //           `/shared-folders/${folderId}`
-  //         );
-  //         if (currentPathIsRelatedToFolder) {
-  //           setOpenSharedFolders((prev) => ({ ...prev, [folderId]: true }));
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [activeView, location.pathname, notes, openSharedFolders]);
 
   useEffect(() => {
     if (
@@ -224,7 +176,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
     };
     try {
       if (folderId) {
-        // Find the folder to check if it's shared
         const folder = folders.find((f: Folder) => f.id === folderId);
         const isShared =
           folder &&
@@ -302,7 +253,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
   const activeMenuItemColor = "#FFFFFF";
   const activeMenuItemHoverBg = "rgba(40, 90, 160, 0.9)";
 
-  // Separate folders into "My Folders" and "Shared Folders"
   const myFolders = useMemo(
     () =>
       Array.isArray(folders)
@@ -373,7 +323,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
       icon: <FolderCopyIcon />,
       onClick: handleMyFoldersToggle,
       open: myFoldersOpen,
-      // Only highlight if not in shared folder
       active: activeView.startsWith("folders"),
       isHeader: true,
       subItems:
@@ -480,7 +429,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
       folderData &&
       (authUser.role === UserRole.ROOT || authUser.id === folderData.owner_id);
 
-    // --- Add logic for canAddNoteToThisFolder ---
     let canAddNoteToThisFolder = false;
     if (authUser && folderData && folderData.access_level) {
       if (
@@ -491,7 +439,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
         canAddNoteToThisFolder = true;
       }
     }
-    // --- End logic for canAddNoteToThisFolder ---
 
     if (
       (item.isHeader && item.text === "My Folders") ||
@@ -512,7 +459,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
               backgroundColor: isActive
                 ? activeMenuItemHoverBg
                 : menuItemHoverBg,
-              // Show action buttons on hover
               "& .sidebar-parent-action": {
                 opacity: 1,
                 pointerEvents: "auto",
