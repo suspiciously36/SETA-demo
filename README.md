@@ -137,15 +137,13 @@ The application enforces different permissions based on user roles:
 
         - View-only access to certain information (details to be specified, typically cannot perform management actions).
 
-    Manager/Root Role (Manageability):
+    Manager Role (Manageability):
 
         - User Management:
 
             1. Create new users (can assign roles: 'member' or 'manager').
 
-            2. Delete users from the system.
-
-            3. View user list with pagination.
+            2. View user list with pagination.
 
         - User Assets:
 
@@ -163,7 +161,7 @@ The application enforces different permissions based on user roles:
 
                 - Edit team name.
 
-                - Delete teams, view team list with lazy loading.
+                - view team list with lazy loading.
 
         - Team Assets:
 
@@ -179,6 +177,14 @@ The application enforces different permissions based on user roles:
 
             4. Shared access must respect permission level (read or write).
 
+        Root Role (Higher Order Manageability)
+
+            1. All manageability that a Manager has, plus:
+
+                - Delete users from the system.
+
+                - Delete teams from the system.
+
 _Project Status_
 
     Core authentication and RBAC logic is in place.
@@ -187,4 +193,6 @@ _Project Status_
 
     UI styling is being updated to match design mockups using MUI.
 
-- Database Table Design: https://dbdiagram.io/d/Management-dashboard-68220b965b2fc4582f3cb992
+- Database Table Design: [Click here!](https://dbdiagram.io/d/Management-dashboard-68220b965b2fc4582f3cb992)
+
+- Use Case Diagram: [Click here!](https://uml.planttext.com/plantuml/svg/ZLTjR-Cs3FxkNq5qm98KJReD630SYkBIT1qsjBqXxQrV1WoApIH2PIkGb6Q-xVxxI4bEBCTjbm1fJJvyfoZwetN2k6sfiW5SIx4oeeH7wHHcZd_XiqK3eYhW4Obp9ognmX8h1zV2hXTQc0B638APe9-e8IDb3wucSPQy5RNUEdX0vsIrifbzbjL6i26HEsqYS8TMbzXYRYtchFEV3EXp9VBdbT7RgfXffGrySojNQ_VmN5-fBGQ4DWMQoFt-9_vw-jGOlOla7_mdaDbsdypNbWy6SoUgbTfxqSR_w3_ztjrynr_IDU2ueP2iIUeAbiGLy8B6oLmeK24tGvy92mHGk7IZZ7_1QJ0SvK6S4tkDIrbXyDzcNX1EFbTYwzPK5zBgiF1bEm5XeSDey7TOBWYnV_HrFJpFjNOmBKfPUINyoAQzJVYrMgEHb9SSOVWBLcY4aby4-pTYKEmI0z9IgAxU8EWb18jdlYEy-fGRH2Oa_xZ66cIm0UGwDm9m9rW6Ci5eHGyBL7h7p-Ka2yhXuj_nk56LDLvuOeXWGsKY6fmyrDPX2JDjy2IMjcctarkzaXMS0_sbqeGaplwQKXPJt1npb2--45pO6yHYGVh_h8QFMbW7zzh99MUTk7RKwF7KEjNqXyHTwpo5yz88C3DGKg4G7dMNjMI0hFxsz0XpN1gqQmhNXNeqMYAC6lAG17-q3oVwA17UBG-wbTQHXPrqQzW8Ia-gd86Ciwdyp22r7Dn7BGqwa9cImgzHeSC46aZ7qBrd0mjJQz7PhYk1ceJR6M3zuNfGErmbljIWj2XeT2K1C_BrW9cR1ioK5FvpGGtk3LwZ4r9PidalIZoBPyMUDRryQ1-METOKKzSs6aZ7q7sKlQbZHa_gRhIYiGVVSa_ZMpaCePwpb-VHgI2xjnA48_5TORRN4VMadfW6TtLZQz0EwQxkDHPa7jR2qBHyuahVOI8NMBsodXMDDNqoHr6SFz78GjYWAQK_ReUwUP4WqNkCOuQdUKu7bNJEyKK_uoWDdPLG6t9f1Z2cgHRcCLqJ-mjuZYeCdBNSMCOmjEzooBh4yVXoF-T89axK8O_hE8m9jAYRbZpp8tNKJDuetHfMAIEElPJO3AMKcdP87o-qmB7bGwcFUMavEtwqYjDdhyaxfoLUAiTvYUc8_9RbC1axZDOGV4Ka7iCURfWylGhzUUzmzYFZ5LNH40LtkFNXKwNgp3z7T6iK7vEz-gOfN-d5eQnojItm7FzsM1KZtvp391KZc5p2i9ss4No0YuiWSNdfuGT7teMtrBE72TudiKTzawt_1Jv4_oxSurkDHW8jYNtdzXXfzVoRGZ6_xqab1w4hsTJGo_bTTQQezrtjgrNnz0yRAMrYtKlcz7H-DPrvqG-dfqJW7lBxMYceeyhOVRp_4jCtaV2zbekA5krIqowb2Su3CeB91QDBNXFvbYosV0ffWGGkqYIZ506xb1qxrZb4xDpl-wdSSZ7CMxcW1P-cQ5mssG5UAosg9RjB_qlJkFIcsVI6QjkqmTxOkqxlFMmM2joGCh_rBtqz1k6YiM7UqAl02oeOKWCNy68diEDXCvfuFRUyUkQwSlmkjjqKrEEsxTj7-fVVwlu3)
