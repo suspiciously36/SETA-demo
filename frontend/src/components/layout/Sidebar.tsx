@@ -37,6 +37,7 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import FolderSharedIcon from "@mui/icons-material/FolderShared";
+import WebAssetIcon from "@mui/icons-material/WebAsset";
 
 import { logoutUser } from "../../store/actions/authActions";
 import { AppDispatch, type RootState } from "../../store";
@@ -285,6 +286,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
     return sharedFolders.slice(0, showItemsCount);
   }, [sharedFolders, showItemsCount]);
 
+  const handleViewAssets = () => {
+    navigate(`/users/${authUser?.id}/assets`);
+    handleManagementSectionToggle();
+  };
+
   const menuItems = [
     {
       text: "Dashboard",
@@ -368,10 +374,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
 
   const bottomMenuItems = [
     {
-      text: "Profile (not available)",
-      icon: <AccountCircleIcon />,
-      path: "/profile",
-      id: "profile",
+      text: "View Your Assets",
+      icon: <WebAssetIcon />,
+      id: "assets",
+      onClick: handleViewAssets,
     },
     {
       text: "Setting (not available)",
