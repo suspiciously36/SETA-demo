@@ -718,9 +718,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView }) => {
                     pl: 2,
                   }}
                 >
-                  {item.subItems.map((subItem) =>
-                    renderListItem(subItem, true)
-                  )}
+                  {item.subItems.map((subItem) => {
+                    if (subItem.id === "managers") {
+                      subItem.disabled = true;
+                    }
+                    return renderListItem(subItem, true);
+                  })}
                 </List>
               </Collapse>
             )}

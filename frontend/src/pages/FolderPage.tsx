@@ -161,11 +161,21 @@ const FolderPage: React.FC = () => {
         folder &&
         (folder.access_level === FolderAccessLevel.READ ||
           folder.access_level === FolderAccessLevel.WRITE);
-      await dispatch(fetchNoteDetails(noteId));
-      if (isShared) {
-        navigate(`/shared-folders/${folderId}/notes/${noteId}`);
-      } else {
-        navigate(`/folders/${folderId}/notes/${noteId}`);
+
+      try {
+        await dispatch(fetchNoteDetails(noteId));
+        if (isShared) {
+          navigate(`/shared-folders/${folderId}/notes/${noteId}`);
+        } else {
+          navigate(`/folders/${folderId}/notes/${noteId}`);
+        }
+      } catch (error: any) {
+        dispatch(
+          showSnackbar(
+            "This note no longer exists or you do not have access.",
+            "error"
+          )
+        );
       }
     }
   };

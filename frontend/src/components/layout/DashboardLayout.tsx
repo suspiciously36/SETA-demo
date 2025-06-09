@@ -116,7 +116,8 @@ const DashboardLayout: React.FC = () => {
             />
             <Tab
               value="managers"
-              label={`Manager | ${managerCountPlaceholder}`}
+              label={`Manager | N/A`}
+              disabled={true}
               sx={{
                 textTransform: "none",
                 fontWeight: activeView === "managers" ? "bold" : 500,

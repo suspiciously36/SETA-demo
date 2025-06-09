@@ -154,5 +154,6 @@ export const fetchNoteDetails = (noteId: string): AppThunk<Promise<void>> => asy
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred while fetching note details.';
         dispatch(fetchNoteDetailsFailure(errorMessage));
         dispatch(showSnackbar(errorMessage, "error"));
+        throw error;
     }
 }
