@@ -136,6 +136,12 @@ const UserManagementTable: React.FC = () => {
     setCurrentUserActions(null);
   };
   const handleViewAssets = () => {
+    const isRoot = loggedInUser?.role === UserRole.ROOT;
+    if (isRoot) {
+      navigate(`/users/${currentUserActions?.id}/assets`);
+      handleMenuClose();
+      return;
+    }
     const isManagerOfThisUser =
       loggedInUser?.role === UserRole.MANAGER &&
       currentUserActions?.teams?.some(
@@ -331,13 +337,11 @@ const UserManagementTable: React.FC = () => {
             <TableBody>
               {loading && users && users.length > 0 && (
                 <TableRow>
-                  {" "}
                   <TableCell
                     colSpan={canManageUsers ? 7 : 6}
                     align="center"
                     sx={{ p: 0, position: "relative", border: 0 }}
                   >
-                    {" "}
                     <Box
                       sx={{
                         position: "absolute",
@@ -351,10 +355,9 @@ const UserManagementTable: React.FC = () => {
                         backgroundColor: "rgba(255,255,255,0.5)",
                       }}
                     >
-                      {" "}
-                      <CircularProgress size={30} />{" "}
-                    </Box>{" "}
-                  </TableCell>{" "}
+                      <CircularProgress size={30} />
+                    </Box>
+                  </TableCell>
                 </TableRow>
               )}
               {!loading && users && users.length === 0 && (
@@ -386,11 +389,7 @@ const UserManagementTable: React.FC = () => {
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
                       <TableCell padding="checkbox">
-                        {" "}
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                        />{" "}
+                        <Checkbox color="primary" checked={isItemSelected} />
                       </TableCell>
                       <TableCell component="th" scope="row">
                         <Box sx={{ display: "flex", alignItems: "center" }}>

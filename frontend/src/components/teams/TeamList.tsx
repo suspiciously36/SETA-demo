@@ -172,9 +172,13 @@ const TeamList: React.FC = () => {
     const isManagerOfTeam = users.some(
       (user) =>
         user.id === loggedInUser?.id &&
-        user.role === UserRole.MANAGER &&
+        (user.role === UserRole.MANAGER || user.role === UserRole.ROOT) &&
         user.teams.some((team) => team.id === teamId)
     );
+    if (loggedInUser?.role === UserRole.ROOT) {
+      navigate(`/teams/${teamId}/assets`);
+      return true;
+    }
     if (!isManagerOfTeam) {
       dispatch(
         showSnackbar(

@@ -69,7 +69,7 @@ export class AuthResolver {
       .where({ email })
       .first();
     if (!result) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('User not found or credentials are invalid');
     }
     return result;
   }
